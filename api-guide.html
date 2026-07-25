@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fated OS · API 配置指南</title>
+<style>
+  :root{
+    --bg:#f5f3ee; --card:#fff; --ink:#1a1a1a; --faint:#8a8580; --line:#e8e4dc;
+    --blue:#007AFF; --green:#34C759; --orange:#FF9500; --red:#FF3B30; --plum:#f0ecf6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65;padding:20px;max-width:760px;margin:0 auto;}
+  h1{font-size:24px;margin:8px 0 4px;letter-spacing:-.3px;}
+  h2{font-size:17px;margin:28px 0 10px;color:var(--blue);border-left:4px solid var(--blue);padding-left:10px;}
+  h3{font-size:14.5px;margin:16px 0 6px;}
+  p{margin:6px 0;font-size:14px;}
+  .sub{color:var(--faint);font-size:13px;margin-bottom:18px;}
+  .card{background:var(--card);border-radius:14px;padding:16px 18px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .step{display:flex;gap:12px;align-items:flex-start;margin:10px 0;}
+  .step .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;
+    font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .step .c{font-size:14px;padding-top:1px;}
+  code{background:var(--plum);padding:2px 6px;border-radius:5px;font-size:12.5px;font-family:'SF Mono',Consolas,monospace;}
+  .kbd{background:#efeee9;border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:12.5px;}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:6px;}
+  .tag.ok{background:#e6f7ec;color:var(--green);} .tag.warn{background:#fff3e0;color:var(--orange);}
+  .tag.tip{background:#e6f0ff;color:var(--blue);} .tag.danger{background:#ffe9e7;color:var(--red);}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);}
+  th{color:var(--faint);font-weight:600;font-size:12px;}
+  .note{font-size:12.5px;color:var(--faint);background:#faf9f6;border-radius:8px;padding:10px 12px;margin:10px 0;}
+  .flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;margin:10px 0;}
+  .flow .box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-weight:600;}
+  .flow .arr{color:var(--faint);}
+  ul{margin:6px 0 6px 20px;font-size:14px;} li{margin:3px 0;}
+  .topbar{display:flex;align-items:center;gap:10px;}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--green);}
+</style>
+</head>
+<body>
+
+<div class="topbar"><span class="dot"></span><span style="font-size:13px;font-weight:700;color:var(--faint);">FATED OS</span></div>
+<h1>API 配置指南</h1>
+<p class="sub">3 分钟搞定。地址只需填域名，系统自动补全路径。直连优先，被拦截自动走云端代理。</p>
+
+<h2>一、连接原理（先看这个）</h2>
+<div class="card">
+  <div class="flow">
+    <span class="box">浏览器</span><span class="arr">→①直连→</span><span class="box">AI API / 中转站</span>
+  </div>
+  <div class="flow">
+    <span class="arr">②被拦截？→</span><span class="box">云端代理 /api/chat</span><span class="arr">→</span><span class="box">AI API / 中转站</span>
+  </div>
+  <p style="margin-top:10px;"><span class="tag ok">直连优先</span>DeepSeek / OpenAI 等官方 API 支持跨域，直连最快、无中转。</p>
+  <p><span class="tag tip">代理兜底</span>多数<b>中转站</b>不支持跨域，浏览器直连会被拦。此时自动切到 Cloudflare 云端代理转发，对用户无感。</p>
+  <p class="note">💡 所以：填中转站地址也能用，只是会自动走代理。两条路都帮你接通了。</p>
+</div>
+
+<h2>二、通用配置 3 步</h2>
+<div class="card">
+  <div class="step"><span class="n">1</span><span class="c">打开 <span class="kbd">设置 → 模型 API (LLM)</span></span></div>
+  <div class="step"><span class="n">2</span><span class="c">「当前语言模型」选一个；填 <b>API Key</b> 和 <b>地址</b>（填域名即可，如 <code>https://api.deepseek.com</code>）</span></div>
+  <div class="step"><span class="n">3</span><span class="c">点 <b>测试连接</b>，显示 ✓ 即成功 → 滑到底部 <b>保存并应用</b></span></div>
+  <p class="note">地址栏会自动补全：<code>/v1/chat/completions</code>（OpenAI类）、<code>/v1/messages</code>（Claude）、<code>:generateContent</code>（Gemini）。填完整地址也行。</p>
+</div>
+
+<h2>三、各官方 API 配置</h2>
+<div class="card">
+<table>
+  <tr><th>模型</th><th>获取 Key</th><th>地址（填域名即可）</th><th>Model ID</th></tr>
+  <tr><td><b>DeepSeek</b></td><td>platform.deepseek.com</td><td><code>https://api.deepseek.com</code></td><td><code>deepseek-chat</code></td></tr>
+  <tr><td><b>ChatGPT</b></td><td>platform.openai.com</td><td><code>https://api.openai.com</code></td><td><code>gpt-4o</code></td></tr>
+  <tr><td><b>Claude</b></td><td>console.anthropic.com</td><td><code>https://api.anthropic.com</code></td><td><code>claude-sonnet-4-20250514</code></td></tr>
+  <tr><td><b>Gemini</b></td><td>aistudio.google.com</td><td><code>https://generativelanguage.googleapis.com</code></td><td><code>gemini-2.5-pro</code></td></tr>
+</table>
+<p class="note">⚠️ 官方 API（OpenAI/Claude/Gemini）在国内需科学上网。若不想折腾，用下面的中转站。</p>
+</div>
+
+<h2>四、中转站配置（哈基米等）</h2>
+<div class="card">
+  <h3>通用中转站（OpenAI 兼容，最常见）</h3>
+  <div class="step"><span class="n">1</span><span class="c">「当前模型」选 <b>自定义 / 中转站</b></span></div>
+  <div class="step"><span class="n">2</span><span class="c">协议格式选 <b>OpenAI 兼容</b>（绝大多数中转站都是这个）</span></div>
+  <div class="step"><span class="n">3</span><span class="c">地址填中转站域名，如 <code>https://api.xxx.com</code>（不用手动加路径）</span></div>
+  <div class="step"><span class="n">4</span><span class="c">填中转站给你的 Key 和要用的 Model ID（如 <code>gpt-4o</code> / <code>deepseek-chat</code>）</span></div>
+  <div class="step"><span class="n">5</span><span class="c">测试连接 → 保存</span></div>
+
+  <h3 style="margin-top:16px;">哈基米（Hajimi，Gemini 中转）</h3>
+  <div class="step"><span class="n">1</span><span class="c">「当前模型」选 <b>自定义 / 中转站</b></span></div>
+  <div class="step"><span class="n">2</span><span class="c">协议格式选 <b>Gemini 兼容</b></span></div>
+  <div class="step"><span class="n">3</span><span class="c">地址填哈基米域名，如 <code>https://你的哈基米地址.com</code></span></div>
+  <div class="step"><span class="n">4</span><span class="c">填 Key（哈基米通常是 Gemini Key 或自定义令牌）+ Model ID <code>gemini-2.5-pro</code></span></div>
+  <p class="note">💡 哈基米若同时提供 OpenAI 兼容接口，也可选「OpenAI 兼容」+ 填 <code>/v1/chat/completions</code> 路径的域名，两种都试试哪个通。</p>
+</div>
+
+<h2>五、常见报错对照</h2>
+<div class="card">
+<table>
+  <tr><th>提示</th><th>原因 & 解决</th></tr>
+  <tr><td><span class="tag danger">401 / unauthorized</span></td><td>API Key 错误或已失效 → 重新复制粘贴 Key</td></tr>
+  <tr><td><span class="tag warn">404 / not found</span></td><td>地址或 Model ID 不对 → 检查地址域名、模型名拼写</td></tr>
+  <tr><td><span class="tag warn">请求超时</span></td><td>中转站无响应 → 换中转站，或检查是否需要科学上网</td></tr>
+  <tr><td><span class="tag warn">无法访问目标地址</span></td><td>代理也连不上 → 地址填错了 / 中转站挂了 / 需科学上网</td></tr>
+  <tr><td><span class="tag tip">直连被拦截且代理未就绪</span></td><td>Cloudflare Functions 未部署 → 确认 functions/api/ 目录已一起上传</td></tr>
+  <tr><td><span class="tag danger">未填写 API Key</span></td><td>没填 Key → 设置里填好 Key 再保存</td></tr>
+</table>
+</div>
+
+<h2>六、直连 vs 代理 小结</h2>
+<div class="card">
+  <ul>
+    <li><b>官方 API</b>（DeepSeek/OpenAI）→ 直连即可，最快。</li>
+    <li><b>中转站</b>（哈基米等）→ 直连通常被 CORS 拦，自动走云端代理，照样能用。</li>
+    <li>两条路<b>自动切换</b>，你只管填对 Key 和地址。</li>
+    <li>云端代理依赖 <code>functions/api/</code> 部署到 Cloudflare Pages，别漏传。</li>
+  </ul>
+</div>
+
+<p class="sub" style="margin-top:24px;text-align:center;">Fated OS · 配好 Key 和地址，剩下交给我 ✨</p>
+
+</body>
+</html>
