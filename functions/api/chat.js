@@ -19,6 +19,9 @@ function normEp(endpoint, fmt) {
   if (!endpoint) return '';
   var ep = String(endpoint).trim();
   if (!ep) return '';
+  // 防御性清理：修复重复协议前缀（如 https://https://...）
+  var m = ep.match(/^(https?:\/\/)(.*)/);
+  if (m) ep = m[1] + m[2].replace(/^(https?:\/\/)+/, '');
   if (ep.indexOf('http://') !== 0 && ep.indexOf('https://') !== 0) ep = 'https://' + ep;
   ep = ep.replace(/\/+$/, '');
   fmt = fmt || 'openai';
@@ -104,6 +107,8 @@ export async function onRequestPost(context) {
       reqBody = JSON.stringify({ model, messages: messages || [], max_tokens: maxTokens, temperature: 0.8 });
     }
 
+    console.log('[chat-proxy] format:', format, 'endpoint:', endpoint, 'finalUrl:', url, 'provider:', providerType);
+
     // 超时保护：中转站无响应时 25s 后主动中断，避免前端长时间挂起
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 25000);
@@ -112,10 +117,10 @@ export async function onRequestPost(context) {
       apiResp = await fetch(url, { method: 'POST', headers, body: reqBody, signal: controller.signal });
     } catch (fetchErr) {
       clearTimeout(timeout);
-      const msg = (fetchErr && fetchErr.name === 'AbortError')
+      const baseMsg = (fetchErr && fetchErr.name === 'AbortError')
         ? '请求超时（中转站 25s 内无响应）'
         : '无法访问目标地址：' + (fetchErr.message || '网络错误') + '。请检查地址是否正确、是否需要科学上网。';
-      return jsonResponse({ error: msg }, 502);
+      return jsonResponse({ error: baseMsg + ' (finalUrl: ' + url + ')' }, 502);
     }
     clearTimeout(timeout);
 
