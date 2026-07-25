@@ -3390,6 +3390,9 @@ function normEp(endpoint, fmt){
   if(!endpoint) return '';
   var ep = String(endpoint).trim();
   if(!ep) return '';
+  // 防御性清理：修复重复协议前缀（如 https://https://...）
+  var m = ep.match(/^(https?:\/\/)(.*)/);
+  if(m) ep = m[1] + m[2].replace(/^(https?:\/\/)+/, '');
   if(ep.indexOf('http://')!==0 && ep.indexOf('https://')!==0) ep = 'https://'+ep;
   ep = ep.replace(/\/+$/,'');                       // 去掉末尾斜杠
   fmt = fmt || 'openai';
@@ -3611,6 +3614,7 @@ function testAPIConnection(){
   var pingMsgs = [{role:'system',content:'Reply with exactly: OK'},{role:'user',content:'ping'}];
   var url,hdrs,bd;
   var ep = modelEndpoint(m, model);
+  console.log('[testAPI] activeModel:', model, 'apiFormat:', (m.apiFormat||'openai'), 'rawEndpoint:', m.endpoint, 'normEp:', ep);
   if(model==='deepseek'||model==='chatgpt'){ url=ep; hdrs={'Content-Type':'application/json','Authorization':'Bearer '+m.key}; bd=JSON.stringify({model:m.model,messages:pingMsgs,max_tokens:64,temperature:0.3}); }
   else if(model==='claude'){ url=ep; hdrs={'Content-Type':'application/json','x-api-key':m.key,'anthropic-version':'2023-06-01'}; bd=JSON.stringify({model:m.model,system:'Reply with exactly: OK',messages:[{role:'user',content:'ping'}],max_tokens:64}); }
   else if(model==='gemini'){ url=ep+'?key='+m.key; hdrs={'Content-Type':'application/json'}; bd=JSON.stringify({contents:[{role:'user',parts:[{text:'ping'}]}],generationConfig:{maxOutputTokens:64,temperature:0.3}}); }
@@ -3621,6 +3625,7 @@ function testAPIConnection(){
     else { url=ep; hdrs={'Content-Type':'application/json','Authorization':'Bearer '+m.key}; bd=JSON.stringify({model:m.model,messages:pingMsgs,max_tokens:64,temperature:0.3}); }
   }
   else { url=ep; hdrs={'Content-Type':'application/json','Authorization':'Bearer '+m.key}; bd=JSON.stringify({model:m.model,messages:pingMsgs,max_tokens:64,temperature:0.3}); }
+  console.log('[testAPI] direct URL:', url, 'headers:', Object.keys(hdrs), 'body:', bd);
   var isErr = function(t){ return /API Error|API连接失败|Invalid|401|403|unauthorized|forbidden|not found|模型|model|Proxy error/i.test(t); };
   // 直连优先测试（DeepSeek/OpenAI 等本身支持 CORS）
   fetch(url,{method:'POST',headers:hdrs,body:bd})
@@ -3649,11 +3654,13 @@ function testAPIConnection(){
 
   function tryProxyTest(){
     var proxyBody = JSON.stringify({messages:pingMsgs, model:m.model, provider:model, key:m.key, endpoint:ep, dataModel:m.model, apiFormat:(m.apiFormat||'openai'), max_tokens:64});
+    console.log('[testAPI] proxy body:', proxyBody);
     fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:proxyBody})
       .then(function(r){
         return r.text().then(function(t){ return {ok:r.ok,status:r.status,text:t}; });
       })
       .then(function(res){
+        console.log('[testAPI] proxy response:', res.status, res.text.substring(0,300));
         if(!res || !res.text){ showToast('连接失败：代理无响应（请确认已部署 Functions）', 3600, 'err'); updateCfgStatus(); return; }
         var d1; try{ d1=JSON.parse(res.text); }catch(e){ d1=null; }
         if(!d1){ showToast('连接失败：代理返回异常 (HTTP '+res.status+')', 3600, 'err'); updateCfgStatus(); return; }
@@ -3662,7 +3669,7 @@ function testAPIConnection(){
         var msg = d1.error || (isErr(r1)?r1:'') || ('HTTP '+res.status);
         showToast('连接失败：'+String(msg).replace(/^(API Error \(HTTP \d+\):\s*|Proxy error:\s*)/i,'').substring(0,70), 3600, 'err'); updateCfgStatus();
       })
-      .catch(function(){ showToast('连接失败：代理请求失败（Functions 可能未部署）', 3600, 'err'); updateCfgStatus(); });
+      .catch(function(e){ console.error('[testAPI] proxy fetch error:', e); showToast('连接失败：代理请求失败（Functions 可能未部署）', 3600, 'err'); updateCfgStatus(); });
   }
 }
 
