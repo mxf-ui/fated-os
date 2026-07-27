@@ -1052,6 +1052,110 @@ body.widget-bg-frosted .glass-liquid{
 .suoha-anim-slide{animation:suoha-slide-up .3s ease-out;}
 .suoha-hidden{ display:none !important; }
 
+/* ============ GO APP ============ */
+#sheet-go{ z-index:400; }
+#sheet-go .sheet-body{ padding:0; overflow-y:auto; background:#f5f5f0; }
+.go-page{ display:none; } .go-page.active{ display:block; }
+.go-header{ position:sticky; top:0; z-index:10; display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:rgba(245,245,240,0.88); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:0.5px solid rgba(0,0,0,0.06); }
+.go-header .t{ font-size:22px; font-weight:700; letter-spacing:-0.5px; color:#1a1a1a; }
+.go-header .wb{ font-size:12px; font-weight:600; background:#e8e8e0; padding:4px 12px; border-radius:20px; color:#555; }
+.go-back{ width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; font-weight:700; background:rgba(0,0,0,0.05); color:#1a1a1a; border:none; }
+.go-main{ padding:16px; padding-bottom:80px; max-width:480px; margin:0 auto; }
+.go-label{ font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:rgba(85,85,85,0.6); margin-bottom:6px; }
+.go-balance{ font-size:40px; font-weight:200; letter-spacing:-0.02em; color:#1a1a1a; line-height:1.1; }
+.go-balance .cur{ font-size:24px; }
+.go-card{ background:#fff; border:0.5px solid rgba(0,0,0,0.06); border-radius:14px; padding:16px; margin-bottom:12px; }
+.go-card.soft{ background:rgba(255,255,255,0.6); }
+.go-btn{ width:100%; padding:13px; font-size:13px; font-weight:600; letter-spacing:0.05em; border:1px solid #1a1a1a; background:transparent; color:#1a1a1a; border-radius:12px; cursor:pointer; transition:all .2s; }
+.go-btn:hover{ background:#1a1a1a; color:#fff; }
+.go-btn.primary{ background:#1a1a1a; color:#fff; }
+.go-btn.primary:hover{ background:#333; }
+.go-btn.ghost{ border-color:rgba(0,0,0,0.12); color:#888; } .go-btn.ghost:hover{ border-color:#1a1a1a; color:#1a1a1a; background:transparent; }
+.go-btn.sm{ padding:8px 14px; width:auto; font-size:12px; border-radius:20px; }
+.go-input{ width:100%; border:none; border-bottom:1.5px solid #1a1a1a; padding:6px 0; font-size:18px; font-weight:300; background:transparent; outline:none; color:#1a1a1a; }
+.go-nav{ position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; align-items:center; height:56px; background:rgba(245,245,240,0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:0.5px solid rgba(0,0,0,0.06); z-index:20; }
+.go-nav-item{ display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; padding:4px 16px; border-radius:24px; font-size:11px; font-weight:600; letter-spacing:0.03em; color:rgba(85,85,85,0.5); transition:all .2s; }
+.go-nav-item.active{ color:#1a1a1a; background:rgba(0,0,0,0.06); }
+.go-nav-item .ico{ font-size:20px; line-height:1; margin-bottom:2px; }
+.go-type-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.go-type-card{ background:#fff; border:0.5px solid rgba(0,0,0,0.06); border-radius:14px; padding:16px; text-align:center; cursor:pointer; transition:all .25s; position:relative; overflow:hidden; }
+.go-type-card:hover{ transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+.go-type-card.selected{ border:2px solid #1a1a1a; }
+.go-type-card .ico{ width:36px; height:36px; margin:0 auto 6px; }
+.go-type-card .t{ font-size:15px; font-weight:600; color:#1a1a1a; }
+.go-type-card .s{ font-size:11px; color:rgba(85,85,85,0.5); margin-top:2px; }
+.go-avatar-float{ animation:go-float 3s ease-in-out infinite; }
+@keyframes go-float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+.go-live-stage{ position:relative; width:100%; aspect-ratio:3/4; border-radius:16px; overflow:hidden; background:linear-gradient(135deg,#2a2a2a,#1a1a1a); }
+.go-live-bg{ position:absolute; inset:0; background-size:cover; background-position:center; transition:opacity .5s; }
+.go-live-overlay{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
+.go-live-avatar{ width:80px; height:80px; border-radius:50%; border:3px solid rgba(255,255,255,0.3); background-size:cover; background-position:center; }
+.go-live-id{ color:#fff; font-size:14px; font-weight:600; text-shadow:0 1px 4px rgba(0,0,0,0.5); }
+.go-live-type-badge{ position:absolute; top:12px; left:12px; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); color:#fff; font-size:11px; font-weight:600; padding:4px 10px; border-radius:12px; }
+.go-live-viewers{ position:absolute; top:12px; right:12px; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); color:#fff; font-size:11px; padding:4px 10px; border-radius:12px; display:flex; align-items:center; gap:4px; }
+.go-danmaku-area{ position:absolute; bottom:80px; left:0; right:0; max-height:120px; overflow:hidden; pointer-events:none; }
+.go-danmaku-item{ color:#fff; font-size:13px; text-shadow:0 1px 3px rgba(0,0,0,0.6); padding:3px 0; opacity:0; animation:go-dm-in .3s forwards, go-dm-out .3s 4s forwards; white-space:nowrap; }
+@keyframes go-dm-in{ from{ opacity:0; transform:translateX(-20px); } to{ opacity:1; transform:translateX(0); } }
+@keyframes go-dm-out{ to{ opacity:0; transform:translateX(20px); } }
+.go-cart-bar{ position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(16px); padding:10px 16px; display:flex; align-items:center; gap:10px; }
+.go-cart-icon{ width:36px; height:36px; border-radius:50%; background:#ff9500; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; }
+.go-product-row{ display:flex; align-items:center; gap:10px; padding:10px; border:0.5px solid rgba(0,0,0,0.06); border-radius:10px; margin-bottom:8px; background:#fff; }
+.go-product-row .img{ width:48px; height:48px; border-radius:8px; background:#f0f0f0; background-size:cover; background-position:center; flex:none; }
+.go-product-row .info{ flex:1; }
+.go-product-row .info .n{ font-size:14px; font-weight:600; color:#1a1a1a; }
+.go-product-row .info .p{ font-size:13px; color:#888; }
+.go-buyer-row{ display:flex; align-items:center; gap:10px; padding:10px; border:0.5px solid rgba(0,0,0,0.06); border-radius:10px; margin-bottom:8px; background:#fff; }
+.go-buyer-row .av{ width:36px; height:36px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; }
+.go-qa-card{ background:#fff; border:0.5px solid rgba(0,0,0,0.06); border-radius:14px; padding:16px; margin-bottom:10px; }
+.go-qa-q{ font-size:15px; font-weight:600; color:#1a1a1a; margin-bottom:8px; }
+.go-qa-a{ font-size:14px; color:#555; line-height:1.6; }
+.go-qa-input{ width:100%; border:0.5px solid rgba(0,0,0,0.1); border-radius:10px; padding:10px; font-size:14px; outline:none; background:rgba(0,0,0,0.02); }
+.go-progress{ height:4px; background:rgba(0,0,0,0.06); border-radius:2px; overflow:hidden; margin:8px 0; }
+.go-progress-bar{ height:100%; background:#1a1a1a; border-radius:2px; transition:width .5s; }
+.go-game-launch{ display:flex; flex-direction:column; align-items:center; gap:14px; padding:24px; }
+.go-game-icon{ width:72px; height:72px; border-radius:16px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; }
+.go-game-icon:active{ transform:scale(0.92); }
+.go-game-timer{ font-size:28px; font-weight:200; color:#1a1a1a; font-family:monospace; }
+.go-farm-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:4px; background:#8B7355; padding:6px; border-radius:12px; }
+.go-farm-cell{ aspect-ratio:1; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:20px; position:relative; transition:all .2s; }
+.go-farm-cell.soil{ background:#a08060; }
+.go-farm-cell.soil.wet{ background:#7a5e40; }
+.go-farm-cell.grass{ background:#7a9a5a; }
+.go-farm-cell:active{ transform:scale(0.94); }
+.go-farm-crop{ font-size:18px; transition:all .5s; }
+.go-farm-stage{ position:absolute; bottom:1px; right:1px; font-size:8px; color:#fff; background:rgba(0,0,0,0.4); border-radius:4px; padding:0 2px; }
+.go-farm-bar{ display:flex; gap:8px; margin-top:12px; }
+.go-farm-tool{ flex:1; text-align:center; padding:10px; border-radius:10px; border:0.5px solid rgba(0,0,0,0.08); cursor:pointer; background:#fff; transition:all .2s; }
+.go-farm-tool:active{ transform:scale(0.95); }
+.go-farm-tool.active{ border:2px solid #1a1a1a; }
+.go-farm-tool .ico{ font-size:18px; }
+.go-farm-tool .n{ font-size:11px; color:#555; margin-top:2px; }
+.go-study-video{ width:100%; aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:#1a1a1a; position:relative; }
+.go-study-video iframe{ width:100%; height:100%; border:none; }
+.go-study-list{ margin-top:12px; }
+.go-study-item{ display:flex; align-items:center; gap:12px; padding:12px; border:0.5px solid rgba(0,0,0,0.06); border-radius:12px; margin-bottom:8px; cursor:pointer; background:#fff; transition:all .2s; }
+.go-study-item:active{ transform:scale(0.98); }
+.go-study-item .ico{ width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex:none; }
+.go-study-item .info{ flex:1; }
+.go-study-item .info .t{ font-size:14px; font-weight:600; color:#1a1a1a; }
+.go-study-item .info .s{ font-size:12px; color:#888; }
+.go-study-item .check{ width:24px; height:24px; border-radius:50%; border:1.5px solid rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:center; flex:none; }
+.go-study-item .check.done{ background:#1a1a1a; border-color:#1a1a1a; color:#fff; }
+.go-watcher-row{ display:flex; align-items:center; gap:10px; padding:10px; border:0.5px solid rgba(0,0,0,0.06); border-radius:10px; margin-bottom:8px; background:#fff; }
+.go-watcher-row .av{ width:36px; height:36px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; }
+.go-modal{ position:fixed; inset:0; z-index:500; display:none; align-items:center; justify-content:center; padding:16px; }
+.go-modal.open{ display:flex; }
+.go-modal-bg{ position:absolute; inset:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+.go-modal-box{ position:relative; width:100%; max-width:380px; background:#f5f5f0; border-radius:20px; padding:20px; max-height:85vh; overflow-y:auto; }
+.go-toast{ position:fixed; bottom:90px; left:50%; transform:translateX(-50%); z-index:600; padding:10px 24px; background:#1a1a1a; color:#fff; border-radius:8px; font-size:13px; max-width:300px; text-align:center; opacity:0; transition:all .3s; pointer-events:none; }
+.go-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+.go-voice-input{ display:flex; align-items:center; gap:8px; padding:10px; border:0.5px solid rgba(0,0,0,0.1); border-radius:10px; background:#fff; cursor:pointer; }
+.go-voice-input.recording{ background:rgba(255,0,0,0.05); border-color:rgba(255,0,0,0.3); }
+.go-bg-picker{ display:flex; gap:8px; overflow-x:auto; padding:4px 0; }
+.go-bg-swatch{ width:60px; height:80px; border-radius:8px; cursor:pointer; border:2px solid transparent; flex:none; }
+.go-bg-swatch.selected{ border-color:#1a1a1a; }
+.go-pixel{ font-family:'Courier New',monospace; image-rendering:pixelated; }
+
 </style>
 </head>
 <body class="widget-bg-frosted">
@@ -2398,6 +2502,7 @@ var svgHeart = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stro
 var svgGame = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4M8 10v4"/><circle cx="15" cy="11" r="1" fill="#fff"/><circle cx="17" cy="13" r="1" fill="#fff"/></svg>';
 var svgGear = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>';
 var svgSuoha = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5" fill="#fff"/><circle cx="16" cy="16" r="1.5" fill="#fff"/><circle cx="16" cy="8" r="1.5" fill="#fff"/><circle cx="8" cy="16" r="1.5" fill="#fff"/><circle cx="12" cy="12" r="1.5" fill="#fff"/></svg>';
+var svgGo = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7l3.5 5L12 17l-3.5-5L12 7z" fill="#fff" stroke="none"/></svg>';
 var appIcons = [
   {id:'wechat', name:'Messages', ico:svgChat, img:null, action:"goToScreen('wechatapp')"},
   {id:'novel', name:'Books', ico:svgBook, img:null, action:"openSheet('novel');renderNovelPick();"},
@@ -2406,6 +2511,7 @@ var appIcons = [
   {id:'couple', name:'Heart', ico:svgHeart, img:null, action:"openSheet('couple');initCouple();"},
   {id:'game', name:'Games', ico:svgGame, img:null, action:"openSheet('game');initGame();"},
   {id:'suoha', name:'Suoha', ico:svgSuoha, img:null, action:"openSheet('suoha');initSuoha();"},
+  {id:'go', name:'GO', ico:svgGo, img:null, action:"openSheet('go');initGo();"},
   {id:'settings', name:'Settings', ico:svgGear, img:null, action:"goToScreen('settings')"}
 ];
 let activeIconId = null;
@@ -3851,7 +3957,8 @@ function saveState(){
       suoha: typeof suohaState!=='undefined' ? suohaState : null,
       momentsLastGenDate: momentsLastGenDate||'',
       coupleState: typeof coupleState!=='undefined' ? coupleState : null,
-      screenTime: typeof screenTimeData!=='undefined' ? screenTimeData : null
+      screenTime: typeof screenTimeData!=='undefined' ? screenTimeData : null,
+      go: typeof goState!=='undefined' && goState ? goState : null
     }));
   }catch(e){ /* localStorage 满了也没关系，聊天记录在 IndexedDB */ }
   /* 大数据（含 base64 图片）存 IndexedDB 避免 localStorage 溢出导致 contactsExtra 丢失 */
@@ -3930,6 +4037,7 @@ function loadState(){
     if(typeof s.momentsLastGenDate==='string') momentsLastGenDate=s.momentsLastGenDate;
     if(s.coupleState && typeof s.coupleState==='object') coupleState=Object.assign(coupleState, s.coupleState);
     if(s.screenTime && typeof s.screenTime==='object') screenTimeData=Object.assign(screenTimeData, s.screenTime);
+    if(s.go && typeof s.go==='object') goState=Object.assign(goDefault(), s.go);
   }catch(e){}
 }
 
@@ -9633,6 +9741,87 @@ function seedChat(date,name,pool,romantic){
 <!-- Toast -->
 <div class="suoha-toast" id="suoha-toast"></div>
 
+<!-- ==================== GO APP ==================== -->
+<div class="sheet" id="sheet-go">
+  <div class="sheet-body">
+    <!-- Setup Page -->
+    <div class="go-page active" id="go-page-setup">
+      <div class="go-header">
+        <div class="t">GO</div>
+        <div class="wb" id="go-balance-display">余额 0</div>
+      </div>
+      <div class="go-main">
+        <div class="go-card">
+          <div class="go-label">选择直播类型</div>
+          <div class="go-type-grid" id="go-type-grid"></div>
+        </div>
+        <div class="go-card">
+          <div class="go-label">直播ID</div>
+          <input class="go-input" id="go-live-id" placeholder="输入你的直播ID" maxlength="20">
+        </div>
+        <div class="go-card">
+          <div class="go-label">直播头像</div>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div id="go-avatar-preview" style="width:56px;height:56px;border-radius:50%;background:#e8e8e0;background-size:cover;background-position:center;border:0.5px solid rgba(0,0,0,0.08);"></div>
+            <button class="go-btn sm ghost" onclick="goPickAvatar()">选择头像</button>
+          </div>
+        </div>
+        <div class="go-card">
+          <div class="go-label">弹幕风格</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;" id="go-dm-cats"></div>
+          <div class="go-label" style="margin-top:12px;">自定义弹幕设定</div>
+          <input class="go-input" id="go-dm-custom" placeholder="可选，描述你想要的弹幕风格">
+          <div class="go-label" style="margin-top:12px;">绑定世界书</div>
+          <select id="go-wb-bind" style="width:100%;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:8px;font-size:14px;background:#fff;color:#1a1a1a;outline:none;">
+            <option value="">不绑定</option>
+          </select>
+        </div>
+        <button class="go-btn primary" style="margin-top:16px;" onclick="goStartLive()">确认开播</button>
+        <div id="go-history-list" style="margin-top:16px;"></div>
+      </div>
+    </div>
+    <!-- Live Page -->
+    <div class="go-page" id="go-page-live">
+      <div class="go-header">
+        <button class="go-back" onclick="goEndLive(false,0)">&lt;</button>
+        <div class="t" id="go-live-title">直播中</div>
+        <div class="wb" id="go-live-timer">00:00</div>
+      </div>
+      <div class="go-main" id="go-live-content"></div>
+    </div>
+  </div>
+</div>
+<!-- GO Toast -->
+<div class="go-toast" id="go-toast"></div>
+<!-- GO Cart Modal -->
+<div class="go-modal" id="go-modal-cart">
+  <div class="go-modal-bg" onclick="goCloseModal('go-modal-cart')"></div>
+  <div class="go-modal-box">
+    <div class="go-label" style="margin-bottom:12px;">小黄车 - 添加产品</div>
+    <div id="go-product-list"></div>
+    <div class="go-card soft" style="margin-top:12px;">
+      <input class="go-input" id="go-prod-name" placeholder="产品名称">
+      <input class="go-input" id="go-prod-price" placeholder="价格" type="number" style="margin-top:8px;">
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+        <button class="go-btn sm ghost" onclick="goUploadProductImg()">上传图片</button>
+        <button class="go-btn sm ghost" onclick="goVoiceInput('product')">语音输入</button>
+        <button class="go-btn sm primary" onclick="goAddProduct()">添加</button>
+      </div>
+    </div>
+    <button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-cart')">完成</button>
+  </div>
+</div>
+<!-- GO Partner Modal -->
+<div class="go-modal" id="go-modal-partner">
+  <div class="go-modal-bg" onclick="goCloseModal('go-modal-partner')"></div>
+  <div class="go-modal-box">
+    <div class="go-label" style="margin-bottom:12px;">选择连麦对象</div>
+    <div id="go-partner-list"></div>
+    <button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-partner')">取消</button>
+  </div>
+</div>
+<input type="file" id="go-file-input" accept="image/*" style="display:none;">
+
 <script>
 /* ==================== 梭哈 SUOHA GAME LOGIC ==================== */
 var suohaState = (typeof suohaState !== 'undefined') ? suohaState : null;
@@ -10534,6 +10723,682 @@ function suohaReset(){
     setTimeout(suohaInit, 100);
   }
 })();
+
+/* ==================== GO APP LOGIC ==================== */
+var goState = null;
+var goDanmakuTimer = null;
+var goLiveTimer = null;
+var goLiveSeconds = 0;
+var goVoiceRec = null;
+var goFileContext = '';
+var goProductImg = '';
+
+function goDefault(){
+  return {
+    balance: 0,
+    liveType: '',
+    liveId: '',
+    liveAvatar: '',
+    liveBg: 0,
+    danmakuCat: 'auto',
+    danmakuCustom: '',
+    worldBookBind: '',
+    products: [],
+    orders: 0,
+    isLive: false,
+    qaQuestions: [],
+    qaCurrent: 0,
+    qaPartner: '',
+    asmrProgress: 0,
+    history: []
+  };
+}
+
+function initGo(){
+  if(!goState) goState = goDefault();
+  goRenderSetup();
+  // File input handler
+  var fi = document.getElementById('go-file-input');
+  if(fi && !fi._goBound){
+    fi._goBound = true;
+    fi.addEventListener('change', function(e){
+      var file = e.target.files[0];
+      if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        var b64 = ev.target.result;
+        if(goFileContext === 'avatar'){
+          goState.liveAvatar = b64;
+          var av = document.getElementById('go-avatar-preview');
+          if(av) av.style.backgroundImage = 'url('+b64+')';
+          goToast('头像已设置');
+          saveState();
+        } else if(goFileContext === 'product'){
+          goProductImg = b64;
+          goToast('产品图片已上传');
+        } else if(goFileContext === 'game'){
+          goAICheckGameResult(b64);
+        }
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+  }
+}
+
+function goToast(msg){
+  var t = document.getElementById('go-toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+function goCloseModal(id){
+  var m = document.getElementById(id);
+  if(m) m.classList.remove('open');
+}
+
+function goOpenModal(id){
+  var m = document.getElementById(id);
+  if(m) m.classList.add('open');
+}
+
+/* ---- AI Call Helper ---- */
+function goCallAI(prompt, systemPrompt, cb){
+  var m = apiConfig.models[apiConfig.active];
+  if(!m || !m.key){ cb(null); return; }
+  var ep = normEp(m.endpoint, m.apiFormat);
+  var msgs = [];
+  if(systemPrompt) msgs.push({role:'system', content:systemPrompt});
+  msgs.push({role:'user', content:prompt});
+  fetch(ep, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+m.key},
+    body:JSON.stringify({model:m.model, messages:msgs, stream:false, max_tokens:300})
+  }).then(function(r){ return r.json(); }).then(function(d){
+    var txt = d.choices && d.choices[0] && d.choices[0].message ? d.choices[0].message.content : '';
+    cb(txt);
+  }).catch(function(e){ cb(null); });
+}
+
+function goCallAIVision(prompt, imgB64, cb){
+  var m = apiConfig.models[apiConfig.active];
+  if(!m || !m.key){ cb(null); return; }
+  var ep = normEp(m.endpoint, m.apiFormat);
+  var body = {
+    model: m.model,
+    messages: [
+      {role:'system', content:'You are an AI that analyzes screenshots.'},
+      {role:'user', content:[
+        {type:'text', text:prompt},
+        {type:'image_url', image_url:{url:imgB64}}
+      ]}
+    ],
+    stream:false, max_tokens:80
+  };
+  fetch(ep, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+m.key},
+    body:JSON.stringify(body)
+  }).then(function(r){ return r.json(); }).then(function(d){
+    var txt = d.choices && d.choices[0] && d.choices[0].message ? d.choices[0].message.content : '';
+    cb(txt);
+  }).catch(function(e){ cb(null); });
+}
+
+/* ---- Setup Page ---- */
+function goRenderSetup(){
+  var s = goState;
+  var bal = document.getElementById('go-balance-display');
+  if(bal) bal.textContent = '余额 ' + s.balance;
+  var types = [
+    {id:'ecommerce', t:'带货', s:'卖货赚佣金', ico:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="8" cy="14" r="1" fill="#1a1a1a"/><circle cx="16" cy="14" r="1" fill="#1a1a1a"/></svg>'},
+    {id:'game', t:'游戏', s:'战绩换奖励', ico:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="11" rx="3"/><path d="M7 12h4M9 10v4" stroke-linecap="round"/><circle cx="16" cy="11" r="1" fill="#1a1a1a"/><circle cx="18" cy="14" r="1" fill="#1a1a1a"/></svg>'},
+    {id:'couple', t:'情侣Q&A', s:'连麦答题', ico:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z"/><path d="M9 11h6"/></svg>'},
+    {id:'asmr', t:'ASMR', s:'语音助眠', ico:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"><path d="M3 12h2l2-6 4 14 3-10 2 6h5"/></svg>'},
+    {id:'voice', t:'语音厅', s:'唱歌语音', ico:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>'},
+    {id:'beauty', t:'美妆', s:'美妆教程', ico:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="9" r="5"/><path d="M12 14v6M9 20h6"/></svg>'}
+  ];
+  var grid = document.getElementById('go-type-grid');
+  if(grid) grid.innerHTML = types.map(function(tp){
+    var sel = s.liveType === tp.id ? ' selected' : '';
+    return '<div class="go-type-card'+sel+'" onclick="goSelectType(\''+tp.id+'\')">'+tp.ico+'<div class="t">'+tp.t+'</div><div class="s">'+tp.s+'</div></div>';
+  }).join('');
+  var cats = [
+    {id:'auto', t:'自动混合'}, {id:'funny', t:'搞笑抽象'}, {id:'pro', t:'专业'},
+    {id:'simp', t:'舔狗'}, {id:'hate', t:'黑粉'}, {id:'custom', t:'自定义'}
+  ];
+  var dmWrap = document.getElementById('go-dm-cats');
+  if(dmWrap) dmWrap.innerHTML = cats.map(function(c){
+    var sel = s.danmakuCat === c.id;
+    var st = sel ? 'border:1.5px solid #1a1a1a;color:#1a1a1a;background:#fff;' : 'border:1px solid rgba(0,0,0,0.12);color:#888;background:transparent;';
+    return '<button class="go-btn sm" style="'+st+'" onclick="goSelectDmCat(\''+c.id+'\')">'+c.t+'</button>';
+  }).join('');
+  var wbSel = document.getElementById('go-wb-bind');
+  if(wbSel){
+    var opts = '<option value="">不绑定</option>';
+    if(typeof worldBooks !== 'undefined'){
+      Object.keys(worldBooks).forEach(function(k){
+        opts += '<option value="'+k+'"'+(s.worldBookBind===k?' selected':'')+'>'+worldBooks[k].name+'</option>';
+      });
+    }
+    wbSel.innerHTML = opts;
+  }
+  var idEl = document.getElementById('go-live-id');
+  if(idEl) idEl.value = s.liveId || '';
+  var av = document.getElementById('go-avatar-preview');
+  if(av){ av.style.backgroundImage = s.liveAvatar ? 'url('+s.liveAvatar+')' : ''; }
+  var dmC = document.getElementById('go-dm-custom');
+  if(dmC) dmC.value = s.danmakuCustom || '';
+  // History
+  var hist = document.getElementById('go-history-list');
+  if(hist && s.history.length > 0){
+    var typeNames = {ecommerce:'带货',game:'游戏',couple:'情侣Q&A',asmr:'ASMR',voice:'语音厅',beauty:'美妆'};
+    hist.innerHTML = '<div class="go-label">直播记录</div>' + s.history.slice(-5).reverse().map(function(h){
+      var d = new Date(h.time);
+      var ts = (d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();
+      return '<div class="go-card soft" style="padding:10px 14px;margin-bottom:6px;"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;color:#555;">'+typeNames[h.type]+' '+ts+'</span><span style="font-size:13px;font-weight:600;color:'+(h.success?'#1a8a3a':'#888')+';">'+(h.success?'+¥'+h.reward:'未完成')+'</span></div></div>';
+    }).join('');
+  } else if(hist){
+    hist.innerHTML = '';
+  }
+}
+
+function goSelectType(type){ goState.liveType = type; goRenderSetup(); }
+function goSelectDmCat(cat){ goState.danmakuCat = cat; goRenderSetup(); }
+function goPickAvatar(){ goFileContext = 'avatar'; document.getElementById('go-file-input').click(); }
+
+/* ---- Start Live ---- */
+function goStartLive(){
+  var s = goState;
+  s.liveId = (document.getElementById('go-live-id').value || '').trim();
+  s.danmakuCustom = (document.getElementById('go-dm-custom').value || '').trim();
+  s.worldBookBind = document.getElementById('go-wb-bind').value;
+  if(!s.liveType){ goToast('请选择直播类型'); return; }
+  if(!s.liveId){ goToast('请输入直播ID'); return; }
+  s.isLive = true;
+  s.liveStartTime = Date.now();
+  goLiveSeconds = 0;
+  s.orders = 0;
+  s.asmrProgress = 0;
+  s.qaCurrent = 0;
+  s.qaQuestions = [];
+  s.qaPartner = '';
+  document.getElementById('go-page-setup').classList.remove('active');
+  document.getElementById('go-page-live').classList.add('active');
+  var tn = {ecommerce:'带货直播',game:'游戏直播',couple:'情侣Q&A',asmr:'ASMR直播',voice:'语音厅',beauty:'美妆直播'};
+  document.getElementById('go-live-title').textContent = tn[s.liveType] || '直播中';
+  if(goLiveTimer) clearInterval(goLiveTimer);
+  goLiveTimer = setInterval(function(){
+    goLiveSeconds++;
+    var m = Math.floor(goLiveSeconds/60), sec = goLiveSeconds%60;
+    var el = document.getElementById('go-live-timer');
+    if(el) el.textContent = (m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;
+  }, 1000);
+  goRenderLive();
+  saveState();
+}
+
+/* ---- Render Live Page ---- */
+function goRenderLive(){
+  var s = goState;
+  var c = document.getElementById('go-live-content');
+  if(!c) return;
+  var avHtml = s.liveAvatar
+    ? '<div class="go-live-avatar go-avatar-float" style="background-image:url('+s.liveAvatar+')"></div>'
+    : '<div class="go-live-avatar go-avatar-float" style="background:#444;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:700;">'+(s.liveId[0]||'G')+'</div>';
+  var stage = '<div class="go-live-stage" id="go-live-stage">'+
+    '<div class="go-live-bg" id="go-live-bg"></div>'+
+    '<div class="go-live-type-badge">'+({ecommerce:'带货',game:'游戏',couple:'情侣Q&A',asmr:'ASMR',voice:'语音厅',beauty:'美妆'}[s.liveType]||'')+'</div>'+
+    '<div class="go-live-viewers"><span id="go-viewer-count">'+Math.floor(Math.random()*200+80)+'</span> 观看</div>'+
+    '<div class="go-live-overlay">'+avHtml+'<div class="go-live-id">'+s.liveId+'</div></div>'+
+    '<div class="go-danmaku-area" id="go-danmaku-area"></div>'+
+    '</div>';
+  var bgHtml = '<div class="go-card" style="margin-top:12px;"><div class="go-label">直播背景</div><div class="go-bg-picker" id="go-bg-picker"></div></div>';
+  var typeHtml = '';
+  if(s.liveType==='ecommerce') typeHtml = goRenderEcommerce();
+  else if(s.liveType==='game') typeHtml = goRenderGame();
+  else if(s.liveType==='couple') typeHtml = goRenderCouple();
+  else typeHtml = goRenderVoice(s.liveType);
+  c.innerHTML = stage + bgHtml + typeHtml;
+  var bgs = ['linear-gradient(135deg,#2a2a2a,#1a1a1a)','linear-gradient(135deg,#1a3a5a,#0d1f3a)','linear-gradient(135deg,#3a1a3a,#1a0d2a)','linear-gradient(135deg,#1a3a1a,#0d2a0d)','linear-gradient(135deg,#3a2a1a,#2a1a0d)'];
+  var bp = document.getElementById('go-bg-picker');
+  if(bp) bp.innerHTML = bgs.map(function(bg,i){
+    return '<div class="go-bg-swatch'+(s.liveBg===i?' selected':'')+'" style="background:'+bg+'" onclick="goSwitchBg('+i+')"></div>';
+  }).join('');
+  goSwitchBg(s.liveBg);
+  goStartDanmaku();
+}
+
+function goSwitchBg(idx){
+  goState.liveBg = idx;
+  var bgs = ['linear-gradient(135deg,#2a2a2a,#1a1a1a)','linear-gradient(135deg,#1a3a5a,#0d1f3a)','linear-gradient(135deg,#3a1a3a,#1a0d2a)','linear-gradient(135deg,#1a3a1a,#0d2a0d)','linear-gradient(135deg,#3a2a1a,#2a1a0d)'];
+  var bg = document.getElementById('go-live-bg');
+  if(bg) bg.style.background = bgs[idx]||bgs[0];
+  document.querySelectorAll('.go-bg-swatch').forEach(function(sw,i){ sw.classList.toggle('selected', i===idx); });
+}
+
+/* ---- Danmaku ---- */
+function goStartDanmaku(){
+  goStopDanmaku();
+  goDanmakuTimer = setInterval(function(){ goGenerateDanmaku(); }, 2800 + Math.random()*2500);
+}
+function goStopDanmaku(){
+  if(goDanmakuTimer){ clearInterval(goDanmakuTimer); goDanmakuTimer = null; }
+}
+function goGenerateDanmaku(){
+  var s = goState;
+  var area = document.getElementById('go-danmaku-area');
+  if(!area) return;
+  var catMap = {
+    auto:'自动混合风格，可以是搞笑的、专业的、或随意评论',
+    funny:'搞笑抽象风格，用网络梗、无厘头的方式评论',
+    pro:'专业风格，从专业角度分析评价',
+    simp:'舔狗风格，疯狂夸赞主播',
+    hate:'黑粉风格，故意挑刺找茬但不太过分',
+    custom: s.danmakuCustom || '随意评论'
+  };
+  var typeMap = {ecommerce:'带货直播',game:'游戏直播',couple:'情侣Q&A直播',asmr:'ASMR直播',voice:'语音厅直播',beauty:'美妆直播'};
+  var wbCtx = '';
+  if(s.worldBookBind && typeof worldBooks!=='undefined' && worldBooks[s.worldBookBind]){
+    wbCtx = '参考世界书: ' + (worldBooks[s.worldBookBind].content||'').substring(0,200);
+  }
+  var npcNames = ['游客'+Math.floor(Math.random()*9999),'路人甲','小可爱','吃瓜群众','大佬666','潜水员','路过的','粉丝'+Math.floor(Math.random()*99),'萌新','老粉'];
+  var npcName = npcNames[Math.floor(Math.random()*npcNames.length)];
+  var fbPool = ['主播好厉害','666','来了来了','哈哈哈哈','声音好好听','学习了','已下单','冲冲冲','太牛了','主播多大了','关注了','第一次来','好可爱','这操作我服了','主播加油','好专业','学到了','笑死','强无敌','冲鸭','主播好好看','我酸了','慕名而来','主播声音好甜','这也能行','绝了','主播棒棒','已三连','泪目了','主播好温柔'];
+  goCallAI(
+    '你正在观看一个'+typeMap[s.liveType]+'，主播ID是'+s.liveId+'。请用'+catMap[s.danmakuCat]+'发一条弹幕，不超过20字。'+wbCtx+'只输出弹幕内容。',
+    '你是一个直播观众，用口语化方式发弹幕。',
+    function(text){
+      var dm = (text||'').replace(/\n/g,'').substring(0,30) || fbPool[Math.floor(Math.random()*fbPool.length)];
+      var div = document.createElement('div');
+      div.className = 'go-danmaku-item';
+      div.textContent = npcName+': '+dm;
+      area.appendChild(div);
+      while(area.children.length>8) area.removeChild(area.firstChild);
+      setTimeout(function(){ if(div.parentNode) div.remove(); }, 5000);
+    }
+  );
+  var vc = document.getElementById('go-viewer-count');
+  if(vc){
+    var cur = parseInt(vc.textContent)||100;
+    cur += Math.floor(Math.random()*8-3);
+    if(cur<30) cur=30;
+    vc.textContent = cur;
+  }
+}
+
+/* ---- E-commerce Live ---- */
+function goRenderEcommerce(){
+  var s = goState;
+  return '<div class="go-card">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'+
+    '<div class="go-label" style="margin:0;" id="go-order-label">订单 '+s.orders+'/15</div>'+
+    '<div class="go-label" style="margin:0;">产品 '+s.products.length+'</div></div>'+
+    '<div class="go-progress"><div class="go-progress-bar" id="go-order-bar" style="width:'+(s.orders/15*100)+'%"></div></div>'+
+    '</div>'+
+    '<div class="go-card">'+
+    '<div class="go-label">小黄车</div>'+
+    '<div id="go-product-display"></div>'+
+    '<button class="go-btn sm ghost" style="margin-top:8px;" onclick="goOpenCart()">管理产品</button>'+
+    '</div>'+
+    '<div class="go-card">'+
+    '<div class="go-label">语音讲解</div>'+
+    '<div style="font-size:13px;color:#555;line-height:1.5;margin-bottom:10px;">点击按钮开始讲解产品，AI会评判你的讲解并触发观众下单</div>'+
+    '<button class="go-btn primary" id="go-pitch-btn" onclick="goVoiceInput(\'ecommerce\')">开始语音讲解</button>'+
+    '<div id="go-pitch-feedback" style="margin-top:10px;"></div>'+
+    '</div>';
+}
+
+function goOpenCart(){
+  goRenderProductList();
+  goOpenModal('go-modal-cart');
+}
+function goRenderProductList(){
+  var s = goState;
+  var list = document.getElementById('go-product-list');
+  if(!list) return;
+  if(s.products.length===0){
+    list.innerHTML = '<div style="text-align:center;color:#888;font-size:13px;padding:12px;">暂无产品，添加你的带货产品</div>';
+    return;
+  }
+  list.innerHTML = s.products.map(function(p,i){
+    var imgSt = p.img ? 'background-image:url('+p.img+')' : 'background:#f0f0f0';
+    return '<div class="go-product-row"><div class="img" style="'+imgSt+'"></div><div class="info"><div class="n">'+p.name+'</div><div class="p">¥'+p.price+'</div></div><button class="go-btn sm ghost" onclick="goRemoveProduct('+i+')">删除</button></div>';
+  }).join('');
+}
+function goAddProduct(){
+  var name = (document.getElementById('go-prod-name').value||'').trim();
+  var price = (document.getElementById('go-prod-price').value||'').trim();
+  if(!name){ goToast('请输入产品名称'); return; }
+  if(!price){ goToast('请输入价格'); return; }
+  goState.products.push({name:name, price:price, img:goProductImg});
+  goProductImg = '';
+  document.getElementById('go-prod-name').value = '';
+  document.getElementById('go-prod-price').value = '';
+  goToast('产品已添加');
+  goRenderProductList();
+  goUpdateProductDisplay();
+  saveState();
+}
+function goRemoveProduct(idx){
+  goState.products.splice(idx,1);
+  goRenderProductList();
+  goUpdateProductDisplay();
+  saveState();
+}
+function goUpdateProductDisplay(){
+  var s = goState;
+  var d = document.getElementById('go-product-display');
+  if(!d) return;
+  if(s.products.length===0){ d.innerHTML = '<div style="font-size:13px;color:#888;">点击下方按钮添加产品</div>'; return; }
+  d.innerHTML = s.products.map(function(p){
+    var imgSt = p.img ? 'background-image:url('+p.img+')' : 'background:#f0f0f0';
+    return '<div class="go-product-row"><div class="img" style="'+imgSt+'"></div><div class="info"><div class="n">'+p.name+'</div><div class="p">¥'+p.price+'</div></div></div>';
+  }).join('');
+}
+function goUploadProductImg(){ goFileContext='product'; document.getElementById('go-file-input').click(); }
+
+function goCheckPitch(text){
+  var s = goState;
+  goToast('AI正在评判你的讲解...');
+  var prodInfo = s.products.length > 0 ? '主播在卖: '+s.products.map(function(p){return p.name+'(¥'+p.price+')';}).join(', ') : '主播还没有上架产品';
+  goCallAI(
+    '一个带货主播正在讲解产品，他说的话是: "'+text+'"。'+prodInfo+'。\n请评判讲解质量(1-10分)，格式: 分数|简短反馈。例如: 8|讲解很专业，产品卖点清晰。',
+    '你是一个直播平台的内容审核AI。',
+    function(result){
+      if(!result){
+        var sc = Math.floor(Math.random()*4+6);
+        goToast('讲解评分: '+sc+'/10');
+        if(sc>=6) goTriggerOrders();
+        return;
+      }
+      var parts = result.split('|');
+      var score = parseInt(parts[0].replace(/[^0-9]/g,''))||7;
+      var fb = (parts[1]||'讲解不错').trim();
+      goToast('评分 '+score+'/10 '+fb);
+      var pf = document.getElementById('go-pitch-feedback');
+      if(pf) pf.innerHTML = '<div class="go-card soft" style="padding:10px 14px;"><div style="font-size:13px;color:#555;">'+fb+'</div></div>';
+      if(score>=6) goTriggerOrders();
+    }
+  );
+}
+function goTriggerOrders(){
+  var s = goState;
+  if(s.products.length===0){ goToast('请先添加产品到小黄车'); return; }
+  var count = Math.floor(Math.random()*3+1);
+  for(var i=0;i<count;i++){
+    (function(idx){
+      setTimeout(function(){
+        if(!goState.isLive) return;
+        goState.orders++;
+        var prod = goState.products[Math.floor(Math.random()*goState.products.length)];
+        goToast(prod.name+' 被下单! ('+goState.orders+'/15)');
+        var ol = document.getElementById('go-order-label');
+        if(ol) ol.textContent = '订单 '+goState.orders+'/15';
+        var ob = document.getElementById('go-order-bar');
+        if(ob) ob.style.width = (goState.orders/15*100)+'%';
+        if(goState.orders>=15){ goEndLive(true,1000); }
+      }, idx*1200);
+    })(i);
+  }
+}
+
+/* ---- Game Live ---- */
+function goRenderGame(){
+  var games = [
+    {name:'王者荣耀', color:'#1e3a5f', ico:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L4 6v6c0 4 3 7 8 10 5-3 8-6 8-10V6l-8-4z"/></svg>'},
+    {name:'第五人格', color:'#5f1e3a', ico:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 10l2 2 4-4M8 16h8"/></svg>'},
+    {name:'光遇', color:'#3a5f1e', ico:'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>'}
+  ];
+  var gHtml = games.map(function(g){
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;">'+
+      '<div class="go-game-icon" style="background:'+g.color+';" onclick="goToast(\'去'+g.name+'打游戏吧，打完上传战绩截图\')">'+g.ico+'</div>'+
+      '<div style="font-size:12px;font-weight:600;color:#1a1a1a;">'+g.name+'</div></div>';
+  }).join('');
+  return '<div class="go-card">'+
+    '<div class="go-label">游戏直播</div>'+
+    '<div style="font-size:13px;color:#555;line-height:1.5;margin-bottom:12px;">选择游戏开始游玩，结束后上传战绩截图。AI将自动判定胜负，胜利奖励1000。</div>'+
+    '<div class="go-game-launch">'+gHtml+'</div></div>'+
+    '<div class="go-card"><div class="go-label">上传战绩截图</div>'+
+    '<div id="go-game-upload" style="border:1.5px dashed rgba(0,0,0,0.15);border-radius:12px;padding:24px;text-align:center;cursor:pointer;" onclick="goUploadGameScreenshot()">'+
+    '<div style="font-size:14px;color:#888;">点击上传战绩截图</div></div></div>';
+}
+function goUploadGameScreenshot(){ goFileContext='game'; document.getElementById('go-file-input').click(); }
+function goAICheckGameResult(img){
+  goToast('AI正在分析战绩...');
+  var upload = document.getElementById('go-game-upload');
+  if(upload){
+    upload.innerHTML = '<div style="font-size:14px;color:#555;">AI分析中...</div>';
+    upload.style.cursor = 'default';
+  }
+  goCallAIVision(
+    '请分析这张游戏截图，判断是胜利还是失败。只回答"胜利"或"失败"。',
+    img,
+    function(text){
+      if(!text){
+        var win = Math.random()>0.4;
+        goToast(win?'AI判定: 胜利! 奖励1000':'AI判定: 失败，再接再厉');
+        if(win) goEndLive(true,1000);
+        else if(upload) upload.innerHTML = '<div style="font-size:14px;color:#888;">AI判定失败，重新上传</div>';
+        return;
+      }
+      var win = text.indexOf('胜')>=0||text.indexOf('赢')>=0||text.toLowerCase().indexOf('win')>=0||text.indexOf('victor')>=0;
+      goToast(win?'AI判定: 胜利! 奖励1000':'AI判定: 失败，再接再厉');
+      if(win) goEndLive(true,1000);
+      else if(upload){ upload.style.cursor='pointer'; upload.innerHTML='<div style="font-size:14px;color:#888;">AI判定失败，点击重新上传</div>'; }
+    }
+  );
+}
+
+/* ---- Couple Q&A Live ---- */
+function goRenderCouple(){
+  var s = goState;
+  var pName = s.qaPartner && contacts[s.qaPartner] ? contacts[s.qaPartner].name : '';
+  if(!s.qaPartner){
+    return '<div class="go-card"><div class="go-label">情侣Q&A</div>'+
+      '<div style="font-size:13px;color:#555;line-height:1.5;margin-bottom:12px;">选择一位WeChat联系人连麦，一起回答AI生成的20个问题</div>'+
+      '<button class="go-btn primary" onclick="goOpenPartnerModal()">选择连麦对象</button></div>';
+  }
+  if(s.qaQuestions.length===0){
+    return '<div class="go-card"><div class="go-label">情侣Q&A - 连麦: '+pName+'</div><div style="text-align:center;padding:20px;font-size:14px;color:#888;">正在生成问题...</div></div>';
+  }
+  if(s.qaCurrent>=s.qaQuestions.length){
+    return '<div class="go-card" style="text-align:center;padding:24px;">'+
+      '<div style="font-size:20px;font-weight:700;margin-bottom:8px;color:#1a1a1a;">答题完成</div>'+
+      '<div style="font-size:14px;color:#888;margin-bottom:16px;">你们完成了'+s.qaQuestions.length+'道问题</div>'+
+      '<button class="go-btn primary" onclick="goEndLive(true,1000)">领取奖励 ¥1000</button></div>';
+  }
+  var q = s.qaQuestions[s.qaCurrent];
+  var prog = (s.qaCurrent/s.qaQuestions.length)*100;
+  return '<div class="go-card">'+
+    '<div class="go-label">Q'+(s.qaCurrent+1)+'/'+s.qaQuestions.length+' 连麦: '+pName+'</div>'+
+    '<div class="go-progress"><div class="go-progress-bar" style="width:'+prog+'%"></div></div>'+
+    '<div class="go-qa-card" style="margin-top:12px;"><div class="go-qa-q">'+q+'</div>'+
+    '<input class="go-qa-input" id="go-qa-answer" placeholder="输入你的回答" onkeydown="if(event.key===\'Enter\')goAnswerQA()"></div>'+
+    '<div id="go-qa-partner" style="margin-top:10px;"></div>'+
+    '<button class="go-btn primary" style="margin-top:10px;" onclick="goAnswerQA()">提交回答</button></div>';
+}
+function goOpenPartnerModal(){
+  var list = document.getElementById('go-partner-list');
+  var cs = Object.keys(contacts).filter(function(k){ return k!=='me' && !contacts[k].blocked && !contacts[k].isGroup; });
+  if(cs.length===0){ list.innerHTML = '<div style="text-align:center;color:#888;padding:12px;">暂无可用联系人</div>'; }
+  else {
+    list.innerHTML = cs.map(function(k){
+      var c = contacts[k];
+      var avSt = c.avatar ? 'background-image:url('+c.avatar+');background-size:cover;background-position:center;' : 'background:'+(c.avatarColor||'#999');
+      return '<div class="go-buyer-row" style="cursor:pointer;" onclick="goSelectPartner(\''+k+'\')"><div class="av" style="'+avSt+'"></div><div style="flex:1;font-size:14px;font-weight:600;color:#1a1a1a;">'+c.name+'</div></div>';
+    }).join('');
+  }
+  goOpenModal('go-modal-partner');
+}
+function goSelectPartner(id){
+  goState.qaPartner = id;
+  goCloseModal('go-modal-partner');
+  goToast('已选择 '+contacts[id].name+' 连麦');
+  goGenerateQA();
+}
+function goGenerateQA(){
+  var s = goState;
+  var pName = contacts[s.qaPartner] ? contacts[s.qaPartner].name : '对方';
+  goCallAI(
+    '请生成20个情侣Q&A问题，每行一个，问题要有趣、有深度，涵盖恋爱、生活、未来等方面。只输出问题，不要编号。',
+    '你是一个情侣互动游戏AI。',
+    function(text){
+      if(!text){
+        s.qaQuestions = ['如果用一道菜形容我们的关系，你觉得是什么？','你第一次见到我时心里在想什么？','如果我们可以穿越时空，你想回到哪一天？','你觉得我最大的优点是什么？','你最想和我一起去哪里旅行？','如果世界末日只能带一样东西，你带什么？','你觉得我们的默契度有多高？','最想对我说但一直没说出口的话是什么？','如果用一首歌形容我们，是哪首？','你觉得我什么时候最好看？','如果我们变成对方一天，你最想做什么？','你最珍惜和我的一张合照是哪张？','如果给我打分，你打几分？','你觉得我们最大的共同点是什么？','最想和我一起完成的事情是什么？','你觉得恋爱中最重要的品质是什么？','如果我们的故事写成书，书名叫什么？','你最怕我做什么？','你觉得我们会在一起多久？','此刻最想对我说什么？'];
+      } else {
+        s.qaQuestions = text.split('\n').map(function(l){ return l.replace(/^\d+[.、]\s*/,'').trim(); }).filter(function(l){ return l.length>0; }).slice(0,20);
+        if(s.qaQuestions.length<5){
+          s.qaQuestions = ['你觉得我怎么样？','最想和我做什么？','你觉得我们有默契吗？','最想对我说什么？','如果重来一次还会选择我吗？','你觉得我最大的魅力是什么？','最想和我去哪里？','你觉得我们之间最难忘的事是什么？'];
+        }
+      }
+      goRenderLive();
+      saveState();
+    }
+  );
+  goRenderLive();
+}
+function goAnswerQA(){
+  var s = goState;
+  var inp = document.getElementById('go-qa-answer');
+  if(!inp) return;
+  var text = inp.value.trim();
+  if(!text){ goToast('请输入回答'); return; }
+  var pDiv = document.getElementById('go-qa-partner');
+  if(pDiv) pDiv.innerHTML = '<div class="go-qa-card"><div class="go-label">你的回答</div><div class="go-qa-a">'+text+'</div></div>';
+  var pName = contacts[s.qaPartner] ? contacts[s.qaPartner].name : '对方';
+  var q = s.qaQuestions[s.qaCurrent];
+  var btn = document.querySelector('#go-live-content .go-btn.primary');
+  if(btn){ btn.style.display='none'; }
+  goCallAI(
+    '你现在是'+pName+'，正在和伴侣做情侣Q&A。问题是: "'+q+'"。对方的回答是: "'+text+'"。\n请以'+pName+'的身份回答这个问题，回答要自然、有个性、不超过50字。',
+    '你是一个角色扮演AI，请代入角色回答。',
+    function(result){
+      if(!result) result = '我觉得这个问题很好，我的想法是...';
+      if(pDiv) pDiv.innerHTML += '<div class="go-qa-card" style="margin-top:8px;"><div class="go-label">'+pName+'的回答</div><div class="go-qa-a">'+result+'</div></div>'+
+        '<button class="go-btn primary" style="margin-top:8px;" onclick="goNextQA()">下一题</button>';
+    }
+  );
+}
+function goNextQA(){
+  goState.qaCurrent++;
+  goRenderLive();
+  saveState();
+}
+
+/* ---- ASMR / Voice Hall / Beauty Live ---- */
+function goRenderVoice(type){
+  var s = goState;
+  var tn = {asmr:'ASMR', voice:'语音厅', beauty:'美妆'};
+  var desc = {
+    asmr:'点击按钮开始你的ASMR表演，AI会作为听众与你互动。完成3次语音互动即可获得奖励。',
+    voice:'点击按钮开始唱歌或语音聊天，AI会作为听众与你互动。完成3次语音互动即可获得奖励。',
+    beauty:'点击按钮开始你的美妆教程讲解，AI会作为听众与你互动。完成3次语音互动即可获得奖励。'
+  };
+  var prog = s.asmrProgress;
+  var need = 3;
+  return '<div class="go-card">'+
+    '<div class="go-label">'+tn[type]+'直播</div>'+
+    '<div style="font-size:13px;color:#555;line-height:1.5;margin-bottom:12px;">'+desc[type]+'</div>'+
+    '<div class="go-progress"><div class="go-progress-bar" style="width:'+(prog/need*100)+'%"></div></div>'+
+    '<div style="text-align:center;font-size:12px;color:#888;margin-top:6px;">'+prog+'/'+need+' 次语音互动</div>'+
+    '<div style="text-align:center;margin-top:16px;">'+
+    '<button class="go-btn primary" id="go-voice-btn" onclick="goVoiceInput(\''+type+'\')">'+(prog>=need?'已完成':'开始语音')+'</button></div>'+
+    '<div id="go-voice-feedback" style="margin-top:12px;"></div></div>';
+}
+function goCompleteVoiceSession(text){
+  var s = goState;
+  var tn = {asmr:'ASMR', voice:'语音厅', beauty:'美妆'};
+  var pm = {
+    asmr:'一个ASMR主播正在表演，内容是: "'+text+'"。请以听众身份给出自然反应，不超过30字。',
+    voice:'一个语音厅主播正在唱歌/说话，内容是: "'+text+'"。请以听众身份给出自然反应，不超过30字。',
+    beauty:'一个美妆主播正在讲解，内容是: "'+text+'"。请以听众身份给出自然反应，不超过30字。'
+  };
+  goToast('AI正在倾听...');
+  goCallAI(pm[s.liveType]||pm.voice, '你是一个直播听众。',
+    function(result){
+      if(!result) result = '主播好棒啊！';
+      s.asmrProgress++;
+      var fb = document.getElementById('go-voice-feedback');
+      if(fb) fb.innerHTML = '<div class="go-qa-card"><div class="go-qa-a">'+result+'</div></div>';
+      goToast('互动 '+s.asmrProgress+'/3');
+      if(s.asmrProgress>=3){
+        setTimeout(function(){ goEndLive(true,1000); }, 1500);
+      } else {
+        goRenderLive();
+      }
+      saveState();
+    }
+  );
+}
+
+/* ---- Voice Input ---- */
+function goVoiceInput(ctx){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ goToast('浏览器不支持语音输入'); return; }
+  if(goVoiceRec){ goVoiceRec.stop(); goVoiceRec=null; return; }
+  goVoiceRec = new SR();
+  goVoiceRec.lang = 'zh-CN';
+  goVoiceRec.continuous = false;
+  goVoiceRec.interimResults = false;
+  goVoiceRec.onstart = function(){
+    goToast('正在录音... 再次点击停止');
+    var btn = document.getElementById('go-pitch-btn') || document.getElementById('go-voice-btn');
+    if(btn){ btn.textContent = '停止录音'; btn.style.background = '#c0392b'; }
+  };
+  goVoiceRec.onresult = function(e){
+    var text = e.results[0][0].transcript;
+    goVoiceRec = null;
+    var btn = document.getElementById('go-pitch-btn') || document.getElementById('go-voice-btn');
+    if(btn){ btn.textContent = '开始语音'; btn.style.background = ''; }
+    if(ctx==='product'){
+      var pn = document.getElementById('go-prod-name');
+      if(pn) pn.value = text;
+      goToast('识别: '+text);
+    } else if(ctx==='ecommerce'){
+      goCheckPitch(text);
+    } else if(ctx==='asmr'||ctx==='voice'||ctx==='beauty'){
+      goCompleteVoiceSession(text);
+    }
+  };
+  goVoiceRec.onerror = function(){
+    goVoiceRec = null;
+    goToast('语音识别失败');
+    var btn = document.getElementById('go-pitch-btn') || document.getElementById('go-voice-btn');
+    if(btn){ btn.textContent = '开始语音'; btn.style.background = ''; }
+  };
+  goVoiceRec.onend = function(){
+    goVoiceRec = null;
+    var btn = document.getElementById('go-pitch-btn') || document.getElementById('go-voice-btn');
+    if(btn){ btn.textContent = '开始语音'; btn.style.background = ''; }
+  };
+  goVoiceRec.start();
+}
+
+/* ---- End Live ---- */
+function goEndLive(success, reward){
+  var s = goState;
+  goStopDanmaku();
+  if(goLiveTimer){ clearInterval(goLiveTimer); goLiveTimer=null; }
+  if(success && reward>0){
+    s.balance += reward;
+    s.history.push({type:s.liveType, reward:reward, time:Date.now(), success:true});
+    goToast('直播完成! 获得 ¥'+reward);
+    if(typeof walletBalance!=='undefined'){ walletBalance += reward; }
+  } else {
+    s.history.push({type:s.liveType, reward:0, time:Date.now(), success:false});
+    goToast('已结束直播');
+  }
+  s.isLive = false;
+  document.getElementById('go-page-live').classList.remove('active');
+  document.getElementById('go-page-setup').classList.add('active');
+  goRenderSetup();
+  saveState();
+}
+
 </script>
 
 </body>
