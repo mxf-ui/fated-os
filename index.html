@@ -2567,7 +2567,8 @@ slotInput.addEventListener('change', e=>{
     if(!res) return;
     if(activeSlot.querySelector('.chibi')) activeSlot.innerHTML='';
     activeSlot.style.backgroundImage='url('+res+')'; activeSlot.style.backgroundSize='cover'; activeSlot.style.backgroundPosition='center'; activeSlot.classList.add('filled');
-    var t=activeSlot.getAttribute('data-wc-img'); if(t){ widgetCustom[t]=widgetCustom[t]||{}; widgetCustom[t].img=res; saveState(); }
+    var t=activeSlot.getAttribute('data-wc-img'); if(t){ widgetCustom[t]=widgetCustom[t]||{}; widgetCustom[t].img=res; hydrateWidgetImages(); saveState(); }
+    slotInput.value='';
   });
 });
 function bindSlots(container){ container.querySelectorAll('.ph-slot').forEach(el=>{ el.addEventListener('click', ()=>{ activeSlot=el; slotInput.click(); }); }); }
@@ -4004,6 +4005,7 @@ function buildStateSnapshot(){
     contactsExtra: buildContactsSnapshot(),
     viewAs:viewAs, bubbleMineColor:bubbleMineColor, bubbleTheirsColor:bubbleTheirsColor, fontConfig:fontConfig,
     widgetBgMode:widgetBgMode, removedPlugins:removedPlugins, activePlugins:buildActivePluginsSnapshot(), widgetCustom:widgetCustom,
+    personaSeq:personaSeq,
     suoha: typeof suohaState!=='undefined' ? suohaState : null,
     momentsLastGenDate: momentsLastGenDate||'',
     coupleState: typeof coupleState!=='undefined' ? coupleState : null,
@@ -4025,6 +4027,7 @@ function applyStateSnapshot(s){
   if(Array.isArray(s.walletTx)) walletTx=s.walletTx;
   if(Array.isArray(s.moments) && s.moments.length) moments=s.moments;
   if(s.viewAs) viewAs=s.viewAs;
+  if(typeof s.personaSeq==='number' && s.personaSeq>personaSeq) personaSeq=s.personaSeq;
   if(Array.isArray(s.contactsExtra)) s.contactsExtra.forEach(function(c){
     var id = c.id;
     if(!id) return;
@@ -4045,6 +4048,8 @@ function applyStateSnapshot(s){
     if(contacts[id].cover===undefined) contacts[id].cover='';
     if(contacts[id].wxid===undefined) contacts[id].wxid=id;
     if(contacts[id].relations===undefined) contacts[id].relations=[];
+    var m = String(id).match(/^[pg](\d+)$/);
+    if(m) personaSeq = Math.max(personaSeq, parseInt(m[1],10)+1);
   });
   if(s.worldBooks && typeof s.worldBooks==='object'){
     Object.keys(s.worldBooks).forEach(function(k){ worldBooks[k]=s.worldBooks[k]; });
@@ -4082,6 +4087,21 @@ function applyStateSnapshot(s){
   if(s.go && typeof s.go==='object') goState=Object.assign(goDefault(), s.go);
   return true;
 }
+function hydrateWidgetImages(){
+  document.querySelectorAll('[data-wc-type]').forEach(function(w){
+    var type = w.getAttribute('data-wc-type');
+    var cfg = widgetCustom[type] || {};
+    if(!cfg.img) return;
+    w.querySelectorAll('.ph-slot').forEach(function(slot){
+      if(!slot.getAttribute('data-wc-img')) slot.setAttribute('data-wc-img', type);
+      slot.style.backgroundImage='url('+cfg.img+')';
+      slot.style.backgroundSize='cover';
+      slot.style.backgroundPosition='center';
+      slot.classList.add('filled');
+      if(slot.querySelector('.chibi')) slot.innerHTML='';
+    });
+  });
+}
 function restorePluginsFromState(){
   document.querySelectorAll('[data-wc-type]').forEach(function(n){ n.remove(); });
   var types = Array.isArray(activePluginsSaved) && activePluginsSaved.length
@@ -4091,10 +4111,16 @@ function restorePluginsFromState(){
     if(removedPlugins.indexOf(t)>=0) return;
     if(pluginDefs.some(function(p){ return p.type===t; })) addPlugin(t);
   });
+  hydrateWidgetImages();
 }
 function ensureContactRowsFromState(){
   Object.keys(contacts).forEach(function(k){
-    if((k[0]==='p'||k[0]==='g') && !document.querySelector('#contact-items [onclick*="'+k+'"]')){
+    if(k==='me' || !contacts[k]) return;
+    if(!Array.isArray(contacts[k].seed)) contacts[k].seed=[];
+    if(contacts[k].pendingCount===undefined) contacts[k].pendingCount=0;
+    if(contacts[k].idleTimer===undefined) contacts[k].idleTimer=null;
+    if(!contacts[k].name) contacts[k].name=k;
+    if(!document.querySelector('#contact-items [onclick*="'+k+'"]')){
       if(contacts[k].isGroup) addContactRow(k,true); else addContactRow(k,false);
     }
   });
@@ -4755,7 +4781,7 @@ function openGroupSheet(){
 function createGroup(){
   const chks = Array.from(document.querySelectorAll('#group-picker .gp-chk:checked')).map(c=>c.value);
   if(chks.length<2){ showToast('至少选择 2 个人设才能建群', 1500); return; }
-  const id = 'g'+(personaSeq++);
+  const id = nextPersonaId('g');
   const gname = document.getElementById('gp-name').value.trim();
   const names = chks.map(k=>contacts[k].name).join('、');
   const wbIds = Array.from(document.querySelectorAll('#gp-worldbooks .wb-chk:checked')).map(c=>c.value);
@@ -5115,7 +5141,15 @@ function contactAvatar(c){
 }
 
 function renderThread(){
-  const c = contacts[currentContact];
+  var c = contacts[currentContact];
+  if(!c){
+    var fallback = Object.keys(contacts).find(function(k){ return k!=='me' && contacts[k] && !contacts[k].blocked; }) || 'tester1';
+    currentContact = fallback;
+    c = contacts[currentContact];
+    if(!c) return;
+  }
+  if(!Array.isArray(c.seed)) c.seed=[];
+  if(c.pendingCount===undefined) c.pendingCount=0;
   document.getElementById('thread-name').textContent = c.displayName || c.name;
   document.getElementById('call-name').textContent = c.name;
   var tAv=document.getElementById('thread-avatar'); if(tAv) tAv.innerHTML=contactAvatar(c);
@@ -5601,6 +5635,7 @@ function wcPickImg(btn){
 
 function updateSendCap(){
   const c = contacts[currentContact];
+  if(!c) return;
   const capped = c.pendingCount >= MAX_STREAK;
   var hint = document.getElementById('send-hint');
   if(hint){
@@ -6102,6 +6137,12 @@ function endCall(){
 
 var personaDocText='';
 var pendingPersonaAvatar = null;
+function nextPersonaId(prefix){
+  prefix = prefix || 'p';
+  var id;
+  do { id = prefix + (personaSeq++); } while(contacts[id]);
+  return id;
+}
 function saveNewPersona(){
   var name=document.getElementById('np-name').value.trim()||'New Persona';
   var base=document.getElementById('np-desc').value.trim()||'warm and authentic';
@@ -6110,7 +6151,7 @@ function saveNewPersona(){
   document.querySelectorAll('#np-tones .persona-chip.on').forEach(function(c){ tones.push(c.textContent.trim()); });
   var toneStr = tones.length ? '【语气标签：'+tones.join('、')+'】' : '';
   var desc = base + (toneStr ? '\n'+toneStr : '') + (personaDocText ? '\n\n【导入的人设文档】\n'+personaDocText : '');
-  var id='p'+(personaSeq++);
+  var id=nextPersonaId('p');
   var wbIds = Array.from(document.querySelectorAll('#np-worldbooks .wb-chk:checked')).map(function(c){ return c.value; });
   if(wbIds.length===0 && currentWorldBookId) wbIds=[currentWorldBookId];
   contacts[id]={name:name, displayName:'', tone:desc, persona:desc, userPrompt:userPrefs||'', jealous:false, pendingCount:0, idleTimer:null, avatarColor:randAvatarColor(), avatar:pendingPersonaAvatar||null, blocked:false, worldBooks:wbIds, memory:{enabled:true, threshold:20, summary:'', lastMsgCount:0}, seed:[{mine:false,kind:'text',text:'你好，我是'+name+'。',from:id,ts:nowStamp()},{mine:true,kind:'text',text:'你好呀～',from:'me',ts:nowStamp()}]};
