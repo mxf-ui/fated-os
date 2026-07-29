@@ -95,29 +95,36 @@
   <div class="topview" id="view-settings">
     <div class="topbar settings-topbar"><div class="icobtn glass-strong settings-back" onclick="goToScreen('home')">&#8249;</div><div class="settings-title"><span>Settings</span><small>设置中心</small></div><div style="width:32px;"></div></div>
     <div class="settings-scroll">
+      <div class="settings-hero">
+        <div><b>Fated OS</b><small>设置中心 / 本机保存与角色配置</small></div>
+        <span>LOCAL</span>
+      </div>
+      <div class="settings-section-title">Profile / 账户</div>
       <div class="ios-section">
         <div class="ios-row" onclick="openSheet('mine')">
           <div class="row-label settings-row-copy"><b id="settings-name">user</b><small>账户资料 / 个人信息</small></div>
           <div class="row-arrow">&#8250;</div>
         </div>
       </div>
+      <div class="settings-section-title">Display / 显示</div>
       <div class="ios-section">
         <div class="ios-row" onclick="openSheet('pluginlib')"><div class="row-label settings-row-copy"><b>Plugins</b><small>插件 / 桌面组件美化</small></div><div class="row-arrow">&#8250;</div></div>
         <div class="ios-row" onclick="openSheet('icons')"><div class="row-label settings-row-copy"><b>App Icons</b><small>图标 / 主屏入口样式</small></div><div class="row-arrow">&#8250;</div></div>
         <div class="ios-row" onclick="openSheet('wallpaper')"><div class="row-label settings-row-copy"><b>Wallpaper</b><small>壁纸 / 锁屏与主屏背景</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('fontcfg');cfgInitFont()"><div class="row-label settings-row-copy"><b>Fonts &amp; Color</b><small>字体 / 文字气质与颜色</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
+      <div class="settings-section-title">Device / 系统</div>
       <div class="ios-section">
         <div class="ios-row" onclick="goToScreen('lock')"><div class="row-label settings-row-copy"><b>Lock Screen</b><small>锁屏 / 返回锁屏预览</small></div><div class="row-arrow">&#8250;</div></div>
         <div class="ios-row" onclick="goToScreen('home')"><div class="row-label settings-row-copy"><b>Home Screen</b><small>主屏 / 回到虚拟手机桌面</small></div><div class="row-arrow">&#8250;</div></div>
-      </div>
-      <div class="ios-section">
         <div class="ios-row" onclick="setPasscodeFromSettings()"><div class="row-label settings-row-copy" id="passcode-status-text"><b>Passcode</b><small>密码 / 解锁保护</small></div><div class="row-arrow">&#8250;</div></div>
         <div class="ios-row" id="passcode-remove-row" style="display:none;" onclick="removePasscodeConfirm()"><div class="row-label settings-row-copy"><b>Turn Off Passcode</b><small>关闭密码 / 取消锁屏保护</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
+      <div class="settings-section-title">AI & Data / 模型与数据</div>
       <div class="ios-section">
-        <div class="ios-row" onclick="openSheet('fontcfg');cfgInitFont()"><div class="row-label settings-row-copy"><b>Fonts &amp; Color</b><small>字体 / 文字气质与颜色</small></div><div class="row-arrow">&#8250;</div></div>
         <div class="ios-row" onclick="openSheet('modelcfg');cfgInit()"><div class="row-label settings-row-copy"><b>API Config</b><small>模型接口 / 聊天核心</small></div><div class="row-arrow">&#8250;</div></div>
         <div class="ios-row" onclick="openSheet('cloudsync');cloudSyncInit()"><div class="row-label settings-row-copy"><b>Cloud Sync</b><small>账号云端 / 加密保存人设聊天</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('datamgr');renderDataManager()"><div class="row-label settings-row-copy"><b>Data Manager</b><small>数据管理 / 统计、备份与检查</small></div><div class="row-arrow">&#8250;</div></div>
         <div class="ios-row" onclick="openSheet('ttscfg');cfgInit()"><div class="row-label settings-row-copy"><b>TTS Voice</b><small>语音 / 让角色开口说话</small></div><div class="row-arrow">&#8250;</div></div>
         <div class="ios-row" onclick="openSheet('worldbooks');renderWorldBooks()"><div class="row-label settings-row-copy"><b>World Book</b><small>世界书 / 长设定注入</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
@@ -607,17 +614,18 @@
 
   <!-- ================= SHEET: WORLD BOOKS ================= -->
   <div class="sheet worldbook-sheet" id="sheet-worldbooks">
-    <div class="sheet-top worldbook-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbooks')">&#8249;</div><div class="t"><span>World Book</span><small>世界书管理</small></div><button type="button" class="wb-new-btn" onclick="openSheet('worldbook-edit')">新建</button></div>
+    <div class="sheet-top worldbook-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbooks')">&#8249;</div><div class="t"><span>World Book</span><small>世界书管理</small></div><button type="button" class="wb-new-btn" onclick="openWorldBookEdit()">新建</button></div>
     <div class="sheet-body worldbook-body">
-      <div class="worldbook-rail">
-        <button type="button" class="active">Library<small>资料库</small></button>
-        <button type="button">Rules<small>规则</small></button>
-        <button type="button">Lore<small>世界观</small></button>
-        <button type="button">Persona<small>人设</small></button>
+      <div class="worldbook-tabs" role="tablist" aria-label="World book categories">
+        <button type="button" class="active" data-wb-filter="all" onclick="setWorldBookFilter('all')">All<small>全部</small></button>
+        <button type="button" data-wb-filter="rules" onclick="setWorldBookFilter('rules')">Rules<small>规则</small></button>
+        <button type="button" data-wb-filter="lore" onclick="setWorldBookFilter('lore')">Lore<small>世界观</small></button>
+        <button type="button" data-wb-filter="persona" onclick="setWorldBookFilter('persona')">Persona<small>人设</small></button>
+        <button type="button" data-wb-filter="memory" onclick="setWorldBookFilter('memory')">Memory<small>记忆</small></button>
       </div>
       <div class="worldbook-content">
         <div class="worldbook-heading">
-          <div><b>Entries</b><small>词条会被绑定到联系人或群聊后注入聊天</small></div>
+          <div><b id="wb-filter-title">Entries</b><small id="wb-filter-desc">词条会被绑定到联系人或群聊后注入聊天</small></div>
           <span id="wb-count">0</span>
         </div>
         <div id="wb-list" class="worldbook-list"></div>
@@ -631,6 +639,13 @@
       <input type="hidden" id="wbe-id">
       <div class="field-label" style="margin-top:0;">世界书名称</div>
       <input class="field-input" id="wbe-name" placeholder="例如：城市、学院、家族、规则">
+      <div class="field-label">Category / 分类</div>
+      <select class="field-input" id="wbe-category">
+        <option value="lore">Lore / 世界观</option>
+        <option value="rules">Rules / 规则</option>
+        <option value="persona">Persona / 人设</option>
+        <option value="memory">Memory / 记忆</option>
+      </select>
       <div class="field-label">内容</div>
       <textarea class="field-input" id="wbe-content" style="min-height:200px;" placeholder="输入世界书内容，每行一条设定。
 例如：
@@ -793,6 +808,27 @@
 </div>
 
   <!-- ================= SHEET: MODEL API (LLM) ================= -->
+  <div class="sheet" id="sheet-datamgr">
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('datamgr')">&#8249;</div><div class="t">Data Manager <small>数据管理</small></div></div>
+    <div class="sheet-body data-manager-body">
+      <div class="settings-note">人设、聊天、API、插件图片会优先保存在本机浏览器数据库。换设备时请配合 Cloud Sync 或导出本机快照。</div>
+      <div class="settings-section-title">Storage / 存储统计</div>
+      <div class="data-stat-grid">
+        <div class="data-stat"><b id="dm-api-count">0</b><small>API 配置</small></div>
+        <div class="data-stat"><b id="dm-contact-count">0</b><small>人设联系人</small></div>
+        <div class="data-stat"><b id="dm-chat-count">0</b><small>聊天消息</small></div>
+        <div class="data-stat"><b id="dm-asset-size">0 KB</b><small>图片与插件</small></div>
+      </div>
+      <div class="settings-section-title">Backup & Restore / 备份与恢复</div>
+      <button type="button" class="data-action primary" onclick="dataManagerExportSnapshot()">Export Local Snapshot (.JSON) / 导出本机快照</button>
+      <button type="button" class="data-action" onclick="dataManagerSaveNow()">Save Current Device Now / 立即写入本机</button>
+      <button type="button" class="data-action" onclick="dataManagerOpenCloud()">Open Cloud Sync / 打开云端同步</button>
+      <div class="settings-section-title">Health Check / 数据体检</div>
+      <button type="button" class="data-action" onclick="dataManagerCheckStorage()">Check Local Storage / 检查本机保存</button>
+      <div class="data-manager-status" id="dm-status">等待检查。</div>
+    </div>
+  </div>
+
   <div class="sheet api-config-sheet" id="sheet-modelcfg">
             <div class="sheet-top api-config-top"><div class="t">API &#35774;&#32622;</div><button type="button" class="api-back" onclick="closeSheet('modelcfg')">&#8249;</button></div>
     <div class="sheet-body api-config-body">

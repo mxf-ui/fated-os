@@ -517,3 +517,94 @@ window.addEventListener('touchend', lockOnUp);
   });
 })();
 
+
+
+/* ============ DATA MANAGER UI ============ */
+function dataManagerOwnContactIds(){
+  return Object.keys(contacts||{}).filter(function(k){ return k==='tester1' || k[0]==='p' || k[0]==='g'; });
+}
+function dataManagerByteSize(value){
+  try{ return new Blob([JSON.stringify(value||{})]).size; }catch(e){ return 0; }
+}
+function dataManagerFormatSize(bytes){
+  bytes = Number(bytes)||0;
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(2) + ' MB';
+}
+function dataManagerAssetSize(){
+  var total = 0;
+  try{
+    if(typeof buildProfileAssets==='function') total += dataManagerByteSize(buildProfileAssets());
+    if(typeof buildMomentsAssets==='function') total += dataManagerByteSize(buildMomentsAssets());
+    if(typeof buildContactAssets==='function') total += dataManagerByteSize(buildContactAssets());
+    if(typeof buildFontAssets==='function') total += dataManagerByteSize(buildFontAssets());
+    total += dataManagerByteSize(widgetCustom||{});
+    total += dataManagerByteSize((appIcons||[]).map(function(a){ return {id:a.id,img:a.img}; }));
+    total += dataManagerByteSize(lockWp||{});
+    total += dataManagerByteSize(homeWp||{});
+  }catch(e){}
+  return total;
+}
+function renderDataManager(){
+  var ids = dataManagerOwnContactIds();
+  var apiProfiles = (apiConfig && Array.isArray(apiConfig.profiles)) ? apiConfig.profiles.length : ((apiConfig && apiConfig.models) ? Object.keys(apiConfig.models).length : 0);
+  var chatCount = ids.reduce(function(sum,id){ var c=contacts[id]; return sum + ((c && Array.isArray(c.seed)) ? c.seed.length : 0); }, 0);
+  var set = function(id, text){ var el=document.getElementById(id); if(el) el.textContent=text; };
+  set('dm-api-count', String(apiProfiles));
+  set('dm-contact-count', String(ids.length));
+  set('dm-chat-count', String(chatCount));
+  set('dm-asset-size', dataManagerFormatSize(dataManagerAssetSize()));
+  set('dm-status', '\u672c\u673a\u6570\u636e\u7edf\u8ba1\u5df2\u5237\u65b0\u3002');
+}
+function dataManagerSaveNow(){
+  var ok = typeof saveState==='function' ? saveState() : false;
+  renderDataManager();
+  var msg = ok ? '\u5df2\u5199\u5165\u672c\u673a\u4fdd\u5b58\u3002' : '\u5df2\u5c1d\u8bd5\u5199\u5165 IndexedDB \u5907\u4efd\u3002';
+  var el=document.getElementById('dm-status'); if(el) el.textContent=msg;
+  if(typeof showToast==='function') showToast(msg, 1400, ok?'ok':'warn');
+}
+function dataManagerExportSnapshot(){
+  try{
+    var payload = {
+      app:'Fated OS',
+      schemaVersion:1,
+      exportedAt:new Date().toISOString(),
+      lightState: typeof buildLightState==='function' ? buildLightState() : {},
+      assets:{
+        profile: typeof buildProfileAssets==='function' ? buildProfileAssets() : {},
+        moments: typeof buildMomentsAssets==='function' ? buildMomentsAssets() : {},
+        contacts: typeof buildContactAssets==='function' ? buildContactAssets() : [],
+        font: typeof buildFontAssets==='function' ? buildFontAssets() : {},
+        widgets: widgetCustom||{},
+        appIcons: (appIcons||[]).map(function(a){ return {id:a.id,img:a.img}; }),
+        lockWp: lockWp||{},
+        homeWp: homeWp||{}
+      }
+    };
+    var blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    var day = new Date().toISOString().slice(0,10);
+    a.href = url; a.download = 'fated-os-backup-'+day+'.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    var el=document.getElementById('dm-status'); if(el) el.textContent='\u5bfc\u51fa\u5df2\u5f00\u59cb\uff0c\u8bf7\u4fdd\u7559\u4e0b\u8f7d\u7684 JSON \u5907\u4efd\u3002';
+    if(typeof showToast==='function') showToast('\u5907\u4efd\u5df2\u5bfc\u51fa', 1400, 'ok');
+  }catch(e){
+    var el=document.getElementById('dm-status'); if(el) el.textContent='\u5bfc\u51fa\u5931\u8d25\uff1a'+(e.message||'unknown');
+    if(typeof showToast==='function') showToast('\u5bfc\u51fa\u5931\u8d25', 1600, 'err');
+  }
+}
+function dataManagerCheckStorage(){
+  var localOk=false, dbOk=!!(window.indexedDB);
+  try{ localStorage.setItem('fated_storage_probe','1'); localStorage.removeItem('fated_storage_probe'); localOk=true; }catch(e){}
+  var msg = 'localStorage: '+(localOk?'OK':'LIMITED')+' / IndexedDB: '+(dbOk?'OK':'UNAVAILABLE');
+  var el=document.getElementById('dm-status'); if(el) el.textContent=msg;
+  if(typeof showToast==='function') showToast(msg, 1800, localOk&&dbOk?'ok':'warn');
+}
+function dataManagerOpenCloud(){
+  closeSheet('datamgr');
+  openSheet('cloudsync');
+  if(typeof cloudSyncInit==='function') cloudSyncInit();
+}

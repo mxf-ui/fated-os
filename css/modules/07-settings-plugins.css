@@ -242,3 +242,222 @@
 #sheet-worldbooks .wb-empty b{ font-size:18px; color:#10242c; margin-bottom:6px; }
 #sheet-worldbooks .wb-empty small{ font-size:12px; line-height:1.45; font-weight:720; }
 @media (max-width:420px){ #sheet-worldbooks .worldbook-body{ grid-template-columns:86px 1fr; padding:14px 12px 32px; gap:10px; } #sheet-worldbooks .worldbook-rail button{ padding:10px 7px; font-size:11px; } #sheet-worldbooks .worldbook-heading b{ font-size:18px; } }
+
+
+/* ---- Light green iOS settings refresh v2 ---- */
+#view-settings{
+  background:linear-gradient(158deg,#fbfffb 0%,#f2fbf3 48%,#eaf7ee 100%);
+  color:#122418;
+}
+.settings-scroll{
+  padding:82px 16px 30px;
+  background:radial-gradient(ellipse at 78% 4%,rgba(116,205,139,.18),transparent 32%),radial-gradient(ellipse at 10% 22%,rgba(196,230,169,.20),transparent 34%),linear-gradient(158deg,#fbfffb 0%,#f3fbf4 46%,#eaf7ee 100%);
+}
+#view-settings .settings-topbar{
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(246,252,247,.74));
+  border-bottom:1px solid rgba(95,158,109,.16);
+  box-shadow:0 10px 24px rgba(67,124,79,.06);
+}
+#view-settings .settings-back{ color:#183823; }
+#view-settings .settings-title{ color:#122418; }
+#view-settings .settings-title small{ color:#579768; }
+#view-settings .settings-hero{
+  min-height:84px;
+  margin:0 0 18px;
+  padding:18px 18px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  border:1px solid rgba(94,154,108,.14);
+  border-radius:24px;
+  background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(241,250,242,.72));
+  box-shadow:0 16px 34px rgba(67,124,79,.08);
+}
+#view-settings .settings-hero b{ display:block; font-size:26px; font-weight:950; color:#102417; line-height:1; }
+#view-settings .settings-hero small{ display:block; margin-top:8px; color:#66856d; font-size:11.5px; font-weight:760; line-height:1.45; }
+#view-settings .settings-hero span{ color:#2f7d45; font-size:10px; font-weight:950; letter-spacing:2px; border-bottom:1px solid rgba(47,125,69,.55); padding-bottom:3px; }
+.settings-section-title{
+  margin:18px 2px 8px;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(78,120,86,.14);
+  color:#8b9a8e;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2.1px;
+  text-transform:uppercase;
+}
+#view-settings .ios-section{
+  border:1px solid rgba(94,154,108,.13);
+  border-radius:20px;
+  background:rgba(255,255,255,.70);
+  box-shadow:0 12px 26px rgba(67,124,79,.07);
+}
+#view-settings .ios-row{
+  min-height:62px;
+  border-bottom:1px solid rgba(78,120,86,.10);
+}
+#view-settings .settings-row-copy b{ color:#14251a; }
+#view-settings .settings-row-copy small{ color:#6c8571; }
+#view-settings .row-arrow{ color:#77a982; }
+#view-settings .ios-footer{ color:#86a08b; }
+
+#sheet-modelcfg.api-config-sheet,
+#sheet-cloudsync,#sheet-ttscfg,#sheet-fontcfg,#sheet-icons,#sheet-worldbook-edit,#sheet-datamgr{
+  background:radial-gradient(ellipse at 82% 8%,rgba(137,213,148,.18),transparent 34%),linear-gradient(158deg,#fbfffb 0%,#f3fbf4 48%,#eaf7ee 100%);
+  color:#122418;
+}
+#sheet-modelcfg.api-config-sheet::before{ color:rgba(61,132,75,.055); }
+#sheet-modelcfg .api-config-top,
+#sheet-cloudsync .sheet-top,#sheet-ttscfg .sheet-top,#sheet-fontcfg .sheet-top,#sheet-icons .sheet-top,#sheet-worldbook-edit .sheet-top,#sheet-datamgr .sheet-top{
+  background:linear-gradient(180deg,rgba(255,255,255,.91),rgba(245,252,246,.75));
+  border-bottom:1px solid rgba(95,158,109,.16);
+  box-shadow:0 10px 24px rgba(67,124,79,.06);
+}
+#sheet-modelcfg .api-config-top .t,
+#sheet-cloudsync .sheet-top .t,#sheet-ttscfg .sheet-top .t,#sheet-fontcfg .sheet-top .t,#sheet-icons .sheet-top .t,#sheet-worldbook-edit .sheet-top .t,#sheet-datamgr .sheet-top .t{ color:#122418; }
+#sheet-cloudsync .sheet-top .t small,#sheet-ttscfg .sheet-top .t small,#sheet-fontcfg .sheet-top .t small,#sheet-datamgr .sheet-top .t small{ display:block; margin-top:2px; font-size:10px; font-weight:800; color:#579768; }
+#sheet-cloudsync .back-btn,#sheet-ttscfg .back-btn,#sheet-fontcfg .back-btn,#sheet-icons .back-btn,#sheet-worldbooks .back-btn,#sheet-worldbook-edit .back-btn,#sheet-datamgr .back-btn{
+  color:#183823;
+  background:rgba(255,255,255,.62);
+  border-color:rgba(95,158,109,.18);
+}
+#sheet-modelcfg .api-back{ color:#183823; border-bottom-color:#183823; }
+#sheet-modelcfg .api-status-line{ color:#3f8b50; }
+#sheet-modelcfg .api-field-block label{ color:#819186; }
+#sheet-modelcfg .api-line-input{ border-bottom-color:rgba(93,149,105,.24); color:#183823; }
+#sheet-modelcfg .api-line-input:focus{ border-bottom-color:#56b46b; color:#0f2315; }
+#sheet-modelcfg select.api-line-input{ background:linear-gradient(45deg,transparent 50%,#3d8d50 50%) right 8px top 48%/8px 8px no-repeat,linear-gradient(135deg,#3d8d50 50%,transparent 50%) right 0 top 48%/8px 8px no-repeat,linear-gradient(90deg,rgba(255,255,255,.28),rgba(255,255,255,0)); }
+#sheet-modelcfg .api-label-row button{ color:#255d32; border-bottom-color:rgba(37,93,50,.72); }
+#sheet-modelcfg .api-label-row strong{ color:#3d8d50; }
+#sheet-modelcfg .api-range{ accent-color:#54b66a; }
+#sheet-modelcfg .api-range::-webkit-slider-runnable-track{ background:linear-gradient(90deg,rgba(106,174,119,.30),rgba(169,219,137,.44)); }
+#sheet-modelcfg .api-range::-webkit-slider-thumb{ background:linear-gradient(135deg,#4aad62,#9fd56d); box-shadow:0 8px 18px rgba(83,165,96,.28); }
+#sheet-modelcfg .api-switch-row,#sheet-modelcfg .api-help-text{ border-bottom-color:rgba(93,149,105,.20); }
+#sheet-modelcfg .api-checkline input{ accent-color:#54b66a; }
+#sheet-modelcfg .api-small-input,#sheet-modelcfg .api-model-option{ border-color:rgba(93,149,105,.22); color:#17351f; }
+#sheet-modelcfg .api-save-btn,#sheet-modelcfg .api-test-btn{ border-color:rgba(76,145,89,.34); }
+#sheet-modelcfg .api-save-btn,
+#sheet-cloudsync .cloud-sync-btn.primary,
+#sheet-ttscfg .big-btn,#sheet-fontcfg .big-btn,#sheet-worldbook-edit .big-btn{
+  background:linear-gradient(135deg,#49b761,#9bd86f);
+  color:#fff;
+  box-shadow:0 14px 28px rgba(75,159,88,.22);
+}
+#sheet-modelcfg .api-test-btn,#sheet-cloudsync .cloud-sync-btn{ color:#2f7d45; background:rgba(255,255,255,.66); }
+#sheet-modelcfg .api-delete-btn{ color:#748a79; }
+
+#sheet-worldbooks.worldbook-sheet{
+  background:radial-gradient(ellipse at 82% 7%,rgba(137,213,148,.20),transparent 33%),linear-gradient(158deg,#fbfffb 0%,#f3fbf4 48%,#eaf7ee 100%);
+  color:#122418;
+}
+#sheet-worldbooks .worldbook-top{
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(245,252,246,.76));
+  border-bottom:1px solid rgba(95,158,109,.16);
+  box-shadow:0 10px 24px rgba(67,124,79,.06);
+}
+#sheet-worldbooks .worldbook-top .t{ color:#122418; }
+#sheet-worldbooks .worldbook-top .t small{ color:#579768; }
+#sheet-worldbooks .wb-new-btn{ border-color:rgba(76,145,89,.26); color:#2f7d45; background:rgba(255,255,255,.70); }
+#sheet-worldbooks .worldbook-body{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:16px 14px 34px;
+  height:calc(100% - 92px);
+  overflow:hidden;
+}
+#sheet-worldbooks .worldbook-tabs{
+  flex:none;
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:0 2px 2px;
+  scrollbar-width:none;
+}
+#sheet-worldbooks .worldbook-tabs::-webkit-scrollbar{ display:none; }
+#sheet-worldbooks .worldbook-tabs button{
+  flex:0 0 auto;
+  min-width:74px;
+  border:1px solid rgba(94,154,108,.14);
+  border-radius:16px;
+  background:rgba(255,255,255,.58);
+  color:#6e8372;
+  padding:10px 12px 9px;
+  text-align:left;
+  font-size:12px;
+  font-weight:950;
+}
+#sheet-worldbooks .worldbook-tabs button.active{
+  background:linear-gradient(135deg,rgba(75,183,97,.18),rgba(160,216,111,.18));
+  border-color:rgba(76,145,89,.30);
+  color:#2f7d45;
+}
+#sheet-worldbooks .worldbook-tabs small{ display:block; margin-top:3px; font-size:10px; color:#78977e; font-weight:820; }
+#sheet-worldbooks .worldbook-content{
+  flex:1;
+  min-height:0;
+  border:1px solid rgba(94,154,108,.13);
+  border-radius:22px;
+  background:rgba(255,255,255,.66);
+  box-shadow:0 12px 26px rgba(67,124,79,.07);
+}
+#sheet-worldbooks .worldbook-heading{ border-bottom-color:rgba(78,120,86,.10); }
+#sheet-worldbooks .worldbook-heading b{ color:#122418; }
+#sheet-worldbooks .worldbook-heading small{ color:#6c8571; }
+#sheet-worldbooks #wb-count{ background:rgba(75,183,97,.12); color:#2f7d45; }
+#sheet-worldbooks .wb-card{
+  border-color:rgba(94,154,108,.13);
+  background:rgba(255,255,255,.78);
+  box-shadow:0 8px 18px rgba(67,124,79,.06);
+}
+#sheet-worldbooks .wb-card-kicker{ margin-bottom:6px; color:#4f995f; font-size:10px; font-weight:950; letter-spacing:1.6px; }
+#sheet-worldbooks .wb-card-title{ color:#14251a; }
+#sheet-worldbooks .wb-card-meta{ color:#61936a; }
+#sheet-worldbooks .wb-card-preview{ color:#6c8571; }
+#sheet-worldbooks .wb-empty{ color:#79917e; }
+#sheet-worldbooks .wb-empty b{ color:#14251a; }
+
+#sheet-datamgr .data-manager-body{ padding:20px 18px 40px; background:transparent; overflow:auto; }
+.settings-note{
+  padding:16px;
+  border:1px solid rgba(94,154,108,.13);
+  border-radius:18px;
+  background:rgba(255,255,255,.66);
+  color:#607868;
+  font-size:12.5px;
+  font-weight:700;
+  line-height:1.65;
+  box-shadow:0 12px 26px rgba(67,124,79,.06);
+}
+.data-stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.data-stat{
+  min-height:82px;
+  padding:14px;
+  border:1px solid rgba(94,154,108,.13);
+  border-radius:18px;
+  background:rgba(255,255,255,.70);
+  box-shadow:0 10px 22px rgba(67,124,79,.06);
+}
+.data-stat b{ display:block; color:#14251a; font-size:21px; font-weight:950; line-height:1; }
+.data-stat small{ display:block; margin-top:10px; color:#718a77; font-size:11px; font-weight:820; line-height:1.35; }
+.data-action{
+  width:100%;
+  min-height:50px;
+  margin:0 0 10px;
+  border:1px solid rgba(76,145,89,.30);
+  border-radius:0;
+  background:rgba(255,255,255,.64);
+  color:#17351f;
+  font-size:13.5px;
+  font-weight:900;
+  letter-spacing:.4px;
+}
+.data-action.primary{ background:#0f1b13; color:#fff; border-color:#0f1b13; }
+.data-manager-status{ margin-top:10px; color:#6b8571; font-size:12px; font-weight:750; line-height:1.5; }
+
+@media (max-width:420px){
+  #sheet-worldbooks .worldbook-body{ padding:14px 12px 32px; gap:10px; }
+  #sheet-worldbooks .worldbook-tabs button{ min-width:70px; padding:9px 10px; }
+  #sheet-worldbooks .worldbook-heading b{ font-size:18px; }
+  .settings-scroll{ padding-left:14px; padding-right:14px; }
+}
