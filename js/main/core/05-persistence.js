@@ -1,7 +1,30 @@
-﻿/* ============ PERSISTENCE ============ */
+/* ============ PERSISTENCE ============ */
 var bubbleMineColor = '#1a1a1a', bubbleTheirsColor = '#ffffff';
 var widgetCustom = {}; var removedPlugins = [];
 var lastPersistenceWarningAt = 0;
+var persistenceBooting = true;
+var savedPluginTypes = null;
+
+function isPersistenceBooting(){ return !!persistenceBooting; }
+function markPersistenceReady(){ persistenceBooting = false; }
+function buildActivePluginsSnapshot(){
+  var list = [], seen = {};
+  if(typeof document==='undefined' || !document.querySelectorAll) return list;
+  document.querySelectorAll('[data-wc-type]').forEach(function(n){
+    var t = n.getAttribute('data-wc-type');
+    if(t && !seen[t]){ seen[t]=true; list.push(t); }
+  });
+  return list;
+}
+function getSavedPluginTypes(){ return Array.isArray(savedPluginTypes) ? savedPluginTypes.slice() : null; }
+function syncPersonaSeqFromContacts(){
+  var max = 0;
+  Object.keys(contacts||{}).forEach(function(id){
+    var m = /^[pg](\d+)$/.exec(id);
+    if(m) max = Math.max(max, parseInt(m[1], 10));
+  });
+  if(max >= personaSeq) personaSeq = max + 1;
+}
 
 function clonePlain(value, fallback){
   try{ return JSON.parse(JSON.stringify(value)); }catch(e){ return fallback; }
@@ -58,6 +81,8 @@ function buildLightState(){
     fontPrefs:lightFontConfig(),
     widgetBgMode:widgetBgMode,
     removedPlugins:removedPlugins,
+    activePlugins:buildActivePluginsSnapshot(),
+    personaSeq:personaSeq,
     suoha: typeof suohaState!=='undefined' ? suohaState : null,
     momentsLastGenDate:momentsLastGenDate||'',
     coupleState: typeof coupleState!=='undefined' ? coupleState : null,
@@ -88,10 +113,11 @@ function warnPersistenceSave(e){
   var now = Date.now();
   if(now-lastPersistenceWarningAt>15000){
     lastPersistenceWarningAt = now;
-    try{ if(typeof showToast==='function') showToast('本地空间不足，已转存到 IndexedDB', 2200, 'warn'); }catch(_e){}
+    try{ if(typeof showToast==='function') showToast('\\u672c\\u5730\\u7a7a\\u95f4\\u4e0d\\u8db3\\uff0c\\u5df2\\u8f6c\\u5b58\\u5230 IndexedDB', 2200, 'warn'); }catch(_e){}
   }
 }
 function saveState(){
+  if(isPersistenceBooting()) return false;
   var lightState = buildLightState();
   var savedLocal = true;
   try{
@@ -157,6 +183,7 @@ function applyContactsSnapshot(list){
     if(contacts[id].wxid===undefined) contacts[id].wxid=id;
     if(contacts[id].relations===undefined) contacts[id].relations=[];
   });
+  syncPersonaSeqFromContacts();
 }
 function applyFontSnapshot(saved){
   if(!saved || typeof saved!=='object') return;
@@ -176,6 +203,8 @@ function applyStateSnapshot(s){
   if(Array.isArray(s.walletTx)) walletTx=s.walletTx;
   if(Array.isArray(s.moments) && s.moments.length) moments=s.moments;
   if(s.viewAs) viewAs=s.viewAs;
+  if(typeof s.personaSeq==='number' && isFinite(s.personaSeq)) personaSeq=Math.max(1, Math.floor(s.personaSeq));
+  if(Array.isArray(s.activePlugins)) savedPluginTypes=s.activePlugins.filter(function(t){ return typeof t==='string' && t; });
   applyContactsSnapshot(s.contactsExtra);
   if(s.worldBooks && typeof s.worldBooks==='object'){
     Object.keys(s.worldBooks).forEach(function(k){ worldBooks[k]=s.worldBooks[k]; });
@@ -214,6 +243,7 @@ function applyStateSnapshot(s){
   if(s.lockWp && typeof s.lockWp==='object') lockWp=s.lockWp;
   if(s.homeWp && typeof s.homeWp==='object') homeWp=s.homeWp;
   if(Array.isArray(s.appIconImgs)) applyAppIconAssets(s.appIconImgs);
+  syncPersonaSeqFromContacts();
   return true;
 }
 function applyAppIconAssets(icons){
