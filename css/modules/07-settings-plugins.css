@@ -153,3 +153,20 @@
 #sheet-modelcfg .api-save-btn{ background:#050505; color:#fff; margin-top:14px; }
 #sheet-modelcfg .api-test-btn{ background:transparent; color:#050505; margin-top:16px; }
 #sheet-modelcfg .api-delete-btn{ display:block; margin:24px auto 0; border:0; border-bottom:1px solid #aaa; background:transparent; color:#aaa; font-size:13px; font-weight:800; padding:0 0 3px; }
+
+/* ---- Cloud encrypted sync ---- */
+.cloud-sync-body{ padding:18px 16px 36px; background:#F2F2F7; }
+.cloud-sync-card{ background:#fff; border:1px solid rgba(0,0,0,0.05); border-radius:16px; padding:16px; margin:0 0 14px; box-shadow:0 1px 5px rgba(0,0,0,0.04); }
+.cloud-sync-title{ font-size:17px; font-weight:900; color:#161616; margin-bottom:6px; }
+.cloud-sync-sub{ font-size:12.5px; line-height:1.55; color:#6f6f76; font-weight:650; margin-bottom:12px; }
+.cloud-sync-account{ font-size:12.5px; color:#555; font-weight:750; margin-bottom:8px; }
+.cloud-sync-status{ min-height:18px; font-size:12px; line-height:1.45; color:#777; font-weight:750; }
+.cloud-sync-status.ok{ color:#12813d; }
+.cloud-sync-status.warn{ color:#b45309; }
+.cloud-sync-label{ display:block; font-size:11px; font-weight:900; color:#8a8a91; letter-spacing:.8px; text-transform:uppercase; margin:12px 0 7px; }
+.cloud-sync-input{ width:100%; border:1px solid #e3e3e8; background:#fafafa; border-radius:12px; padding:12px 12px; font-size:14px; font-weight:700; outline:none; color:#171717; }
+.cloud-sync-input:focus{ border-color:#34C759; background:#fff; }
+.cloud-sync-btn{ width:100%; border:1px solid #d8d8de; background:#fff; color:#171717; padding:13px 12px; border-radius:12px; margin-top:12px; font-size:14px; font-weight:900; cursor:pointer; }
+.cloud-sync-btn.primary{ border-color:#111; background:#111; color:#fff; }
+.cloud-sync-btn.danger{ border-color:rgba(255,59,48,.18); background:rgba(255,59,48,.08); color:#c62828; }
+.cloud-sync-btn:disabled{ opacity:.55; cursor:wait; }
