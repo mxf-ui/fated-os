@@ -3815,6 +3815,21 @@ function fatedDBSaveChat(contactId, cb){
       var tx = db.transaction('chats','readwrite');
       tx.objectStore('chats').put({
         id: contactId,
+        name: c.name || contactId,
+        displayName: c.displayName || '',
+        tone: c.tone || '',
+        persona: c.persona || c.tone || '',
+        userPrompt: c.userPrompt || '',
+        jealous: !!c.jealous,
+        isGroup: !!c.isGroup,
+        members: c.members || null,
+        avatar: c.avatar || null,
+        avatarColor: c.avatarColor || null,
+        proactive: c.proactive !== false,
+        bio: c.bio || '',
+        cover: c.cover || '',
+        wxid: c.wxid || contactId,
+        relations: c.relations || [],
         seed: c.seed,
         pendingCount: c.pendingCount||0,
         blocked: !!c.blocked,
@@ -3847,17 +3862,43 @@ function fatedDBLoadAllChats(cb){
       req.onsuccess = function(e){
         var rows = e.target.result||[];
         rows.forEach(function(row){
-          if(contacts[row.id]){
-            if(row.seed && Array.isArray(row.seed) && row.seed.length>0){
-              contacts[row.id].seed = row.seed;
-            }
-            if(typeof row.pendingCount==='number') contacts[row.id].pendingCount = row.pendingCount;
-            contacts[row.id].blocked = !!row.blocked;
-            if(typeof row.unread==='number') contacts[row.id].unread = row.unread;
-            if(row.memory) contacts[row.id].memory = row.memory;
-            if(Array.isArray(row.worldBooks)) contacts[row.id].worldBooks = row.worldBooks;
-            if(typeof row.groupUserPrompt==='string') contacts[row.id].groupUserPrompt = row.groupUserPrompt;
+          if(!row || !row.id) return;
+          if(!contacts[row.id]){
+            contacts[row.id] = {
+              name: row.name || row.id,
+              displayName: row.displayName || '',
+              tone: row.tone || '',
+              persona: row.persona || row.tone || '',
+              userPrompt: row.userPrompt || '',
+              jealous: !!row.jealous,
+              isGroup: !!row.isGroup,
+              members: row.members || null,
+              avatar: row.avatar || null,
+              avatarColor: row.avatarColor || randAvatarColor(),
+              blocked: !!row.blocked,
+              proactive: row.proactive !== false,
+              bio: row.bio || '',
+              cover: row.cover || '',
+              wxid: row.wxid || row.id,
+              relations: row.relations || [],
+              pendingCount: 0,
+              idleTimer: null,
+              seed: []
+            };
           }
+          if(row.seed && Array.isArray(row.seed) && row.seed.length>0){
+            contacts[row.id].seed = row.seed;
+          }
+          if(typeof row.pendingCount==='number') contacts[row.id].pendingCount = row.pendingCount;
+          contacts[row.id].blocked = !!row.blocked;
+          if(typeof row.unread==='number') contacts[row.id].unread = row.unread;
+          if(row.memory) contacts[row.id].memory = row.memory;
+          if(Array.isArray(row.worldBooks)) contacts[row.id].worldBooks = row.worldBooks;
+          if(typeof row.groupUserPrompt==='string') contacts[row.id].groupUserPrompt = row.groupUserPrompt;
+          if(contacts[row.id].pendingCount===undefined) contacts[row.id].pendingCount=0;
+          if(contacts[row.id].idleTimer===undefined) contacts[row.id].idleTimer=null;
+          if(!contacts[row.id].worldBooks) contacts[row.id].worldBooks=[];
+          if(!contacts[row.id].memory) contacts[row.id].memory={enabled:true, threshold:20, summary:'', lastMsgCount:0};
         });
         cb&&cb(true);
       };
@@ -3939,106 +3980,159 @@ function fatedDBDeleteChat(contactId, cb){
 
 /* ============ PERSISTENCE ============ */
 var bubbleMineColor = '#1a1a1a', bubbleTheirsColor = '#ffffff';
-var widgetCustom = {}; var removedPlugins = [];
+var widgetCustom = {}; var removedPlugins = []; var activePluginsSaved = null;
+function buildContactsSnapshot(){
+  return Object.keys(contacts).filter(function(k){ return k[0]==='p'||k[0]==='g'||k==='tester1'; }).map(function(k){
+    var c=contacts[k];
+    return {id:k, name:c.name, displayName:c.displayName||'', tone:c.tone||'', persona:c.persona||'', userPrompt:c.userPrompt||'', jealous:!!c.jealous, isGroup:!!c.isGroup, members:c.members||null, avatar:c.avatar||null, avatarColor:c.avatarColor||null, blocked:!!c.blocked, worldBooks:c.worldBooks||[], memory:c.memory||{enabled:true, threshold:20, summary:'', lastMsgCount:0}, groupUserPrompt:c.groupUserPrompt||'', proactive:c.proactive!==false, bio:c.bio||'', cover:c.cover||'', wxid:c.wxid||'', relations:c.relations||[]};
+  });
+}
+function buildActivePluginsSnapshot(){
+  var seen = {};
+  return Array.from(document.querySelectorAll('[data-wc-type]')).map(function(el){ return el.getAttribute('data-wc-type'); }).filter(function(type){
+    if(!type || seen[type]) return false;
+    seen[type]=true;
+    return true;
+  });
+}
+function buildStateSnapshot(){
+  return {
+    userName:userName, userWxid:userWxid, userBio:userBio, userCover:userCover, userPrefs:userPrefs, userAvatar:userAvatar, chatBg:chatBg, momentsBg:momentsBg,
+    walletBalance:walletBalance, walletTx:walletTx, apiConfig:apiConfig,
+    worldBooks:worldBooks,
+    moments: moments.map(function(m){ return {id:m.id, authorId:m.authorId, text:m.text, vis:m.vis, hidden:m.hidden, ts:m.ts, place:m.place||'', likes:m.likes, liked:m.liked, comments:m.comments, img:m.img||null}; }),
+    contactsExtra: buildContactsSnapshot(),
+    viewAs:viewAs, bubbleMineColor:bubbleMineColor, bubbleTheirsColor:bubbleTheirsColor, fontConfig:fontConfig,
+    widgetBgMode:widgetBgMode, removedPlugins:removedPlugins, activePlugins:buildActivePluginsSnapshot(), widgetCustom:widgetCustom,
+    suoha: typeof suohaState!=='undefined' ? suohaState : null,
+    momentsLastGenDate: momentsLastGenDate||'',
+    coupleState: typeof coupleState!=='undefined' ? coupleState : null,
+    screenTime: typeof screenTimeData!=='undefined' ? screenTimeData : null,
+    go: typeof goState!=='undefined' && goState ? goState : null
+  };
+}
+function applyStateSnapshot(s){
+  if(!s || typeof s!=='object') return false;
+  if(s.userName) userName=s.userName;
+  if(s.userWxid) userWxid=s.userWxid;
+  if(typeof s.userBio==='string') userBio=s.userBio;
+  if(s.userCover!==undefined) userCover=s.userCover;
+  if(typeof s.userPrefs==='string') userPrefs=s.userPrefs;
+  if(s.userAvatar!==undefined) userAvatar=s.userAvatar;
+  if(s.chatBg) chatBg=s.chatBg;
+  if(s.momentsBg) momentsBg=s.momentsBg;
+  if(typeof s.walletBalance==='number') walletBalance=s.walletBalance;
+  if(Array.isArray(s.walletTx)) walletTx=s.walletTx;
+  if(Array.isArray(s.moments) && s.moments.length) moments=s.moments;
+  if(s.viewAs) viewAs=s.viewAs;
+  if(Array.isArray(s.contactsExtra)) s.contactsExtra.forEach(function(c){
+    var id = c.id;
+    if(!id) return;
+    var rest = Object.assign({}, c);
+    delete rest.id;
+    contacts[id] = Object.assign(contacts[id]||{pendingCount:0,idleTimer:null}, rest);
+    if(contacts[id].pendingCount===undefined) contacts[id].pendingCount=0;
+    if(contacts[id].idleTimer===undefined) contacts[id].idleTimer=null;
+    if(!contacts[id].worldBooks) contacts[id].worldBooks=[];
+    if(!contacts[id].memory) contacts[id].memory={enabled:true, threshold:20, summary:'', lastMsgCount:0};
+    if(contacts[id].memory.enabled===undefined) contacts[id].memory.enabled=true;
+    if(!contacts[id].memory.threshold) contacts[id].memory.threshold=20;
+    if(contacts[id].blocked===undefined) contacts[id].blocked=false;
+    if(contacts[id].persona===undefined) contacts[id].persona=contacts[id].tone||'';
+    if(contacts[id].userPrompt===undefined) contacts[id].userPrompt='';
+    if(contacts[id].proactive===undefined) contacts[id].proactive=true;
+    if(contacts[id].bio===undefined) contacts[id].bio='';
+    if(contacts[id].cover===undefined) contacts[id].cover='';
+    if(contacts[id].wxid===undefined) contacts[id].wxid=id;
+    if(contacts[id].relations===undefined) contacts[id].relations=[];
+  });
+  if(s.worldBooks && typeof s.worldBooks==='object'){
+    Object.keys(s.worldBooks).forEach(function(k){ worldBooks[k]=s.worldBooks[k]; });
+  }
+  if(typeof s.bubbleMineColor==='string') bubbleMineColor=s.bubbleMineColor;
+  if(typeof s.bubbleTheirsColor==='string') bubbleTheirsColor=s.bubbleTheirsColor;
+  if(s.widgetCustom && typeof s.widgetCustom==='object') widgetCustom=s.widgetCustom;
+  if(Array.isArray(s.removedPlugins)) removedPlugins=s.removedPlugins;
+  if(Array.isArray(s.activePlugins)) activePluginsSaved=s.activePlugins;
+  if(s.lockWp && typeof s.lockWp==='object'){ lockWp=s.lockWp; paintWallpaper(document.getElementById('lock-wallpaper'), lockWp); }
+  if(s.homeWp && typeof s.homeWp==='object'){ homeWp=s.homeWp; paintWallpaper(document.getElementById('home-wallpaper'), homeWp); }
+  if(typeof s.widgetBgMode==='string'){ widgetBgMode=s.widgetBgMode; }
+  if(s.suoha && typeof s.suoha==='object'){ suohaState=Object.assign(suohaDefault(), s.suoha); }
+  if(Array.isArray(s.appIconImgs)){ s.appIconImgs.forEach(function(o){ var a=appIcons.find(function(x){return x.id===o.id;}); if(a) a.img=o.img; }); renderDesktopIcons(); renderIconGrid(); }
+  if(s.apiConfig){
+    var dflt=JSON.parse(JSON.stringify(apiConfig));
+    for(var k in s.apiConfig){ apiConfig[k]=s.apiConfig[k]; }
+    if(s.apiConfig.models){
+      for(var mk in dflt.models){
+        if(!apiConfig.models[mk]) apiConfig.models[mk]=dflt.models[mk];
+        else for(var fk in dflt.models[mk]){ if(!(fk in apiConfig.models[mk])) apiConfig.models[mk][fk]=dflt.models[mk][fk]; }
+      }
+    }
+  }
+  if(s.fontConfig && typeof s.fontConfig==='object'){
+    fontConfig=s.fontConfig;
+    if(fontConfig.customDataUrl){
+      try{ var ff=new FontFace('FatedCustomFont','url('+fontConfig.customDataUrl+')'); ff.load().then(function(l){ document.fonts.add(l); }); }catch(e){}
+    }
+    applyFontConfig();
+  }
+  if(typeof s.momentsLastGenDate==='string') momentsLastGenDate=s.momentsLastGenDate;
+  if(s.coupleState && typeof s.coupleState==='object') coupleState=Object.assign(coupleState, s.coupleState);
+  if(s.screenTime && typeof s.screenTime==='object') screenTimeData=Object.assign(screenTimeData, s.screenTime);
+  if(s.go && typeof s.go==='object') goState=Object.assign(goDefault(), s.go);
+  return true;
+}
+function restorePluginsFromState(){
+  document.querySelectorAll('[data-wc-type]').forEach(function(n){ n.remove(); });
+  var types = Array.isArray(activePluginsSaved) && activePluginsSaved.length
+    ? activePluginsSaved
+    : ['glasstext','breathe','viz','countdown'].filter(function(t){ return removedPlugins.indexOf(t)<0; });
+  types.forEach(function(t){
+    if(removedPlugins.indexOf(t)>=0) return;
+    if(pluginDefs.some(function(p){ return p.type===t; })) addPlugin(t);
+  });
+}
+function ensureContactRowsFromState(){
+  Object.keys(contacts).forEach(function(k){
+    if((k[0]==='p'||k[0]==='g') && !document.querySelector('#contact-items [onclick*="'+k+'"]')){
+      if(contacts[k].isGroup) addContactRow(k,true); else addContactRow(k,false);
+    }
+  });
+}
+function refreshPersistentUI(){
+  ensureContactRowsFromState();
+  applyUserName(); applyUserPrefs(); updateUserAvatarEl();
+  applyMomentsBg(); renderMoments(); populateViewAs();
+  renderWallet();
+  if(chatBg){ applyChatBgToDOM(chatBg); }
+  restorePluginsFromState();
+  renderThread(); renderChatList(); applyBubbleColors();
+  var _bm=document.getElementById('bub-mine'); if(_bm) _bm.value=bubbleMineColor||'#1a1a1a';
+  var _bt=document.getElementById('bub-theirs'); if(_bt) _bt.value=bubbleTheirsColor||'#ffffff';
+}
+
 function saveState(){
+  var state = buildStateSnapshot();
   try{
-    localStorage.setItem('fated_state', JSON.stringify({
-      userName, userWxid, userBio, userCover, userPrefs, userAvatar, chatBg, momentsBg,
-      walletBalance, walletTx, apiConfig,
-      worldBooks,
-      moments: moments.map(m=>({id:m.id, authorId:m.authorId, text:m.text, vis:m.vis, hidden:m.hidden, ts:m.ts, place:m.place||'', likes:m.likes, liked:m.liked, comments:m.comments, img:m.img||null})),
-      /* 聊天记录(seed)不再存 localStorage，改用 IndexedDB 避免溢出；这里只存联系人基本信息 */
-      contactsExtra: Object.keys(contacts).filter(k=>k[0]==='p'||k[0]==='g'||k==='tester1').map(k=>{
-        var c=contacts[k];
-        return {id:k, name:c.name, displayName:c.displayName||'', tone:c.tone||'', persona:c.persona||'', userPrompt:c.userPrompt||'', jealous:!!c.jealous, isGroup:!!c.isGroup, members:c.members||null, avatar:c.avatar||null, avatarColor:c.avatarColor||null, blocked:!!c.blocked, worldBooks:c.worldBooks||[], memory:c.memory||{enabled:true, threshold:20, summary:'', lastMsgCount:0}, groupUserPrompt:c.groupUserPrompt||'', proactive:c.proactive!==false, bio:c.bio||'', cover:c.cover||'', wxid:c.wxid||'', relations:c.relations||[]};
-      }),
-      viewAs, bubbleMineColor, bubbleTheirsColor, fontConfig,
-      widgetBgMode, removedPlugins,
-      suoha: typeof suohaState!=='undefined' ? suohaState : null,
-      momentsLastGenDate: momentsLastGenDate||'',
-      coupleState: typeof coupleState!=='undefined' ? coupleState : null,
-      screenTime: typeof screenTimeData!=='undefined' ? screenTimeData : null,
-      go: typeof goState!=='undefined' && goState ? goState : null
-    }));
-  }catch(e){ /* localStorage 满了也没关系，聊天记录在 IndexedDB */ }
-  /* 大数据（含 base64 图片）存 IndexedDB 避免 localStorage 溢出导致 contactsExtra 丢失 */
+    safeLS.setItem('fated_state', JSON.stringify(state));
+  }catch(e){ /* localStorage ????????????????????? IndexedDB */ }
+  fatedDBSaveKV('state', state);
+  /* ????? base64 ???? IndexedDB ?? localStorage ???? contactsExtra ?? */
   fatedDBSaveKV('widgetCustom', widgetCustom);
   fatedDBSaveKV('appIconImgs', appIcons.map(function(a){ return {id:a.id, img:a.img}; }));
   fatedDBSaveKV('lockWp', lockWp);
   fatedDBSaveKV('homeWp', homeWp);
-  /* 同步保存聊天记录和表情包到 IndexedDB（异步，不阻塞 UI）*/
+  /* ????????????? IndexedDB??????? UI?*/
   fatedDBSaveAllChats();
   fatedDBSaveStickers();
 }
 function loadState(){
   try{
-    const raw = localStorage.getItem('fated_state'); if(!raw) return;
+    const raw = safeLS.getItem('fated_state');
+    if(!raw) return false;
     const s = JSON.parse(raw);
-    if(s.userName) userName=s.userName;
-    if(s.userWxid) userWxid=s.userWxid;
-    if(typeof s.userBio==='string') userBio=s.userBio;
-    if(s.userCover!==undefined) userCover=s.userCover;
-    if(typeof s.userPrefs==='string') userPrefs=s.userPrefs;
-    if(s.userAvatar!==undefined) userAvatar=s.userAvatar;
-    if(s.chatBg) chatBg=s.chatBg;
-    if(s.momentsBg) momentsBg=s.momentsBg;
-    if(typeof s.walletBalance==='number') walletBalance=s.walletBalance;
-    if(Array.isArray(s.walletTx)) walletTx=s.walletTx;
-    if(Array.isArray(s.moments) && s.moments.length) moments=s.moments;
-    if(s.viewAs) viewAs=s.viewAs;
-    if(Array.isArray(s.contactsExtra)) s.contactsExtra.forEach(c=>{
-      const {id, ...rest}=c;
-      contacts[id] = Object.assign(contacts[id]||{pendingCount:0,idleTimer:null}, rest);
-      if(contacts[id].pendingCount===undefined) contacts[id].pendingCount=0;
-      if(contacts[id].idleTimer===undefined) contacts[id].idleTimer=null;
-      if(!contacts[id].worldBooks) contacts[id].worldBooks=[];
-      if(!contacts[id].memory) contacts[id].memory={enabled:true, threshold:20, summary:'', lastMsgCount:0};
-      if(contacts[id].memory.enabled===undefined) contacts[id].memory.enabled=true;
-      if(!contacts[id].memory.threshold) contacts[id].memory.threshold=20;
-      if(contacts[id].blocked===undefined) contacts[id].blocked=false;
-      if(contacts[id].persona===undefined) contacts[id].persona=contacts[id].tone||'';
-      if(contacts[id].userPrompt===undefined) contacts[id].userPrompt='';
-      if(contacts[id].proactive===undefined) contacts[id].proactive=true;
-      if(contacts[id].bio===undefined) contacts[id].bio='';
-      if(contacts[id].cover===undefined) contacts[id].cover='';
-      if(contacts[id].wxid===undefined) contacts[id].wxid=id;
-      if(contacts[id].relations===undefined) contacts[id].relations=[];
-    });
-    if(s.worldBooks && typeof s.worldBooks==='object'){
-      Object.keys(s.worldBooks).forEach(function(k){ worldBooks[k]=s.worldBooks[k]; });
-    }
-    if(typeof s.bubbleMineColor==='string') bubbleMineColor=s.bubbleMineColor;
-    if(typeof s.bubbleTheirsColor==='string') bubbleTheirsColor=s.bubbleTheirsColor;
-    if(s.widgetCustom && typeof s.widgetCustom==='object') widgetCustom=s.widgetCustom;
-    if(Array.isArray(s.removedPlugins)) removedPlugins=s.removedPlugins;
-    if(s.lockWp && typeof s.lockWp==='object'){ lockWp=s.lockWp; paintWallpaper(document.getElementById('lock-wallpaper'), lockWp); }
-    if(s.homeWp && typeof s.homeWp==='object'){ homeWp=s.homeWp; paintWallpaper(document.getElementById('home-wallpaper'), homeWp); }
-    if(typeof s.widgetBgMode==='string'){ widgetBgMode=s.widgetBgMode; }
-    if(s.suoha && typeof s.suoha==='object'){ suohaState=Object.assign(suohaDefault(), s.suoha); }
-    if(Array.isArray(s.appIconImgs)){ s.appIconImgs.forEach(function(o){ var a=appIcons.find(function(x){return x.id===o.id;}); if(a) a.img=o.img; }); renderDesktopIcons(); renderIconGrid(); }
-    if(s.apiConfig){
-      /* 浅合并：保留新版本新增的默认字段（如 custom.apiFormat），旧存档不会丢失新功能 */
-      var dflt=JSON.parse(JSON.stringify(apiConfig));
-      for(var k in s.apiConfig){ apiConfig[k]=s.apiConfig[k]; }
-      if(s.apiConfig.models){
-        for(var mk in dflt.models){
-          if(!apiConfig.models[mk]) apiConfig.models[mk]=dflt.models[mk];
-          else for(var fk in dflt.models[mk]){ if(!(fk in apiConfig.models[mk])) apiConfig.models[mk][fk]=dflt.models[mk][fk]; }
-        }
-      }
-    }
-    if(s.fontConfig && typeof s.fontConfig==='object'){
-      fontConfig=s.fontConfig;
-      if(fontConfig.customDataUrl){
-        try{ var ff=new FontFace('FatedCustomFont','url('+fontConfig.customDataUrl+')'); ff.load().then(function(l){ document.fonts.add(l); }); }catch(e){}
-      }
-      applyFontConfig();
-    }
-    if(typeof s.momentsLastGenDate==='string') momentsLastGenDate=s.momentsLastGenDate;
-    if(s.coupleState && typeof s.coupleState==='object') coupleState=Object.assign(coupleState, s.coupleState);
-    if(s.screenTime && typeof s.screenTime==='object') screenTimeData=Object.assign(screenTimeData, s.screenTime);
-    if(s.go && typeof s.go==='object') goState=Object.assign(goDefault(), s.go);
-  }catch(e){}
+    return applyStateSnapshot(s);
+  }catch(e){ return false; }
 }
 
 /* 便捷函数：保存当前联系人聊天记录到 IndexedDB（消息发送后调用）*/
@@ -6105,7 +6199,7 @@ function populateViewAs(){
 
 function initApp(){
   /* 记忆模式：不再清空旧存档，保留用户所有数据 */
-  loadState();
+  var loadedLocalState = loadState();
   initWidgetBgMode(); /* 确保插件背景效果立即生效（即使无存档也用默认磨砂）*/
   if(!moments.length){
     moments = [
@@ -6124,36 +6218,45 @@ function initApp(){
   renderWallet();
   if(chatBg){ applyChatBgToDOM(chatBg); }
   renderThread();
-  /* seed default widgets (after state loaded, so custom image/text persist) — 跳过用户已移除的 */
-  ['glasstext','breathe','viz','countdown'].forEach(function(t){ if(removedPlugins.indexOf(t)<0) addPlugin(t); });
+  /* seed or restore widgets after state loaded, so custom plugin choices persist */
+  restorePluginsFromState();
   renderChatList();
   applyBubbleColors();
   var _bm=document.getElementById('bub-mine'); if(_bm) _bm.value=bubbleMineColor||'#1a1a1a';
   var _bt=document.getElementById('bub-theirs'); if(_bt) _bt.value=bubbleTheirsColor||'#ffffff';
   /* 记忆模式：从 IndexedDB 加载聊天记录和表情包 */
-  fatedDBLoadStickers(function(ok){
-    if(ok){ renderStickerLib(); }
-    fatedDBLoadAllChats(function(ok2){
-      if(ok2){
-        renderThread();
-        renderChatList();
-      }
-      /* 从 IndexedDB 加载大数据（widgetCustom/appIconImgs/lockWp/homeWp），避免 localStorage 溢出丢失 */
-      fatedDBLoadKV('widgetCustom', function(wc){
-        if(wc && typeof wc==='object') widgetCustom=wc;
-        fatedDBLoadKV('appIconImgs', function(icons){
-          if(Array.isArray(icons)){ icons.forEach(function(o){ var a=appIcons.find(function(x){return x.id===o.id;}); if(a) a.img=o.img; }); renderDesktopIcons(); renderIconGrid(); }
-          fatedDBLoadKV('lockWp', function(lwp){
-            if(lwp && typeof lwp==='object'){ lockWp=lwp; paintWallpaper(document.getElementById('lock-wallpaper'), lockWp); }
-            fatedDBLoadKV('homeWp', function(hwp){
-              if(hwp && typeof hwp==='object'){ homeWp=hwp; paintWallpaper(document.getElementById('home-wallpaper'), homeWp); }
+  fatedDBLoadKV('state', function(dbState){
+    if(!loadedLocalState && dbState && typeof dbState==='object'){
+      applyStateSnapshot(dbState);
+      refreshPersistentUI();
+    }
+    fatedDBLoadStickers(function(ok){
+      if(ok){ renderStickerLib(); }
+      fatedDBLoadAllChats(function(ok2){
+        if(ok2){
+          ensureContactRowsFromState();
+          renderThread();
+          renderChatList();
+        }
+        fatedDBLoadKV('widgetCustom', function(wc){
+          if(wc && typeof wc==='object'){
+            widgetCustom=wc;
+            restorePluginsFromState();
+          }
+          fatedDBLoadKV('appIconImgs', function(icons){
+            if(Array.isArray(icons)){ icons.forEach(function(o){ var a=appIcons.find(function(x){return x.id===o.id;}); if(a) a.img=o.img; }); renderDesktopIcons(); renderIconGrid(); }
+            fatedDBLoadKV('lockWp', function(lwp){
+              if(lwp && typeof lwp==='object'){ lockWp=lwp; paintWallpaper(document.getElementById('lock-wallpaper'), lockWp); }
+              fatedDBLoadKV('homeWp', function(hwp){
+                if(hwp && typeof hwp==='object'){ homeWp=hwp; paintWallpaper(document.getElementById('home-wallpaper'), hwp); }
+                refreshPersistentUI();
+              });
             });
           });
         });
       });
     });
   });
-  /* 记忆模式：每 30 秒自动保存所有聊天记录（安全网）*/
   setInterval(function(){ fatedDBSaveAllChats(); }, 30000);
   /* 页面关闭前保存 */
   window.addEventListener('beforeunload', function(){ saveState(); });
