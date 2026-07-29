@@ -445,3 +445,114 @@
   .go-api-card{ align-items:flex-start; flex-direction:column; }
   .go-api-card small{ text-align:left; max-width:none; }
 }
+
+
+/* GO live refinement: text cards, custom background, WeChat link mic */
+.go-shell .go-live-pulse{ color:#1f704e; }
+.go-type-grid{ gap:11px; }
+.go-type-card{
+  min-height:82px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:14px 10px;
+  border-radius:18px;
+  background:#fff;
+  border:1.5px solid rgba(20,35,29,.72);
+  box-shadow:0 8px 18px rgba(29,83,58,.06);
+}
+.go-type-card:hover{ transform:translateY(-1px); box-shadow:0 12px 24px rgba(30,94,62,.1); }
+.go-type-card.selected{
+  border:2px solid #111;
+  background:#f8fffb;
+  box-shadow:0 0 0 4px rgba(49,190,126,.12),0 12px 26px rgba(37,120,80,.12);
+}
+.go-type-orb{ display:none !important; }
+.go-type-card .t{ color:#111; font-size:16px; font-weight:800; line-height:1.2; }
+.go-type-card .s{ color:#66736c; font-size:11px; line-height:1.35; margin-top:5px; max-width:112px; }
+.go-live-stage{
+  background:linear-gradient(135deg,#eefbf4,#ccefdc 48%,#9eddbf);
+  border:1px solid rgba(46,116,82,.14);
+}
+.go-live-bg{
+  background:linear-gradient(135deg,#effcf4,#d7f5e4 48%,#aee4c8);
+  background-size:cover;
+  background-position:center;
+}
+.go-live-stage.camera-on .go-live-bg{ opacity:.18; }
+.go-camera-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:none;
+  transform:scaleX(-1);
+  background:#0f251d;
+}
+.go-live-stage.camera-on .go-camera-video{ display:block; }
+.go-live-avatar-fallback{
+  background:rgba(21,56,44,.84);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:28px;
+  font-weight:800;
+}
+.go-live-api-chip{
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.24);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.24);
+  font-size:11px;
+  font-weight:800;
+  backdrop-filter:blur(12px);
+}
+.go-live-ai-chip{ display:none; }
+.go-live-partner-badge{
+  position:absolute;
+  left:12px;
+  bottom:16px;
+  z-index:4;
+  max-width:calc(100% - 24px);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px 7px 7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.82);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 10px 24px rgba(12,45,30,.16);
+  backdrop-filter:blur(12px);
+}
+.go-live-partner-avatar{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  flex:none;
+  background-size:cover;
+  background-position:center;
+  border:1px solid rgba(26,77,51,.12);
+}
+.go-live-partner-badge b{ display:block; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#17392d; font-size:12px; line-height:1.1; }
+.go-live-partner-badge small{ display:block; color:#59846f; font-size:10px; margin-top:2px; }
+.go-live-controls{ margin-top:12px; }
+.go-live-control-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.go-live-control-grid .go-btn{ min-height:38px; }
+.go-live-control-note{ margin-top:10px; font-size:12px; line-height:1.45; color:#5f8473; }
+.go-partner-chat{ margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+.go-partner-empty{ padding:12px; border-radius:12px; background:rgba(236,250,242,.74); color:#6b947f; font-size:12px; line-height:1.45; }
+.go-partner-msg{ max-width:86%; padding:9px 11px; border-radius:14px; background:#f2fbf6; border:1px solid rgba(61,135,98,.12); }
+.go-partner-msg.mine{ align-self:flex-end; background:#dff7ea; }
+.go-partner-msg.other{ align-self:flex-start; background:#fff; }
+.go-partner-msg span{ display:block; margin-bottom:4px; color:#49745f; font-size:10px; font-weight:800; }
+.go-partner-msg p{ margin:0; color:#17392d; font-size:13px; line-height:1.45; }
+.go-game-icon{ color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; }
+.go-game-icon span{ color:#fff; }
+@media (max-width:390px){
+  .go-live-control-grid{ grid-template-columns:1fr; }
+  .go-type-card .s{ max-width:140px; }
+}
