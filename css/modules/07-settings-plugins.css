@@ -123,36 +123,42 @@
 
 
 /* ---- API settings profile sheet ---- */
-#sheet-modelcfg.api-config-sheet{ background:#f8f8f6; backdrop-filter:none; -webkit-backdrop-filter:none; }
-#sheet-modelcfg .api-config-top{ background:#f8f8f6; border-bottom:1px solid #e5e5e1; backdrop-filter:none; -webkit-backdrop-filter:none; padding:56px 32px 22px; }
-#sheet-modelcfg .api-config-top .t{ text-align:left; font-size:22px; font-weight:900; letter-spacing:0; color:#171717; }
-#sheet-modelcfg .api-back{ border:0; border-bottom:1px solid #171717; background:transparent; color:#171717; font-size:14px; font-weight:800; letter-spacing:4px; padding:0 0 2px; }
-#sheet-modelcfg .api-config-body{ padding:34px 32px 42px; background:#f8f8f6; color:#171717; }
-#sheet-modelcfg .api-status-line{ min-height:18px; margin:0 0 18px; font-size:12px; font-weight:800; color:#777; }
-#sheet-modelcfg .api-field-block{ margin:0 0 28px; }
-#sheet-modelcfg .api-field-block label{ display:block; margin:0 0 12px; color:#9a9a9a; font-size:13px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
-#sheet-modelcfg .api-line-input{ width:100%; border:0; border-bottom:1px solid #deded9; border-radius:0; background:transparent; padding:0 0 14px; color:#1c1c1c; font-size:21px; font-weight:700; outline:none; font-family:inherit; }
-#sheet-modelcfg select.api-line-input{ appearance:none; -webkit-appearance:none; background:transparent; cursor:pointer; }
+#sheet-modelcfg.api-config-sheet{ background:radial-gradient(ellipse at 80% 8%,rgba(107,214,210,.22),transparent 34%),linear-gradient(152deg,#f8fcff 0%,#edf9fb 44%,#e9fbf2 100%); backdrop-filter:none; -webkit-backdrop-filter:none; color:#10242c; }
+#sheet-modelcfg.api-config-sheet::before{ content:"API"; position:absolute; right:-18px; bottom:42px; z-index:0; font-family:Georgia,serif; font-size:168px; font-style:italic; font-weight:700; line-height:1; color:rgba(32,157,171,.055); pointer-events:none; }
+#sheet-modelcfg .api-config-top{ position:relative; z-index:1; background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(241,252,252,.72)); border-bottom:1px solid rgba(69,183,190,.18); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); padding:56px 32px 22px; box-shadow:0 10px 26px rgba(57,151,168,.07); }
+#sheet-modelcfg .api-config-top .t{ text-align:left; font-size:24px; font-weight:950; letter-spacing:0; color:#0b2028; }
+#sheet-modelcfg .api-back{ border:0; border-bottom:1px solid #0f3339; background:transparent; color:#0f3339; font-size:14px; font-weight:850; letter-spacing:4px; padding:0 0 2px; }
+#sheet-modelcfg .api-config-body{ position:relative; z-index:1; padding:34px 32px 42px; background:transparent; color:#10242c; }
+#sheet-modelcfg .api-status-line{ min-height:18px; margin:0 0 22px; font-size:12px; font-weight:850; color:#228e9a; }
+#sheet-modelcfg .api-field-block{ margin:0 0 30px; }
+#sheet-modelcfg .api-field-block label{ display:block; margin:0 0 12px; color:#6e919a; font-size:13px; font-weight:850; letter-spacing:2.1px; text-transform:uppercase; }
+#sheet-modelcfg .api-line-input{ width:100%; border:0; border-bottom:1px solid rgba(65,171,184,.28); border-radius:0; background:linear-gradient(90deg,rgba(255,255,255,.24),rgba(255,255,255,0)); padding:0 0 14px; color:#143039; font-size:21px; font-weight:780; outline:none; font-family:inherit; box-shadow:0 1px 0 rgba(255,255,255,.7); }
+#sheet-modelcfg .api-line-input::placeholder{ color:rgba(64,87,96,.58); }
+#sheet-modelcfg .api-line-input:focus{ border-bottom-color:#22b8bd; color:#071f27; }
+#sheet-modelcfg select.api-line-input{ appearance:none; -webkit-appearance:none; background:linear-gradient(45deg,transparent 50%,#128b96 50%) right 8px top 48%/8px 8px no-repeat,linear-gradient(135deg,#128b96 50%,transparent 50%) right 0 top 48%/8px 8px no-repeat,linear-gradient(90deg,rgba(255,255,255,.24),rgba(255,255,255,0)); cursor:pointer; }
 #sheet-modelcfg .api-label-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
 #sheet-modelcfg .api-label-row label{ margin-bottom:12px; }
-#sheet-modelcfg .api-label-row button{ border:0; background:transparent; color:#171717; font-size:13px; font-weight:900; text-decoration:underline; padding:0 0 12px; white-space:nowrap; }
-#sheet-modelcfg .api-label-row strong{ font-family:Georgia,serif; font-size:20px; font-style:italic; min-width:44px; text-align:right; }
-#sheet-modelcfg .api-range{ width:100%; accent-color:#000; }
-#sheet-modelcfg .api-range::-webkit-slider-thumb{ background:#000; }
-#sheet-modelcfg .api-switch-row{ display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid #deded9; padding-bottom:18px; }
-#sheet-modelcfg .api-switch-row p{ margin:0; font-size:15px; font-weight:900; color:#222; }
-#sheet-modelcfg .api-help-text{ border-bottom:1px solid #deded9; padding:0 0 22px; margin:-10px 0 28px; color:#8b8b8b; font-size:13px; font-weight:650; line-height:1.65; }
-#sheet-modelcfg .api-checkline{ display:flex; align-items:center; gap:8px; margin:0 0 22px; font-size:13px; font-weight:800; color:#555; }
+#sheet-modelcfg .api-label-row button{ border:0; border-bottom:1px solid rgba(9,80,88,.72); background:transparent; color:#083940; font-size:13px; font-weight:950; padding:0 0 12px; white-space:nowrap; }
+#sheet-modelcfg .api-label-row strong{ font-family:Georgia,serif; font-size:22px; font-style:italic; font-weight:700; min-width:44px; text-align:right; color:#0d5f68; }
+#sheet-modelcfg .api-range{ width:100%; accent-color:#19bdad; }
+#sheet-modelcfg .api-range::-webkit-slider-runnable-track{ height:4px; border-radius:999px; background:linear-gradient(90deg,rgba(72,185,202,.28),rgba(31,203,160,.42)); }
+#sheet-modelcfg .api-range::-webkit-slider-thumb{ width:24px; height:24px; margin-top:-10px; border:2px solid #fff; border-radius:6px; background:linear-gradient(135deg,#17b8ca,#19c899); box-shadow:0 8px 18px rgba(25,184,176,.32); }
+#sheet-modelcfg .api-switch-row{ display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid rgba(65,171,184,.22); padding-bottom:18px; }
+#sheet-modelcfg .api-switch-row p{ margin:0; font-size:14px; font-weight:800; color:#466871; line-height:1.55; }
+#sheet-modelcfg .api-help-text{ border-bottom:1px solid rgba(65,171,184,.22); padding:0 0 22px; margin:-10px 0 28px; color:#62818a; font-size:13px; font-weight:700; line-height:1.65; }
+#sheet-modelcfg .api-checkline{ display:flex; align-items:center; gap:8px; margin:0 0 22px; font-size:13px; font-weight:850; color:#31545d; }
+#sheet-modelcfg .api-checkline input{ accent-color:#18bfa4; }
 #sheet-modelcfg .api-advanced-row{ display:flex; gap:10px; margin:0 0 22px; }
-#sheet-modelcfg .api-small-input{ flex:1; min-width:0; border:1px solid #deded9; background:#fff; padding:10px; font-size:12px; font-weight:800; }
-#sheet-modelcfg .api-inline-note{ margin:8px 0 0; color:#8b8b8b; font-size:12px; font-weight:750; line-height:1.4; }
+#sheet-modelcfg .api-small-input{ flex:1; min-width:0; border:1px solid rgba(57,172,181,.24); background:rgba(255,255,255,.54); border-radius:12px; padding:11px 12px; color:#15343b; font-size:12px; font-weight:850; }
+#sheet-modelcfg .api-inline-note{ margin:8px 0 0; color:#668891; font-size:12px; font-weight:750; line-height:1.4; }
 #sheet-modelcfg .api-model-options{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; max-height:132px; overflow:auto; }
-#sheet-modelcfg .api-model-option{ border:1px solid #cfcfca; background:#fff; color:#191919; padding:7px 9px; font-size:11px; font-weight:800; border-radius:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#sheet-modelcfg .api-model-option{ border:1px solid rgba(46,168,176,.26); background:rgba(255,255,255,.7); color:#0f3c44; padding:8px 10px; font-size:11px; font-weight:850; border-radius:999px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 #sheet-modelcfg .api-memory-fold{ margin:0 0 18px; }
-#sheet-modelcfg .api-save-btn,#sheet-modelcfg .api-test-btn{ width:100%; border:1px solid #050505; padding:18px 12px; font-size:16px; font-weight:900; letter-spacing:1px; }
-#sheet-modelcfg .api-save-btn{ background:#050505; color:#fff; margin-top:14px; }
-#sheet-modelcfg .api-test-btn{ background:transparent; color:#050505; margin-top:16px; }
-#sheet-modelcfg .api-delete-btn{ display:block; margin:24px auto 0; border:0; border-bottom:1px solid #aaa; background:transparent; color:#aaa; font-size:13px; font-weight:800; padding:0 0 3px; }
+#sheet-modelcfg .api-save-btn,#sheet-modelcfg .api-test-btn{ width:100%; border:1px solid rgba(17,137,148,.38); border-radius:16px; padding:17px 12px; font-size:16px; font-weight:950; letter-spacing:1px; }
+#sheet-modelcfg .api-save-btn{ background:linear-gradient(135deg,#38c7dc,#27d69f); color:#fff; margin-top:14px; box-shadow:0 14px 30px rgba(37,189,178,.26); }
+#sheet-modelcfg .api-test-btn{ background:rgba(255,255,255,.58); color:#0f6570; margin-top:16px; }
+#sheet-modelcfg .api-delete-btn{ display:block; margin:24px auto 0; border:0; border-bottom:1px solid rgba(84,126,134,.54); background:transparent; color:#6f8e95; font-size:13px; font-weight:850; padding:0 0 3px; }
+@media (max-width:420px){ #sheet-modelcfg .api-config-top{ padding:52px 26px 20px; } #sheet-modelcfg .api-config-body{ padding:30px 26px 40px; } #sheet-modelcfg .api-line-input{ font-size:19px; } #sheet-modelcfg.api-config-sheet::before{ font-size:132px; right:-14px; bottom:56px; } }
 
 /* ---- Cloud encrypted sync ---- */
 .cloud-sync-body{ padding:18px 16px 36px; background:#F2F2F7; }
