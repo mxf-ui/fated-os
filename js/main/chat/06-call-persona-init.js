@@ -121,8 +121,13 @@ function populateViewAs(){
   sel.value = viewAs;
 }
 
-function initApp(){
-  /* 记忆模式：不再清空旧存档，保留用户所有数据 */
+function seedStartupPlugins(){
+  var saved = (typeof getSavedPluginTypes==='function') ? getSavedPluginTypes() : null;
+  var list = saved ? saved : ['glasstext','breathe','viz','countdown'];
+  list.forEach(function(t){ if(removedPlugins.indexOf(t)<0) addPlugin(t, {skipSave:true}); });
+}
+
+function initApp(){  /* 记忆模式：不再清空旧存档，保留用户所有数据 */
   loadState();
   initWidgetBgMode(); /* 确保插件背景效果立即生效（即使无存档也用默认磨砂）*/
   if(!moments.length){
@@ -143,7 +148,7 @@ function initApp(){
   if(chatBg){ applyChatBgToDOM(chatBg); }
   renderThread();
   /* seed default widgets (after state loaded, so custom image/text persist) — 跳过用户已移除的 */
-  ['glasstext','breathe','viz','countdown'].forEach(function(t){ if(removedPlugins.indexOf(t)<0) addPlugin(t); });
+  /* Default plugins are mounted after IndexedDB assets are restored. */
   renderChatList();
   applyBubbleColors();
   var _bm=document.getElementById('bub-mine'); if(_bm) _bm.value=bubbleMineColor||'#1a1a1a';
@@ -168,8 +173,11 @@ function initApp(){
           renderChatList();
         }
         loadStateAssetsFromDB(function(){
+          seedStartupPlugins();
           renderThread();
           renderChatList();
+          markPersistenceReady();
+          saveState();
         });
       });
     });
