@@ -46,42 +46,106 @@ function goAICheckGameResult(img){
 }
 
 /* ---- Couple Q&A Live ---- */
+function goNormalizeQuestion(q){
+  return String(q||'').replace(/^\s*\d+[.\u3001)\uff09-]?\s*/, '').replace(/[\uFF1F?\u3002\uFF01!\s]+$/g, '').trim();
+}
+function goQuestionKey(q){ return goNormalizeQuestion(q).replace(/\s+/g,'').toLowerCase(); }
+function goWechatContactKeys(){
+  if(typeof contacts === 'undefined') return [];
+  return Object.keys(contacts).filter(function(k){
+    var c = contacts[k];
+    return k !== 'me' && c && !c.blocked && !c.isGroup;
+  });
+}
+function goLocalQuestionPool(){
+  return [
+    '如果今天只能保留一个关于我们的记忆，你会选哪一个？',
+    '你觉得我们最像情侣的瞬间是什么？',
+    '如果把我写进你的世界观，我会是什么身份？',
+    '你最希望我以后改掉的一个小习惯是什么？',
+    '你觉得我们吵架后最需要先做什么？',
+    '如果给我们的关系设置一个安全词，会是什么？',
+    '你最近一次被我打动是什么时候？',
+    '你觉得我最需要被偏爱的地方是什么？',
+    '如果我们一起搬家，第一件要买的东西是什么？',
+    '你觉得我们最互补的地方在哪里？',
+    '如果未来一年只能完成一个共同计划，你想选什么？',
+    '你希望我怎么哄你才最有效？',
+    '你觉得我什么时候最有魅力？',
+    '如果今天互换身份，你最想体验我的哪部分生活？',
+    '你觉得我们之间最不能丢掉的默契是什么？',
+    '如果我们的聊天记录变成一本书，标题叫什么？',
+    '你最想和我一起重复一百次的日常是什么？',
+    '你觉得我对你的了解有几分？为什么？',
+    '如果我们要定一个只属于彼此的节日，会是哪天？',
+    '此刻你最想让我知道的一件小事是什么？',
+    '你觉得爱里最需要被认真回答的问题是什么？',
+    '如果给我们的关系做一次升级，你会升级什么功能？'
+  ];
+}
+function goBuildUniqueQuestions(text, need){
+  var used = Array.isArray(goState.qaUsedQuestions) ? goState.qaUsedQuestions : [];
+  var seen = {};
+  used.forEach(function(q){ seen[goQuestionKey(q)] = true; });
+  var raw = String(text||'').split(/\n+/).map(goNormalizeQuestion).filter(function(q){ return q.length > 4; });
+  var out = [];
+  raw.concat(goLocalQuestionPool().sort(function(){ return Math.random()-0.5; })).forEach(function(q){
+    var key = goQuestionKey(q);
+    if(!key || seen[key]) return;
+    seen[key] = true;
+    out.push(/[\uFF1F?]$/.test(q) ? q : q + '？');
+  });
+  if(out.length < need){
+    goState.qaUsedQuestions = [];
+    seen = {};
+    goLocalQuestionPool().sort(function(){ return Math.random()-0.5; }).forEach(function(q){
+      var key = goQuestionKey(q);
+      if(!seen[key]){ seen[key] = true; out.push(q); }
+    });
+  }
+  return out.slice(0, need);
+}
+function goContactPersonaText(id){
+  var c = contacts && contacts[id] ? contacts[id] : null;
+  if(!c) return '';
+  return [c.name, c.wxid ? 'WeChat ID: '+c.wxid : '', c.bio || '', c.persona || c.tone || '', c.userPrompt || '', c.memory && c.memory.summary ? '记忆: '+c.memory.summary : ''].filter(Boolean).join('\n');
+}
 function goRenderCouple(){
   var s = goState;
   var pName = s.qaPartner && contacts[s.qaPartner] ? contacts[s.qaPartner].name : '';
   if(!s.qaPartner){
-    return '<div class="go-card"><div class="go-label">情侣Q&A</div>'+
-      '<div style="font-size:13px;color:#555;line-height:1.5;margin-bottom:12px;">选择一位WeChat联系人连麦，一起回答AI生成的20个问题</div>'+
+    return '<div class="go-card"><div class="go-label">情侣Q&A</div>'+ 
+      '<div style="font-size:13px;color:#45685a;line-height:1.5;margin-bottom:12px;">选择一位 WeChat 联系人连麦。问题由设置里的 API 生成，并避开历史题目与本轮重复。</div>'+ 
       '<button class="go-btn primary" onclick="goOpenPartnerModal()">选择连麦对象</button></div>';
   }
   if(s.qaQuestions.length===0){
-    return '<div class="go-card"><div class="go-label">情侣Q&A - 连麦: '+pName+'</div><div style="text-align:center;padding:20px;font-size:14px;color:#888;">正在生成问题...</div></div>';
+    return '<div class="go-card"><div class="go-label">情侣Q&A - 连麦: '+esc(pName)+'</div><div style="text-align:center;padding:20px;font-size:14px;color:#78a392;">AI 正在生成不重复问题...</div></div>';
   }
   if(s.qaCurrent>=s.qaQuestions.length){
     return '<div class="go-card" style="text-align:center;padding:24px;">'+
-      '<div style="font-size:20px;font-weight:700;margin-bottom:8px;color:#1a1a1a;">答题完成</div>'+
-      '<div style="font-size:14px;color:#888;margin-bottom:16px;">你们完成了'+s.qaQuestions.length+'道问题</div>'+
-      '<button class="go-btn primary" onclick="goEndLive(true,1000)">领取奖励 ¥1000</button></div>';
+      '<div style="font-size:20px;font-weight:700;margin-bottom:8px;color:#17392d;">答题完成</div>'+
+      '<div style="font-size:14px;color:#78a392;margin-bottom:16px;">你们完成了 '+s.qaQuestions.length+' 道不重复问题</div>'+
+      '<button class="go-btn primary" onclick="goEndLive(true,1000)">领取工资 ¥1000</button></div>';
   }
   var q = s.qaQuestions[s.qaCurrent];
   var prog = (s.qaCurrent/s.qaQuestions.length)*100;
   return '<div class="go-card">'+
-    '<div class="go-label">Q'+(s.qaCurrent+1)+'/'+s.qaQuestions.length+' 连麦: '+pName+'</div>'+
+    '<div class="go-label">Q'+(s.qaCurrent+1)+'/'+s.qaQuestions.length+' ? WeChat 连麦: '+esc(pName)+'</div>'+
     '<div class="go-progress"><div class="go-progress-bar" style="width:'+prog+'%"></div></div>'+
-    '<div class="go-qa-card" style="margin-top:12px;"><div class="go-qa-q">'+q+'</div>'+
-    '<input class="go-qa-input" id="go-qa-answer" placeholder="输入你的回答" onkeydown="if(event.key===\'Enter\')goAnswerQA()"></div>'+
-    '<div id="go-qa-partner" style="margin-top:10px;"></div>'+
+    '<div class="go-qa-card" style="margin-top:12px;"><div class="go-qa-q">'+esc(q)+'</div>'+ 
+    '<input class="go-qa-input" id="go-qa-answer" placeholder="输入你的回答" onkeydown="if(event.key===\'Enter\')goAnswerQA()"></div>'+ 
+    '<div id="go-qa-partner" style="margin-top:10px;"></div>'+ 
     '<button class="go-btn primary" style="margin-top:10px;" onclick="goAnswerQA()">提交回答</button></div>';
 }
 function goOpenPartnerModal(){
   var list = document.getElementById('go-partner-list');
-  var cs = Object.keys(contacts).filter(function(k){ return k!=='me' && !contacts[k].blocked && !contacts[k].isGroup; });
-  if(cs.length===0){ list.innerHTML = '<div style="text-align:center;color:#888;padding:12px;">暂无可用联系人</div>'; }
+  var cs = goWechatContactKeys();
+  if(cs.length===0){ list.innerHTML = '<div style="text-align:center;color:#78a392;padding:12px;">暂无可用 WeChat 联系人</div>'; }
   else {
     list.innerHTML = cs.map(function(k){
       var c = contacts[k];
-      var avSt = c.avatar ? 'background-image:url('+c.avatar+');background-size:cover;background-position:center;' : 'background:'+(c.avatarColor||'#999');
-      return '<div class="go-buyer-row" style="cursor:pointer;" onclick="goSelectPartner(\''+k+'\')"><div class="av" style="'+avSt+'"></div><div style="flex:1;font-size:14px;font-weight:600;color:#1a1a1a;">'+c.name+'</div></div>';
+      var avSt = c.avatar ? 'background-image:url('+c.avatar+');background-size:cover;background-position:center;' : 'background:'+(c.avatarColor||'#9bd9bf');
+      return '<div class="go-buyer-row go-partner-row" style="cursor:pointer;" onclick="goSelectPartner(\''+k+'\')"><div class="av" style="'+avSt+'"></div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#17392d;">'+esc(c.name||'联系人')+'</div><div style="font-size:11px;color:#78a392;margin-top:2px;">'+esc(c.wxid||k)+' ? WeChat 同步</div></div><div class="go-link-dot"></div></div>';
     }).join('');
   }
   goOpenModal('go-modal-partner');
@@ -94,19 +158,13 @@ function goSelectPartner(id){
 }
 function goGenerateQA(){
   var s = goState;
-  var pName = contacts[s.qaPartner] ? contacts[s.qaPartner].name : '对方';
+  var avoid = (Array.isArray(s.qaUsedQuestions) ? s.qaUsedQuestions.slice(-80) : []).join('；');
   goCallAI(
-    '请生成20个情侣Q&A问题，每行一个，问题要有趣、有深度，涵盖恋爱、生活、未来等方面。只输出问题，不要编号。',
-    '你是一个情侣互动游戏AI。',
+    '请生成20个情侣Q&A问题，每行一个。要求：有恋爱张力、有生活细节、有未来规划；不要编号；不要重复这些历史题目：'+avoid+'。本轮ID：'+(s.qaRoundSeed||Date.now())+'。',
+    '你是情侣互动游戏AI，必须保证每道题彼此不同，并且尽量避开历史题目。',
     function(text){
-      if(!text){
-        s.qaQuestions = ['如果用一道菜形容我们的关系，你觉得是什么？','你第一次见到我时心里在想什么？','如果我们可以穿越时空，你想回到哪一天？','你觉得我最大的优点是什么？','你最想和我一起去哪里旅行？','如果世界末日只能带一样东西，你带什么？','你觉得我们的默契度有多高？','最想对我说但一直没说出口的话是什么？','如果用一首歌形容我们，是哪首？','你觉得我什么时候最好看？','如果我们变成对方一天，你最想做什么？','你最珍惜和我的一张合照是哪张？','如果给我打分，你打几分？','你觉得我们最大的共同点是什么？','最想和我一起完成的事情是什么？','你觉得恋爱中最重要的品质是什么？','如果我们的故事写成书，书名叫什么？','你最怕我做什么？','你觉得我们会在一起多久？','此刻最想对我说什么？'];
-      } else {
-        s.qaQuestions = text.split('\n').map(function(l){ return l.replace(/^\d+[.、]\s*/,'').trim(); }).filter(function(l){ return l.length>0; }).slice(0,20);
-        if(s.qaQuestions.length<5){
-          s.qaQuestions = ['你觉得我怎么样？','最想和我做什么？','你觉得我们有默契吗？','最想对我说什么？','如果重来一次还会选择我吗？','你觉得我最大的魅力是什么？','最想和我去哪里？','你觉得我们之间最难忘的事是什么？'];
-        }
-      }
+      s.qaQuestions = goBuildUniqueQuestions(text, 20);
+      s.qaUsedQuestions = (Array.isArray(s.qaUsedQuestions) ? s.qaUsedQuestions : []).concat(s.qaQuestions).slice(-220);
       goRenderLive();
       saveState();
     }
@@ -120,17 +178,17 @@ function goAnswerQA(){
   var text = inp.value.trim();
   if(!text){ goToast('请输入回答'); return; }
   var pDiv = document.getElementById('go-qa-partner');
-  if(pDiv) pDiv.innerHTML = '<div class="go-qa-card"><div class="go-label">你的回答</div><div class="go-qa-a">'+text+'</div></div>';
+  if(pDiv) pDiv.innerHTML = '<div class="go-qa-card"><div class="go-label">你的回答</div><div class="go-qa-a">'+esc(text)+'</div></div>';
   var pName = contacts[s.qaPartner] ? contacts[s.qaPartner].name : '对方';
   var q = s.qaQuestions[s.qaCurrent];
   var btn = document.querySelector('#go-live-content .go-btn.primary');
   if(btn){ btn.style.display='none'; }
   goCallAI(
-    '你现在是'+pName+'，正在和伴侣做情侣Q&A。问题是: "'+q+'"。对方的回答是: "'+text+'"。\n请以'+pName+'的身份回答这个问题，回答要自然、有个性、不超过50字。',
-    '你是一个角色扮演AI，请代入角色回答。',
+    '你现在是'+pName+'，正在和伴侣做情侣Q&A。问题是: "'+q+'"。对方的回答是: "'+text+'"。\n联系人资料：\n'+goContactPersonaText(s.qaPartner)+'\n请以'+pName+'的身份回答这个问题，回答要自然、有个性、不超过50字。',
+    '你是 WeChat 联系人连麦角色，请严格代入联系人资料和历史记忆回答。',
     function(result){
-      if(!result) result = '我觉得这个问题很好，我的想法是...';
-      if(pDiv) pDiv.innerHTML += '<div class="go-qa-card" style="margin-top:8px;"><div class="go-label">'+pName+'的回答</div><div class="go-qa-a">'+result+'</div></div>'+
+      if(!result) result = '我还在想，但这个问题真的很像我们会聊的事。';
+      if(pDiv) pDiv.innerHTML += '<div class="go-qa-card" style="margin-top:8px;"><div class="go-label">'+esc(pName)+'的回答</div><div class="go-qa-a">'+esc(result)+'</div></div>'+ 
         '<button class="go-btn primary" style="margin-top:8px;" onclick="goNextQA()">下一题</button>';
     }
   );

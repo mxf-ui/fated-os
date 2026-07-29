@@ -1,3 +1,15 @@
+function goSyncBalanceFromWallet(){
+  if(typeof walletBalance === 'number') goState.balance = walletBalance;
+}
+function goPayWageToWallet(title, reward){
+  reward = Number(reward) || 0;
+  if(reward <= 0) return;
+  if(typeof addWalletTx === 'function') addWalletTx(title, reward);
+  else if(typeof walletBalance !== 'undefined') walletBalance += reward;
+  if(typeof updateWalletPreview === 'function') updateWalletPreview();
+  goSyncBalanceFromWallet();
+}
+
 /* ---- Voice Input ---- */
 function goVoiceInput(ctx){
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;

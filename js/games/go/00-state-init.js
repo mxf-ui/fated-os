@@ -23,7 +23,10 @@ function goDefault(){
     qaQuestions: [],
     qaCurrent: 0,
     qaPartner: '',
+    qaUsedQuestions: [],
+    qaRoundSeed: '',
     asmrProgress: 0,
+    liveEvents: [],
     history: []
   };
 }

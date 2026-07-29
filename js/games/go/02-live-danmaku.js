@@ -13,6 +13,8 @@ function goStartLive(){
   s.qaCurrent = 0;
   s.qaQuestions = [];
   s.qaPartner = '';
+  s.qaRoundSeed = 'round-' + Date.now() + '-' + Math.floor(Math.random()*100000);
+  s.liveEvents = [];
   document.getElementById('go-page-setup').classList.remove('active');
   document.getElementById('go-page-live').classList.add('active');
   var tn = {ecommerce:'带货直播',game:'游戏直播',couple:'情侣Q&A',asmr:'ASMR直播',voice:'语音厅',beauty:'美妆直播'};
@@ -40,7 +42,7 @@ function goRenderLive(){
     '<div class="go-live-bg" id="go-live-bg"></div>'+
     '<div class="go-live-type-badge">'+({ecommerce:'带货',game:'游戏',couple:'情侣Q&A',asmr:'ASMR',voice:'语音厅',beauty:'美妆'}[s.liveType]||'')+'</div>'+
     '<div class="go-live-viewers"><span id="go-viewer-count">'+Math.floor(Math.random()*200+80)+'</span> 观看</div>'+
-    '<div class="go-live-overlay">'+avHtml+'<div class="go-live-id">'+s.liveId+'</div></div>'+
+    '<div class="go-live-overlay">'+avHtml+'<div class="go-live-id">'+s.liveId+'</div><div class="go-live-ai-chip">'+(goApiReady()?'AI\u5df2\u63a5\u5165':'\u5f85\u914d\u7f6eAPI')+'</div></div>'+
     '<div class="go-danmaku-area" id="go-danmaku-area"></div>'+
     '</div>';
   var bgHtml = '<div class="go-card" style="margin-top:12px;"><div class="go-label">直播背景</div><div class="go-bg-picker" id="go-bg-picker"></div></div>';
@@ -49,7 +51,12 @@ function goRenderLive(){
   else if(s.liveType==='game') typeHtml = goRenderGame();
   else if(s.liveType==='couple') typeHtml = goRenderCouple();
   else typeHtml = goRenderVoice(s.liveType);
-  c.innerHTML = stage + bgHtml + typeHtml;
+  var dashHtml = '<div class="go-live-dashboard">'+
+    '<div><b id="go-live-events">'+((s.liveEvents && s.liveEvents.length) || 0)+'</b><small>AI\u5f39\u5e55</small></div>'+
+    '<div><b>'+((s.qaUsedQuestions && s.qaUsedQuestions.length) || 0)+'</b><small>\u95ee\u7b54\u53bb\u91cd</small></div>'+
+    '<div><b>'+(goApiReady()?'ON':'OFF')+'</b><small>\u5168\u5c40API</small></div>'+
+    '</div>';
+  c.innerHTML = stage + dashHtml + bgHtml + typeHtml;
   var bgs = ['linear-gradient(135deg,#2a2a2a,#1a1a1a)','linear-gradient(135deg,#1a3a5a,#0d1f3a)','linear-gradient(135deg,#3a1a3a,#1a0d2a)','linear-gradient(135deg,#1a3a1a,#0d2a0d)','linear-gradient(135deg,#3a2a1a,#2a1a0d)'];
   var bp = document.getElementById('go-bg-picker');
   if(bp) bp.innerHTML = bgs.map(function(bg,i){
@@ -100,6 +107,10 @@ function goGenerateDanmaku(){
     '你是一个直播观众，用口语化方式发弹幕。',
     function(text){
       var dm = (text||'').replace(/\n/g,'').substring(0,30) || fbPool[Math.floor(Math.random()*fbPool.length)];
+      s.liveEvents = Array.isArray(s.liveEvents) ? s.liveEvents : [];
+      s.liveEvents.push({type:'danmaku', text:dm, at:Date.now()});
+      if(s.liveEvents.length>80) s.liveEvents = s.liveEvents.slice(-80);
+      var ev = document.getElementById('go-live-events'); if(ev) ev.textContent = s.liveEvents.length;
       var div = document.createElement('div');
       div.className = 'go-danmaku-item';
       div.textContent = npcName+': '+dm;

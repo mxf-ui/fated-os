@@ -1744,84 +1744,31 @@
 <div class="suoha-toast" id="suoha-toast"></div>
 
 <!-- ==================== GO APP ==================== -->
-<div class="sheet" id="sheet-go">
+<div class="sheet go-shell" id="sheet-go">
   <div class="sheet-body">
-    <!-- Setup Page -->
     <div class="go-page active" id="go-page-setup">
       <div class="go-header">
-        <div class="t">GO</div>
-        <div class="wb" id="go-balance-display">余额 0</div>
+        <button class="go-back" onclick="closeSheet('go')">&#8249;</button>
+        <div class="t">GO Live</div>
+        <div class="wb" id="go-balance-display">钱包 ¥0.00</div>
       </div>
       <div class="go-main">
-        <div class="go-card">
-          <div class="go-label">选择直播类型</div>
-          <div class="go-type-grid" id="go-type-grid"></div>
-        </div>
-        <div class="go-card">
-          <div class="go-label">直播ID</div>
-          <input class="go-input" id="go-live-id" placeholder="输入你的直播ID" maxlength="20">
-        </div>
-        <div class="go-card">
-          <div class="go-label">直播头像</div>
-          <div style="display:flex;gap:12px;align-items:center;">
-            <div id="go-avatar-preview" style="width:56px;height:56px;border-radius:50%;background:#e8e8e0;background-size:cover;background-position:center;border:0.5px solid rgba(0,0,0,0.08);"></div>
-            <button class="go-btn sm ghost" onclick="goPickAvatar()">选择头像</button>
-          </div>
-        </div>
-        <div class="go-card">
-          <div class="go-label">弹幕风格</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;" id="go-dm-cats"></div>
-          <div class="go-label" style="margin-top:12px;">自定义弹幕设定</div>
-          <input class="go-input" id="go-dm-custom" placeholder="可选，描述你想要的弹幕风格">
-          <div class="go-label" style="margin-top:12px;">绑定世界书</div>
-          <select id="go-wb-bind" style="width:100%;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:8px;font-size:14px;background:#fff;color:#1a1a1a;outline:none;">
-            <option value="">不绑定</option>
-          </select>
-        </div>
-        <button class="go-btn primary" style="margin-top:16px;" onclick="goStartLive()">确认开播</button>
+        <div class="go-hero"><div><div class="go-kicker">Creator Studio</div><div class="go-hero-title">直播任务中心</div><div class="go-hero-sub">弹幕、情侣问答、评分和观众反馈统一读取设置里的 API。</div></div><div class="go-live-pulse"><span></span>AI</div></div>
+        <div class="go-api-card" id="go-api-status"><b>AI 状态检测中</b><small>GO 不单独配置 API</small></div>
+        <div class="go-card"><div class="go-label">选择直播类型</div><div class="go-type-grid" id="go-type-grid"></div></div>
+        <div class="go-card go-card-split"><label><span class="go-label">直播ID</span><input class="go-input" id="go-live-id" placeholder="输入你的直播ID" maxlength="20"></label><div><div class="go-label">直播头像</div><div class="go-avatar-row"><div id="go-avatar-preview" class="go-avatar-preview"></div><button class="go-btn sm ghost" onclick="goPickAvatar()">选择头像</button></div></div></div>
+        <div class="go-card"><div class="go-label">弹幕风格</div><div class="go-chip-row" id="go-dm-cats"></div><div class="go-label" style="margin-top:12px;">自定义弹幕设定</div><input class="go-input" id="go-dm-custom" placeholder="可选，例如：毒舌但不攻击人 / 温柔陪伴 / 专业点评"><div class="go-label" style="margin-top:12px;">绑定世界书</div><select id="go-wb-bind" class="go-select"><option value="">不绑定</option></select></div>
+        <div class="go-insight-grid"><div><b>WeChat</b><small>连麦好友来自联系人</small></div><div><b>钱包</b><small>工资自动入账</small></div><div><b>去重</b><small>每轮问答不重复</small></div></div>
+        <button class="go-btn primary go-start-btn" onclick="goStartLive()">确认开播</button>
         <div id="go-history-list" style="margin-top:16px;"></div>
       </div>
     </div>
-    <!-- Live Page -->
-    <div class="go-page" id="go-page-live">
-      <div class="go-header">
-        <button class="go-back" onclick="goEndLive(false,0)">&lt;</button>
-        <div class="t" id="go-live-title">直播中</div>
-        <div class="wb" id="go-live-timer">00:00</div>
-      </div>
-      <div class="go-main" id="go-live-content"></div>
-    </div>
+    <div class="go-page" id="go-page-live"><div class="go-header"><button class="go-back" onclick="goEndLive(false,0)">&#8249;</button><div class="t" id="go-live-title">直播中</div><div class="wb" id="go-live-timer">00:00</div></div><div class="go-main" id="go-live-content"></div></div>
   </div>
 </div>
-<!-- GO Toast -->
 <div class="go-toast" id="go-toast"></div>
-<!-- GO Cart Modal -->
-<div class="go-modal" id="go-modal-cart">
-  <div class="go-modal-bg" onclick="goCloseModal('go-modal-cart')"></div>
-  <div class="go-modal-box">
-    <div class="go-label" style="margin-bottom:12px;">小黄车 - 添加产品</div>
-    <div id="go-product-list"></div>
-    <div class="go-card soft" style="margin-top:12px;">
-      <input class="go-input" id="go-prod-name" placeholder="产品名称">
-      <input class="go-input" id="go-prod-price" placeholder="价格" type="number" style="margin-top:8px;">
-      <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
-        <button class="go-btn sm ghost" onclick="goUploadProductImg()">上传图片</button>
-        <button class="go-btn sm ghost" onclick="goVoiceInput('product')">语音输入</button>
-        <button class="go-btn sm primary" onclick="goAddProduct()">添加</button>
-      </div>
-    </div>
-    <button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-cart')">完成</button>
-  </div>
-</div>
-<!-- GO Partner Modal -->
-<div class="go-modal" id="go-modal-partner">
-  <div class="go-modal-bg" onclick="goCloseModal('go-modal-partner')"></div>
-  <div class="go-modal-box">
-    <div class="go-label" style="margin-bottom:12px;">选择连麦对象</div>
-    <div id="go-partner-list"></div>
-    <button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-partner')">取消</button>
-  </div>
-</div>
+<div class="go-modal" id="go-modal-cart"><div class="go-modal-bg" onclick="goCloseModal('go-modal-cart')"></div><div class="go-modal-box"><div class="go-label" style="margin-bottom:12px;">小黄车 - 添加产品</div><div id="go-product-list"></div><div class="go-card soft" style="margin-top:12px;"><input class="go-input" id="go-prod-name" placeholder="产品名称"><input class="go-input" id="go-prod-price" placeholder="价格" type="number" style="margin-top:8px;"><div style="display:flex;gap:8px;margin-top:10px;align-items:center;"><button class="go-btn sm ghost" onclick="goUploadProductImg()">上传图片</button><button class="go-btn sm ghost" onclick="goVoiceInput('product')">语音输入</button><button class="go-btn sm primary" onclick="goAddProduct()">添加</button></div></div><button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-cart')">完成</button></div></div>
+<div class="go-modal" id="go-modal-partner"><div class="go-modal-bg" onclick="goCloseModal('go-modal-partner')"></div><div class="go-modal-box"><div class="go-label" style="margin-bottom:12px;">选择 WeChat 连麦对象</div><div id="go-partner-list"></div><button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-partner')">取消</button></div></div>
 <input type="file" id="go-file-input" accept="image/*" style="display:none;">
 <script src="js/main/00-boot-state.js"></script>
 <script src="js/main/01-system-shell.js"></script>

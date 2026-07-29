@@ -608,3 +608,14 @@ function dataManagerOpenCloud(){
   openSheet('cloudsync');
   if(typeof cloudSyncInit==='function') cloudSyncInit();
 }
+
+
+function bootHashRoute(){
+  try{
+    var h = String(location.hash || '').replace(/^#/, '').toLowerCase();
+    if(h === 'go'){
+      setTimeout(function(){ openSheet('go'); initGo(); }, 350);
+    }
+  }catch(e){}
+}
+window.addEventListener('load', bootHashRoute);
