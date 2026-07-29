@@ -15,31 +15,6 @@ function jsonResponse(obj, status) {
 }
 
 // 端点地址智能补全（与前端 normEp 一致，做防御性二次补全，避免旧存档地址不完整）
-function parseSseReply(text, providerType, format) {
-  const chunks = [];
-  for (const line of String(text || '').split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed.startsWith('data:')) continue;
-    const payload = trimmed.slice(5).trim();
-    if (!payload || payload === '[DONE]') continue;
-    let row;
-    try { row = JSON.parse(payload); } catch (e) { continue; }
-    if (providerType === 'claude' || (providerType === 'custom' && format === 'claude')) {
-      const textDelta = row.delta && row.delta.text;
-      if (textDelta) chunks.push(textDelta);
-      const blockText = row.content_block && row.content_block.text;
-      if (blockText) chunks.push(blockText);
-      continue;
-    }
-    const choice = row.choices && row.choices[0];
-    const deltaText = choice && choice.delta && choice.delta.content;
-    const messageText = choice && choice.message && choice.message.content;
-    if (deltaText) chunks.push(deltaText);
-    else if (messageText) chunks.push(messageText);
-  }
-  return chunks.join('');
-}
-
 function normEp(endpoint, fmt) {
   if (!endpoint) return '';
   var ep = String(endpoint).trim();
@@ -95,7 +70,7 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Invalid JSON body' }, 400);
   }
 
-  const { messages, provider, key, endpoint, dataModel, apiFormat, max_tokens, temperature, stream } = body;
+  const { messages, provider, key, endpoint, dataModel, apiFormat, max_tokens } = body;
 
   if (!key) return jsonResponse({ error: 'Missing API key — 请在设置中填写 API Key' }, 400);
   if (!endpoint) return jsonResponse({ error: 'Missing endpoint — 请在设置中填写 API 地址（填域名即可）' }, 400);
@@ -104,10 +79,6 @@ export async function onRequestPost(context) {
   const format = apiFormat || 'openai';
   const model = dataModel || body.model || 'deepseek-chat';
   const maxTokens = max_tokens || 1024;
-  let temp = Number(temperature);
-  if (!Number.isFinite(temp)) temp = 0.8;
-  temp = Math.max(0, Math.min(2, temp));
-  const useStream = stream === true || stream === 'true';
 
   let url, headers, reqBody;
 
@@ -118,26 +89,22 @@ export async function onRequestPost(context) {
       const chatMsgs = (messages || []).filter(m => m.role !== 'system');
       url = normEp(endpoint, fmt);
       headers = { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' };
-      reqBody = JSON.stringify({ model, system: sysMsgs, messages: chatMsgs, max_tokens: maxTokens, temperature: temp, stream: useStream });
+      reqBody = JSON.stringify({ model, system: sysMsgs, messages: chatMsgs, max_tokens: maxTokens });
     } else if (providerType === 'gemini' || (providerType === 'custom' && format === 'gemini')) {
       const fmt = 'gemini';
       url = normEp(endpoint, fmt);
-      if (!/\/models\/[^/]+(?::generateContent)?$/i.test(url)) {
-        const geminiModel = String(model || 'gemini-2.5-pro').replace(/^models\//i, '');
-        url = url.replace(/\/models$/i, '').replace(/\/+$/, '') + '/models/' + encodeURIComponent(geminiModel) + ':generateContent';
-      }
       url = url + (url.includes('?') ? '&' : '?') + 'key=' + key;
       headers = { 'Content-Type': 'application/json' };
       reqBody = JSON.stringify({
         contents: (messages || []).map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-        generationConfig: { maxOutputTokens: maxTokens, temperature: temp }
+        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.8 }
       });
     } else {
       // OpenAI-compatible (DeepSeek, OpenAI, most relay stations / 中转站)
       const fmt = 'openai';
       url = normEp(endpoint, fmt);
       headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key };
-      reqBody = JSON.stringify({ model, messages: messages || [], max_tokens: maxTokens, temperature: temp, stream: useStream });
+      reqBody = JSON.stringify({ model, messages: messages || [], max_tokens: maxTokens, temperature: 0.8 });
     }
 
     console.log('[chat-proxy] format:', format, 'endpoint:', endpoint, 'finalUrl:', url, 'provider:', providerType);
@@ -158,11 +125,6 @@ export async function onRequestPost(context) {
     clearTimeout(timeout);
 
     const respText = await apiResp.text();
-    const contentType = apiResp.headers.get('content-type') || '';
-    if (useStream || /text\/event-stream/i.test(contentType) || /^\s*data:/i.test(respText)) {
-      const streamReply = parseSseReply(respText, providerType, format);
-      if (streamReply) return jsonResponse({ content: streamReply });
-    }
     let data;
     try { data = JSON.parse(respText); } catch (e) {
       return jsonResponse({ error: 'API 返回非 JSON (HTTP ' + apiResp.status + ')：' + respText.substring(0, 300) }, 502);
