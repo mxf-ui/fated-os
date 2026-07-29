@@ -238,7 +238,8 @@ function pluginPreviewHTML(type){
     case 'affection': return '<div class="aff-title">好感度 · 实时</div><div class="aff-row"><div class="aff-track"><i></i></div><div class="aff-num">78%</div></div>';
   }
 }
-function addPlugin(type){
+function addPlugin(type, opts){
+  opts = opts || {};
   const def = pluginDefs.find(p=>p.type===type);
   // 删除已存在的同类型实例（避免重复添加），并从“已移除”列表移除
   document.querySelectorAll('[data-wc-type="'+type+'"]').forEach(function(n){ n.remove(); });
@@ -279,6 +280,7 @@ function addPlugin(type){
   var del=document.createElement('div'); del.className='wc-del'; del.textContent='×'; del.setAttribute('onclick',"removePlugin('"+type+"')"); el.appendChild(del);
   bindSlots(el);
   closeSheet('pluginlib');
+  if(!opts.skipSave && (typeof isPersistenceBooting!=='function' || !isPersistenceBooting())) saveState();
 }
 function removePlugin(type){
   document.querySelectorAll('[data-wc-type="'+type+'"]').forEach(function(n){ n.remove(); });
