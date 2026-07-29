@@ -93,39 +93,37 @@
 
   <!-- ================= SETTINGS ================= -->
   <div class="topview" id="view-settings">
-    <div class="topbar"><div class="icobtn glass-strong" onclick="goToScreen('home')">‹</div><div style="font-weight:600;font-size:20px;flex:1;text-align:center;font-family:'Inter',sans-serif;letter-spacing:-0.3px;">Settings</div><div style="width:32px;"></div></div>
-    <div class="settings-scroll" style="padding-top:8px;">
+    <div class="topbar settings-topbar"><div class="icobtn glass-strong settings-back" onclick="goToScreen('home')">&#8249;</div><div class="settings-title"><span>Settings</span><small>设置中心</small></div><div style="width:32px;"></div></div>
+    <div class="settings-scroll">
       <div class="ios-section">
         <div class="ios-row" onclick="openSheet('mine')">
-          <div class="row-icon" style="background:#e0e0e0;width:56px;height:56px;border-radius:50%;" id="settings-avatar"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg></div>
-          <div class="row-label"><b id="settings-name">user</b><div style="font-size:12px;color:var(--ink-soft);">Apple ID, iCloud &amp; Media</div></div>
-          <div class="row-arrow">›</div>
+          <div class="row-label settings-row-copy"><b id="settings-name">user</b><small>账户资料 / 个人信息</small></div>
+          <div class="row-arrow">&#8250;</div>
         </div>
       </div>
       <div class="ios-section">
-        <div class="ios-row" onclick="openSheet('pluginlib')"><div class="row-icon" style="background:#1a1a1a;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><div class="row-label">Plugins</div><div class="row-arrow">›</div></div>
-        <div class="ios-row" onclick="openSheet('icons')"><div class="row-icon" style="background:#555;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M3 16l5-5 4 4 4-4 5 5"/></svg></div><div class="row-label">App Icons</div><div class="row-arrow">›</div></div>
-        <div class="ios-row" onclick="openSheet('wallpaper')"><div class="row-icon" style="background:#888;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="4"/></svg></div><div class="row-label">Wallpaper</div><div class="row-arrow">›</div></div>
+        <div class="ios-row" onclick="openSheet('pluginlib')"><div class="row-label settings-row-copy"><b>Plugins</b><small>插件 / 桌面组件美化</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('icons')"><div class="row-label settings-row-copy"><b>App Icons</b><small>图标 / 主屏入口样式</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('wallpaper')"><div class="row-label settings-row-copy"><b>Wallpaper</b><small>壁纸 / 锁屏与主屏背景</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
       <div class="ios-section">
-        <div class="ios-row" onclick="goToScreen('lock')"><div class="row-icon" style="background:#333;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div><div class="row-label">Lock Screen</div><div class="row-arrow">›</div></div>
-        <div class="ios-row" onclick="goToScreen('home')"><div class="row-icon" style="background:#555;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 10l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V10z"/></svg></div><div class="row-label">Home Screen</div><div class="row-arrow">›</div></div>
+        <div class="ios-row" onclick="goToScreen('lock')"><div class="row-label settings-row-copy"><b>Lock Screen</b><small>锁屏 / 返回锁屏预览</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="goToScreen('home')"><div class="row-label settings-row-copy"><b>Home Screen</b><small>主屏 / 回到虚拟手机桌面</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
       <div class="ios-section">
-        <div class="ios-row" onclick="setPasscodeFromSettings()"><div class="row-icon" style="background:#1a1a1a;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="row-label" id="passcode-status-text">Passcode</div><div class="row-arrow">›</div></div>
-        <div class="ios-row" id="passcode-remove-row" style="display:none;" onclick="removePasscodeConfirm()"><div class="row-icon" style="background:#c00;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></div><div class="row-label">Turn Off Passcode</div><div class="row-arrow">›</div></div>
+        <div class="ios-row" onclick="setPasscodeFromSettings()"><div class="row-label settings-row-copy" id="passcode-status-text"><b>Passcode</b><small>密码 / 解锁保护</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" id="passcode-remove-row" style="display:none;" onclick="removePasscodeConfirm()"><div class="row-label settings-row-copy"><b>Turn Off Passcode</b><small>关闭密码 / 取消锁屏保护</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
       <div class="ios-section">
-        <div class="ios-row" onclick="openSheet('fontcfg');cfgInitFont()"><div class="row-icon" style="background:#FF2D55;color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;">A</div><div class="row-label">字体 &amp; 颜色</div><div class="row-arrow">›</div></div>
-        <div class="ios-row" onclick="openSheet('modelcfg');cfgInit()"><div class="row-icon" style="background:#007AFF;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0110 10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 0 01-4 10"/></svg></div><div class="row-label">模型 API (LLM)</div><div class="row-arrow">›</div></div>
-        <div class="ios-row" onclick="openSheet('cloudsync');cloudSyncInit()"><div class="row-icon" style="background:#34C759;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 15a5 5 0 0 0 5 5h4a5 5 0 0 0 5-5"/></svg></div><div class="row-label">Cloud Sync<div style="font-size:12px;color:var(--ink-soft);font-weight:600;">Account & encrypted cloud save</div></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('ttscfg');cfgInit()"><div class="row-icon" style="background:#FF9500;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2a3 3 0 013 3v6a3 3 0 01-6 0V5a3 3 0 013-3z"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v3"/></svg></div><div class="row-label">TTS 语音</div><div class="row-arrow">›</div></div>
-        <div class="ios-row" onclick="openSheet('worldbooks');renderWorldBooks()"><div class="row-icon" style="background:#5856D6;color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;">W</div><div class="row-label">世界书</div><div class="row-arrow">›</div></div>
+        <div class="ios-row" onclick="openSheet('fontcfg');cfgInitFont()"><div class="row-label settings-row-copy"><b>Fonts &amp; Color</b><small>字体 / 文字气质与颜色</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('modelcfg');cfgInit()"><div class="row-label settings-row-copy"><b>API Config</b><small>模型接口 / 聊天核心</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('cloudsync');cloudSyncInit()"><div class="row-label settings-row-copy"><b>Cloud Sync</b><small>账号云端 / 加密保存人设聊天</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('ttscfg');cfgInit()"><div class="row-label settings-row-copy"><b>TTS Voice</b><small>语音 / 让角色开口说话</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('worldbooks');renderWorldBooks()"><div class="row-label settings-row-copy"><b>World Book</b><small>世界书 / 长设定注入</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
-      <div class="ios-footer">Fated OS · v1.0</div>
+      <div class="ios-footer">Fated OS &middot; v1.0</div>
     </div>
   </div>
-
   <!-- ================= WECHAT APP (top-level screen) ================= -->
   <div class="topview" id="view-wechatapp">
   <!-- ================= CHATS ================= -->
@@ -608,20 +606,31 @@
   </div>
 
   <!-- ================= SHEET: WORLD BOOKS ================= -->
-  <div class="sheet" id="sheet-worldbooks">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbooks')">‹</div><div class="t">世界书管理</div><div class="big-btn" style="margin:0; padding:8px 16px; font-size:12px;" onclick="openSheet('worldbook-edit')">＋新建</div></div>
-    <div class="sheet-body" style="padding:16px;">
-      <div id="wb-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+  <div class="sheet worldbook-sheet" id="sheet-worldbooks">
+    <div class="sheet-top worldbook-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbooks')">&#8249;</div><div class="t"><span>World Book</span><small>世界书管理</small></div><button type="button" class="wb-new-btn" onclick="openSheet('worldbook-edit')">新建</button></div>
+    <div class="sheet-body worldbook-body">
+      <div class="worldbook-rail">
+        <button type="button" class="active">Library<small>资料库</small></button>
+        <button type="button">Rules<small>规则</small></button>
+        <button type="button">Lore<small>世界观</small></button>
+        <button type="button">Persona<small>人设</small></button>
+      </div>
+      <div class="worldbook-content">
+        <div class="worldbook-heading">
+          <div><b>Entries</b><small>词条会被绑定到联系人或群聊后注入聊天</small></div>
+          <span id="wb-count">0</span>
+        </div>
+        <div id="wb-list" class="worldbook-list"></div>
+      </div>
     </div>
   </div>
-
   <!-- ================= SHEET: WORLD BOOK EDIT ================= -->
   <div class="sheet" id="sheet-worldbook-edit">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbook-edit')">‹</div><div class="t" id="wbe-title">编辑世界书</div><div style="width:32px;"></div></div>
+    <div class="sheet-top worldbook-edit-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbook-edit')">&#8249;</div><div class="t" id="wbe-title">编辑世界书</div><div style="width:32px;"></div></div>
     <div class="sheet-body" style="padding:16px;">
       <input type="hidden" id="wbe-id">
       <div class="field-label" style="margin-top:0;">世界书名称</div>
-      <input class="field-input" id="wbe-name" placeholder="例如：破限">
+      <input class="field-input" id="wbe-name" placeholder="例如：城市、学院、家族、规则">
       <div class="field-label">内容</div>
       <textarea class="field-input" id="wbe-content" style="min-height:200px;" placeholder="输入世界书内容，每行一条设定。
 例如：
@@ -631,7 +640,7 @@
       <div style="margin:10px 0;">
         <div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">导入文件</div>
         <label style="display:flex;gap:8px;align-items:center;padding:10px;border:1px dashed var(--ink-faint);border-radius:10px;cursor:pointer;font-size:12px;color:var(--ink-soft);">
-          <span>📄 导入 TXT / Word 文件</span>
+          <span>导入 TXT / Word 文件</span>
           <input type="file" accept=".txt,.docx,.doc" style="display:none;" onchange="importWorldBookFile(event)">
         </label>
         <div id="wbe-import-status" style="font-size:11px;color:var(--ink-faint);margin-top:4px;"></div>
@@ -759,33 +768,33 @@
 
 <!-- ================= SHEET: CLOUD SYNC ================= -->
 <div class="sheet" id="sheet-cloudsync">
-  <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('cloudsync')">&#8249;</div><div class="t">Cloud Sync</div></div>
+  <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('cloudsync')">&#8249;</div><div class="t">Cloud Sync <small>云端保存</small></div></div>
   <div class="sheet-body cloud-sync-body">
     <div class="cloud-sync-card">
-      <div class="cloud-sync-title">Encrypted Account Save</div>
-      <div class="cloud-sync-sub">Your personas, chats, API settings, plugin images, wallpapers and stickers are encrypted in this browser before upload.</div>
-      <div class="cloud-sync-account">Account: <b id="cloud-current-email">Not signed in</b></div>
-      <div id="cloud-sync-status" class="cloud-sync-status">Sign in or create an account to enable cloud save.</div>
+      <div class="cloud-sync-title">Encrypted Account Save <small>加密账号保存</small></div>
+      <div class="cloud-sync-sub">人设、聊天、API 设置、插件图片、壁纸和贴纸会在本浏览器加密后再上传。</div>
+      <div class="cloud-sync-account">Account 账号：<b id="cloud-current-email">Not signed in 未登录</b></div>
+      <div id="cloud-sync-status" class="cloud-sync-status">登录或创建账号后启用云端保存。</div>
     </div>
     <div class="cloud-sync-card" id="cloud-auth-box">
-      <label class="cloud-sync-label">Email</label>
+      <label class="cloud-sync-label">Email / 邮箱</label>
       <input id="cloud-email" class="cloud-sync-input" type="email" placeholder="you@example.com" autocomplete="email">
-      <label class="cloud-sync-label">Password</label>
-      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="At least 8 characters" autocomplete="current-password">
-      <button id="cloud-login-btn" class="cloud-sync-btn primary" onclick="cloudLogin()">Sign In</button>
-      <button id="cloud-register-btn" class="cloud-sync-btn" onclick="cloudRegister()">Create Account</button>
+      <label class="cloud-sync-label">Password / 密码</label>
+      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="至少 8 位字符" autocomplete="current-password">
+      <button id="cloud-login-btn" class="cloud-sync-btn primary" onclick="cloudLogin()">Sign In / 登录</button>
+      <button id="cloud-register-btn" class="cloud-sync-btn" onclick="cloudRegister()">Create Account / 创建账号</button>
     </div>
     <div class="cloud-sync-card" id="cloud-action-box" style="display:none;">
-      <button id="cloud-upload-btn" class="cloud-sync-btn primary" onclick="cloudUploadNow()">Upload This Device To Cloud</button>
-      <button id="cloud-restore-btn" class="cloud-sync-btn" onclick="cloudRestoreNow()">Restore Cloud Save To This Device</button>
-      <button id="cloud-logout-btn" class="cloud-sync-btn danger" onclick="cloudLogout()">Sign Out</button>
+      <button id="cloud-upload-btn" class="cloud-sync-btn primary" onclick="cloudUploadNow()">Upload / 上传本机数据</button>
+      <button id="cloud-restore-btn" class="cloud-sync-btn" onclick="cloudRestoreNow()">Restore / 恢复云端数据</button>
+      <button id="cloud-logout-btn" class="cloud-sync-btn danger" onclick="cloudLogout()">Sign Out / 退出登录</button>
     </div>
   </div>
 </div>
 
   <!-- ================= SHEET: MODEL API (LLM) ================= -->
   <div class="sheet api-config-sheet" id="sheet-modelcfg">
-            <div class="sheet-top api-config-top"><div class="t">API &#35774;&#32622;</div><button type="button" class="api-back" onclick="closeSheet('modelcfg')">BACK</button></div>
+            <div class="sheet-top api-config-top"><div class="t">API &#35774;&#32622;</div><button type="button" class="api-back" onclick="closeSheet('modelcfg')">&#8249;</button></div>
     <div class="sheet-body api-config-body">
       <div id="cfg-status" class="api-status-line">&#31561;&#24453;&#37197;&#32622;...</div>
 
@@ -864,9 +873,9 @@
 
   <!-- ================= SHEET: TTS VOICE ================= -->
   <div class="sheet" id="sheet-ttscfg">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('ttscfg')">‹</div><div class="t">TTS 语音</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('ttscfg')">&#8249;</div><div class="t">TTS Voice <small>语音接口</small></div></div>
     <div class="sheet-body">
-      <div class="cfg-sec">🎙 TTS / Voice API</div>
+      <div class="cfg-sec">TTS / Voice API <small>角色语音服务</small></div>
       <div class="field-label">TTS / Voice 服务商</div>
       <select class="field-input" id="cfg-tts-provider" onchange="cfgSwitchTTS()">
         <option value="elevenlabs">ElevenLabs</option>
@@ -889,10 +898,10 @@
         <input class="field-input" id="cfg-tts-custom-voice" placeholder="Voice ID / Speaker">
       </div>
 
-      <div class="field-label">Voice ID per Persona</div>
+      <div class="field-label">Voice ID per Persona / ??????? ID</div>
       <div id="cfg-voice-ids"></div>
 
-      <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin:8px 0 4px;">Saved to localStorage · Applied globally</div>
+      <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin:8px 0 4px;">已保存在本机 · 对所有角色生效</div>
     </div>
     <div class="save-foot">
       <div class="big-btn" onclick="cfgSaveAll()">保存并应用 (Save &amp; Apply)</div>
@@ -901,9 +910,9 @@
 
   <!-- ================= SHEET: FONT & COLOR ================= -->
   <div class="sheet" id="sheet-fontcfg">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('fontcfg')">‹</div><div class="t">字体 &amp; 颜色</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('fontcfg')">&#8249;</div><div class="t">Fonts &amp; Color <small>字体与颜色</small></div></div>
     <div class="sheet-body">
-      <div class="cfg-sec">🔤 字体</div>
+      <div class="cfg-sec">Fonts <small>字体样式</small></div>
       <div class="field-label">字体样式</div>
       <select class="field-input" id="cfg-font-family" onchange="cfgFontPreview()">
         <option value="">系统默认 (System)</option>
@@ -920,12 +929,12 @@
         <div style="font-size:13px;margin-top:6px;font-family:var(--app-font);">这是一段示例文字，用来预览当前字体与颜色效果。</div>
       </div>
 
-      <div class="cfg-sec" style="margin-top:16px;">🎨 字体颜色</div>
+      <div class="cfg-sec" style="margin-top:16px;">Text Color <small>字体颜色</small></div>
       <div class="field-label">字体颜色</div>
       <input type="color" id="cfg-font-color" style="width:100%;height:44px;border:1px solid var(--separator);border-radius:12px;background:#fff;cursor:pointer;" onchange="cfgFontPreview()">
       <div style="font-size:11px;color:var(--ink-faint);margin:6px 2px 0;">全局文字颜色立即生效（气泡、列表、设置等）</div>
 
-      <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin:14px 0 4px;">Saved to localStorage · 立即生效</div>
+      <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin:14px 0 4px;">已保存在本机 · 立即生效</div>
     </div>
     <div class="save-foot">
       <div class="big-btn" onclick="cfgSaveFont()">保存并应用 (Save &amp; Apply)</div>

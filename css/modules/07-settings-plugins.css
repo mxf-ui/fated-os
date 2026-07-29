@@ -1,5 +1,5 @@
 /* ---------- settings + plugin library + icon customize ---------- */
-.settings-scroll{ flex:1; padding:56px 0 0; overflow-y:auto; background:#F2F2F7; }
+.settings-scroll{ flex:1; padding:78px 14px 28px; overflow-y:auto; background:radial-gradient(ellipse at 78% 2%,rgba(99,214,211,.24),transparent 32%),radial-gradient(ellipse at 8% 16%,rgba(108,197,255,.16),transparent 34%),linear-gradient(152deg,#f8fcff 0%,#edf9fb 44%,#e9fbf2 100%); }
 .sheet-hint{ font-size:11px; color:var(--ink-soft); font-weight:500; margin-bottom:14px; line-height:1.6; }
 .icon-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 .icon-cell{ display:flex; flex-direction:column; align-items:center; gap:8px; }
@@ -176,3 +176,69 @@
 .cloud-sync-btn.primary{ border-color:#111; background:#111; color:#fff; }
 .cloud-sync-btn.danger{ border-color:rgba(255,59,48,.18); background:rgba(255,59,48,.08); color:#c62828; }
 .cloud-sync-btn:disabled{ opacity:.55; cursor:wait; }
+
+
+/* ---- Light aqua iOS settings refresh ---- */
+#view-settings{ background:linear-gradient(152deg,#f8fcff 0%,#edf9fb 46%,#e9fbf2 100%); color:#10242c; }
+#view-settings .settings-topbar{ background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(242,252,252,.64)); border-bottom:1px solid rgba(69,183,190,.16); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); box-shadow:0 10px 26px rgba(57,151,168,.07); }
+#view-settings .settings-back{ color:#0f3339; font-size:24px; font-weight:500; }
+#view-settings .settings-title{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; font-family:'Inter',sans-serif; color:#0b2028; letter-spacing:0; }
+#view-settings .settings-title span{ font-size:20px; font-weight:850; line-height:1; }
+#view-settings .settings-title small{ font-size:10px; font-weight:800; color:#3f858d; line-height:1.25; }
+#view-settings .ios-section{ margin:0 0 14px; border:1px solid rgba(72,179,190,.16); border-radius:22px; overflow:hidden; background:rgba(255,255,255,.68); box-shadow:0 12px 28px rgba(56,146,158,.08); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+#view-settings .ios-row{ min-height:58px; padding:13px 15px; gap:12px; background:transparent; border-bottom:1px solid rgba(53,139,150,.10); }
+#view-settings .ios-row:last-child{ border-bottom:0; }
+#view-settings .row-icon{ display:none!important; }
+#view-settings .settings-row-copy{ display:flex; flex-direction:column; justify-content:center; gap:4px; min-width:0; color:#10242c; }
+#view-settings .settings-row-copy b{ font-size:15.5px; font-weight:850; letter-spacing:0; line-height:1.08; color:#10242c; }
+#view-settings .settings-row-copy small{ display:block; font-size:11.5px; font-weight:720; color:#5d818a; line-height:1.35; white-space:normal; }
+#view-settings .row-arrow{ color:#63a7af; font-size:22px; font-weight:400; }
+#view-settings .ios-footer{ color:#6b9299; font-weight:800; text-align:center; padding:8px 0 18px; }
+
+#sheet-cloudsync,#sheet-ttscfg,#sheet-fontcfg,#sheet-icons,#sheet-worldbook-edit{ background:radial-gradient(ellipse at 80% 8%,rgba(107,214,210,.22),transparent 34%),linear-gradient(152deg,#f8fcff 0%,#edf9fb 44%,#e9fbf2 100%); color:#10242c; }
+#sheet-cloudsync .sheet-top,#sheet-ttscfg .sheet-top,#sheet-fontcfg .sheet-top,#sheet-icons .sheet-top,#sheet-worldbook-edit .sheet-top{ background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(241,252,252,.72)); border-bottom:1px solid rgba(69,183,190,.18); box-shadow:0 10px 26px rgba(57,151,168,.07); }
+#sheet-cloudsync .sheet-top .t small,#sheet-ttscfg .sheet-top .t small,#sheet-fontcfg .sheet-top .t small{ display:block; margin-top:2px; font-size:10px; font-weight:800; color:#3f858d; }
+#sheet-cloudsync .back-btn,#sheet-ttscfg .back-btn,#sheet-fontcfg .back-btn,#sheet-icons .back-btn,#sheet-worldbooks .back-btn,#sheet-worldbook-edit .back-btn{ color:#0f3339; font-size:24px; font-weight:500; background:rgba(255,255,255,.58); border-color:rgba(72,179,190,.22); }
+#sheet-cloudsync .cloud-sync-body{ background:transparent; padding:20px 18px 38px; }
+#sheet-cloudsync .cloud-sync-card{ border:1px solid rgba(72,179,190,.16); background:rgba(255,255,255,.68); border-radius:18px; box-shadow:0 12px 28px rgba(56,146,158,.08); }
+#sheet-cloudsync .cloud-sync-title{ color:#10242c; }
+#sheet-cloudsync .cloud-sync-title small{ display:block; margin-top:2px; font-size:11px; color:#4d8992; }
+#sheet-cloudsync .cloud-sync-sub,#sheet-cloudsync .cloud-sync-account,#sheet-cloudsync .cloud-sync-status{ color:#557882; }
+#sheet-cloudsync .cloud-sync-input{ border-color:rgba(69,183,190,.22); background:rgba(255,255,255,.74); color:#143039; }
+#sheet-cloudsync .cloud-sync-input:focus{ border-color:#22b8bd; background:#fff; }
+#sheet-cloudsync .cloud-sync-btn{ border-color:rgba(47,157,169,.26); background:rgba(255,255,255,.66); color:#0f6570; }
+#sheet-cloudsync .cloud-sync-btn.primary{ border-color:rgba(20,169,181,.38); background:linear-gradient(135deg,#38c7dc,#27d69f); color:#fff; box-shadow:0 12px 24px rgba(37,189,178,.22); }
+#sheet-cloudsync .cloud-sync-btn.danger{ border-color:rgba(255,59,48,.18); background:rgba(255,59,48,.08); color:#c62828; }
+#sheet-ttscfg .sheet-body,#sheet-fontcfg .sheet-body,#sheet-worldbook-edit .sheet-body{ background:transparent; }
+#sheet-ttscfg .cfg-sec,#sheet-fontcfg .cfg-sec{ color:#0f6570; background:rgba(255,255,255,.58); border:1px solid rgba(72,179,190,.15); border-radius:14px; }
+#sheet-ttscfg .cfg-sec small,#sheet-fontcfg .cfg-sec small{ display:block; margin-top:2px; font-size:10px; color:#5d818a; }
+#sheet-ttscfg .field-input,#sheet-fontcfg .field-input,#sheet-worldbook-edit .field-input{ border-color:rgba(69,183,190,.22); background:rgba(255,255,255,.76); color:#143039; }
+#sheet-ttscfg .save-foot,#sheet-fontcfg .save-foot{ background:linear-gradient(180deg,rgba(255,255,255,0),rgba(241,252,252,.88)); }
+#sheet-ttscfg .big-btn,#sheet-fontcfg .big-btn,#sheet-worldbook-edit .big-btn{ background:linear-gradient(135deg,#38c7dc,#27d69f); color:#fff; box-shadow:0 12px 24px rgba(37,189,178,.22); }
+
+#sheet-worldbooks.worldbook-sheet{ background:radial-gradient(ellipse at 78% 6%,rgba(107,214,210,.24),transparent 34%),radial-gradient(ellipse at 8% 24%,rgba(118,199,255,.16),transparent 36%),linear-gradient(152deg,#f8fcff 0%,#edf9fb 44%,#e9fbf2 100%); color:#10242c; overflow:hidden; }
+#sheet-worldbooks .worldbook-top{ padding:54px 18px 14px; background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(241,252,252,.72)); border-bottom:1px solid rgba(69,183,190,.18); box-shadow:0 10px 26px rgba(57,151,168,.07); }
+#sheet-worldbooks .worldbook-top .t{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:18px; color:#0b2028; }
+#sheet-worldbooks .worldbook-top .t span{ font-weight:900; }
+#sheet-worldbooks .worldbook-top .t small{ font-size:10px; font-weight:800; color:#3f858d; }
+#sheet-worldbooks .wb-new-btn{ border:1px solid rgba(22,154,165,.28); border-radius:999px; padding:8px 13px; background:rgba(255,255,255,.68); color:#0f6570; font-size:12px; font-weight:900; }
+#sheet-worldbooks .worldbook-body{ display:grid; grid-template-columns:94px 1fr; gap:12px; padding:16px 14px 34px; background:transparent; height:calc(100% - 92px); overflow:hidden; }
+#sheet-worldbooks .worldbook-rail{ display:flex; flex-direction:column; gap:8px; min-width:0; }
+#sheet-worldbooks .worldbook-rail button{ border:1px solid rgba(72,179,190,.14); border-radius:14px; background:rgba(255,255,255,.48); color:#5b7f88; padding:11px 8px; text-align:left; font-size:12px; font-weight:900; }
+#sheet-worldbooks .worldbook-rail button.active{ background:linear-gradient(135deg,rgba(56,199,220,.18),rgba(39,214,159,.18)); border-color:rgba(22,154,165,.30); color:#0f6570; }
+#sheet-worldbooks .worldbook-rail small{ display:block; margin-top:3px; font-size:10px; font-weight:800; color:#6c969d; }
+#sheet-worldbooks .worldbook-content{ min-width:0; display:flex; flex-direction:column; border:1px solid rgba(72,179,190,.16); border-radius:22px; background:rgba(255,255,255,.62); box-shadow:0 12px 28px rgba(56,146,158,.08); overflow:hidden; }
+#sheet-worldbooks .worldbook-heading{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:16px 16px 12px; border-bottom:1px solid rgba(53,139,150,.10); }
+#sheet-worldbooks .worldbook-heading b{ display:block; font-size:20px; font-weight:950; color:#10242c; }
+#sheet-worldbooks .worldbook-heading small{ display:block; margin-top:3px; color:#5d818a; font-size:11px; font-weight:720; line-height:1.35; }
+#sheet-worldbooks #wb-count{ min-width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(49,190,185,.12); color:#0f6570; font-weight:950; }
+#sheet-worldbooks .worldbook-list{ flex:1; overflow:auto; padding:12px; display:flex; flex-direction:column; gap:10px; }
+#sheet-worldbooks .wb-card{ border:1px solid rgba(72,179,190,.16); border-radius:16px; background:rgba(255,255,255,.72); padding:13px; cursor:pointer; box-shadow:0 8px 18px rgba(56,146,158,.06); }
+#sheet-worldbooks .wb-card:active{ transform:scale(.99); }
+#sheet-worldbooks .wb-card-title{ font-size:14px; font-weight:920; color:#10242c; line-height:1.2; }
+#sheet-worldbooks .wb-card-meta{ margin-top:4px; font-size:10.5px; font-weight:850; color:#23929b; text-transform:uppercase; letter-spacing:1px; }
+#sheet-worldbooks .wb-card-preview{ margin-top:8px; color:#5d818a; font-size:12px; font-weight:650; line-height:1.55; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+#sheet-worldbooks .wb-empty{ height:100%; min-height:280px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#6d9299; padding:24px; }
+#sheet-worldbooks .wb-empty b{ font-size:18px; color:#10242c; margin-bottom:6px; }
+#sheet-worldbooks .wb-empty small{ font-size:12px; line-height:1.45; font-weight:720; }
+@media (max-width:420px){ #sheet-worldbooks .worldbook-body{ grid-template-columns:86px 1fr; padding:14px 12px 32px; gap:10px; } #sheet-worldbooks .worldbook-rail button{ padding:10px 7px; font-size:11px; } #sheet-worldbooks .worldbook-heading b{ font-size:18px; } }

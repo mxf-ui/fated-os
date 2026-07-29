@@ -1,10 +1,23 @@
 function renderWorldBooks(){
   var el=document.getElementById('wb-list'); if(!el) return;
-  var ids=Object.keys(worldBooks);
-  if(ids.length===0){ el.innerHTML='<div style="text-align:center;color:#999;padding:40px 0;font-size:14px;">还没有世界书<br>点击右上角新建</div>'; return; }
+  var ids=Object.keys(worldBooks||{});
+  var count=document.getElementById('wb-count');
+  if(count) count.textContent=ids.length;
+  if(ids.length===0){
+    el.innerHTML='<div class="wb-empty"><b>\u6682\u65e0\u4e16\u754c\u4e66</b><small>\u70b9\u51fb\u53f3\u4e0a\u89d2\u65b0\u5efa\uff0c\u7528\u4e8e\u4fdd\u5b58\u4e16\u754c\u89c2\u3001\u89c4\u5219\u3001\u4eba\u8bbe\u548c\u957f\u671f\u8bb0\u5fc6\u3002</small></div>';
+    return;
+  }
   el.innerHTML=ids.map(function(k){
-    var wb=worldBooks[k];
-    return '<div class="ios-row" onclick="openWorldBookEdit(\''+k+'\')" style="flex-direction:column;align-items:flex-start;gap:4px;"><div style="font-weight:700;">'+esc(wb.name)+'</div><div style="font-size:12px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;">'+esc((wb.content||'').slice(0,80))+'</div></div>';
+    var wb=worldBooks[k]||{};
+    var content=wb.content||'';
+    var preview=content.trim()?content.slice(0,120):'\u8fd8\u6ca1\u6709\u5185\u5bb9\uff0c\u70b9\u51fb\u8fdb\u5165\u7f16\u8f91\u3002';
+    var lines=content.split(/\n+/).filter(function(x){return x.trim();}).length;
+    var safeId=String(k).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return '<div class="wb-card" onclick="openWorldBookEdit(\''+safeId+'\')">'
+      + '<div class="wb-card-title">'+esc(wb.name||'\u672a\u547d\u540d')+'</div>'
+      + '<div class="wb-card-meta">WORLD BOOK / '+lines+' \u6761\u8bbe\u5b9a</div>'
+      + '<div class="wb-card-preview">'+esc(preview)+'</div>'
+      + '</div>';
   }).join('');
 }
 function openWorldBookEdit(id){

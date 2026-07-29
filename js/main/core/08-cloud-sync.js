@@ -67,7 +67,7 @@ function cloudRenderAuthState(){
   var emailEl=document.getElementById('cloud-current-email');
   var authBox=document.getElementById('cloud-auth-box');
   var actionBox=document.getElementById('cloud-action-box');
-  if(emailEl) emailEl.textContent=signed ? cloudSyncState.user.email : 'Not signed in';
+  if(emailEl) emailEl.textContent=signed ? cloudSyncState.user.email : 'Not signed in \u672a\u767b\u5f55';
   if(authBox) authBox.style.display=signed && cloudSyncState.key ? 'none' : 'block';
   if(actionBox) actionBox.style.display=signed && cloudSyncState.key ? 'block' : 'none';
   var savedEmail=''; try{ savedEmail=localStorage.getItem('fated_cloud_email')||''; }catch(e){}
@@ -79,34 +79,34 @@ async function cloudSyncInit(){
   try{
     var me=await cloudApi('/api/auth/me');
     cloudApplyUser(me.user, null);
-    cloudSetStatus(cloudSyncState.key ? 'Cloud sync is unlocked.' : 'Signed in. Enter password once to unlock encrypted sync.', '');
+    cloudSetStatus(cloudSyncState.key ? 'Cloud sync is unlocked. / \u4e91\u7aef\u540c\u6b65\u5df2\u89e3\u9501\u3002' : 'Signed in. Enter password once to unlock encrypted sync. / \u5df2\u767b\u5f55\uff0c\u8f93\u5165\u5bc6\u7801\u540e\u89e3\u9501\u52a0\u5bc6\u540c\u6b65\u3002', '');
   }catch(e){
     cloudSyncState.user=null; cloudSyncState.key=null; cloudRenderAuthState();
-    cloudSetStatus(e.data && e.data.setupRequired ? 'Cloud database is not configured yet.' : 'Sign in or create an account to enable cloud save.', e.data && e.data.setupRequired ? 'warn' : '');
+    cloudSetStatus(e.data && e.data.setupRequired ? 'Cloud database is not configured yet. / \u4e91\u7aef\u6570\u636e\u5e93\u5c1a\u672a\u914d\u7f6e\u3002' : 'Sign in or create an account to enable cloud save. / \u767b\u5f55\u6216\u521b\u5efa\u8d26\u53f7\u540e\u542f\u7528\u4e91\u7aef\u4fdd\u5b58\u3002', e.data && e.data.setupRequired ? 'warn' : '');
   }
 }
 async function cloudLogin(){
   var input=cloudReadInputs();
-  if(!input.email || !input.password) return cloudSetStatus('Email and password are required.', 'warn');
+  if(!input.email || !input.password) return cloudSetStatus('Email and password are required. / \u9700\u8981\u586b\u5199\u90ae\u7bb1\u548c\u5bc6\u7801\u3002', 'warn');
   cloudSetBusy(true); cloudSetStatus('Signing in...', '');
   try{
     var data=await cloudApi('/api/auth/login', {method:'POST', body:JSON.stringify(input)});
     var key=await cloudDeriveKey(input.password, data.user.encryptionSalt);
     cloudApplyUser(data.user, key);
-    cloudSetStatus('Signed in. You can upload or restore cloud save now.', 'ok');
+    cloudSetStatus('Signed in. You can upload or restore cloud save now. / \u5df2\u767b\u5f55\uff0c\u73b0\u5728\u53ef\u4ee5\u4e0a\u4f20\u6216\u6062\u590d\u4e91\u7aef\u5b58\u6863\u3002', 'ok');
   }catch(e){ cloudSetStatus(e.message, 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 async function cloudRegister(){
   var input=cloudReadInputs();
-  if(!input.email || !input.password) return cloudSetStatus('Email and password are required.', 'warn');
-  if(input.password.length<8) return cloudSetStatus('Password needs at least 8 characters.', 'warn');
+  if(!input.email || !input.password) return cloudSetStatus('Email and password are required. / \u9700\u8981\u586b\u5199\u90ae\u7bb1\u548c\u5bc6\u7801\u3002', 'warn');
+  if(input.password.length<8) return cloudSetStatus('Password needs at least 8 characters. / \u5bc6\u7801\u81f3\u5c11 8 \u4f4d\u5b57\u7b26\u3002', 'warn');
   cloudSetBusy(true); cloudSetStatus('Creating account...', '');
   try{
     var data=await cloudApi('/api/auth/register', {method:'POST', body:JSON.stringify(input)});
     var key=await cloudDeriveKey(input.password, data.user.encryptionSalt);
     cloudApplyUser(data.user, key);
-    cloudSetStatus('Account created. Upload your current local save to cloud.', 'ok');
+    cloudSetStatus('Account created. Upload your current local save to cloud. / \u8d26\u53f7\u5df2\u521b\u5efa\uff0c\u8bf7\u4e0a\u4f20\u672c\u673a\u6570\u636e\u5230\u4e91\u7aef\u3002', 'ok');
   }catch(e){ cloudSetStatus(e.message, 'warn'); }
   finally{ cloudSetBusy(false); }
 }
@@ -114,7 +114,7 @@ async function cloudLogout(){
   cloudSetBusy(true);
   try{ await cloudApi('/api/auth/logout', {method:'POST', body:'{}'}); }catch(e){}
   cloudSyncState.user=null; cloudSyncState.key=null; cloudRenderAuthState();
-  cloudSetStatus('Signed out. Local data is still on this device.', '');
+  cloudSetStatus('Signed out. Local data is still on this device. / \u5df2\u9000\u51fa\uff0c\u672c\u673a\u6570\u636e\u4ecd\u4fdd\u7559\u5728\u8bbe\u5907\u4e0a\u3002', '');
   cloudSetBusy(false);
 }
 function cloudCollectChats(){
@@ -168,7 +168,7 @@ async function cloudBuildLocalSnapshot(){
   };
 }
 async function cloudRestoreSnapshotPayload(payload){
-  if(!payload || !payload.state) throw new Error('Cloud save is empty or invalid.');
+  if(!payload || !payload.state) throw new Error('Cloud save is empty or invalid. / \u4e91\u7aef\u5b58\u6863\u4e3a\u7a7a\u6216\u65e0\u6548\u3002');
   applyStateSnapshot(payload.state);
   var a=payload.assets||{};
   applyProfileAssets(a.profile); applyMomentsAssets(a.moments); applyContactAssets(a.contacts); applyFontSnapshot(a.font);
@@ -194,28 +194,28 @@ async function cloudRestoreSnapshotPayload(payload){
   renderChatList(); renderThread(); populateViewAs();
 }
 async function cloudUploadNow(){
-  if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first.', 'warn');
-  cloudSetBusy(true); cloudSetStatus('Encrypting local save...', '');
+  if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first. / \u8bf7\u5148\u7528\u5bc6\u7801\u767b\u5f55\u3002', 'warn');
+  cloudSetBusy(true); cloudSetStatus('Encrypting local save... / \u6b63\u5728\u52a0\u5bc6\u672c\u673a\u5b58\u6863\u2026', '');
   try{
     var snapshot=await cloudBuildLocalSnapshot();
     var encrypted=await cloudEncryptSnapshot(snapshot, cloudSyncState.key);
     var data=await cloudApi('/api/sync', {method:'PUT', body:JSON.stringify({ciphertext:encrypted.ciphertext, iv:encrypted.iv, schemaVersion:1, clientUpdatedAt:snapshot.savedAt, meta:{device:navigator.userAgent, appVersion:'fated-os-split'}})});
     cloudSyncState.lastRemote=data.updatedAt;
-    cloudSetStatus('Uploaded encrypted cloud save at '+new Date(data.updatedAt).toLocaleString()+'.', 'ok');
+    cloudSetStatus('Uploaded encrypted cloud save at '+new Date(data.updatedAt).toLocaleString()+' / \u52a0\u5bc6\u4e91\u7aef\u5b58\u6863\u5df2\u4e0a\u4f20\u3002', 'ok');
   }catch(e){ cloudSetStatus(e.message, 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 async function cloudRestoreNow(){
-  if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first.', 'warn');
-  if(!confirm('Restore cloud save to this device? Current local data will be replaced by the cloud snapshot.')) return;
-  cloudSetBusy(true); cloudSetStatus('Downloading cloud save...', '');
+  if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first. / \u8bf7\u5148\u7528\u5bc6\u7801\u767b\u5f55\u3002', 'warn');
+  if(!confirm('Restore cloud save to this device? Current local data will be replaced by the cloud snapshot. / \u786e\u5b9a\u6062\u590d\u4e91\u7aef\u5b58\u6863\u5230\u672c\u8bbe\u5907\u5417\uff1f\u5f53\u524d\u672c\u673a\u6570\u636e\u4f1a\u88ab\u4e91\u7aef\u5feb\u7167\u66ff\u6362\u3002')) return;
+  cloudSetBusy(true); cloudSetStatus('Downloading cloud save... / \u6b63\u5728\u4e0b\u8f7d\u4e91\u7aef\u5b58\u6863\u2026', '');
   try{
     var data=await cloudApi('/api/sync');
-    if(!data.snapshot) throw new Error('No cloud save found. Upload once from your main device first.');
-    cloudSetStatus('Decrypting cloud save...', '');
+    if(!data.snapshot) throw new Error('No cloud save found. Upload once from your main device first. / \u6ca1\u6709\u627e\u5230\u4e91\u7aef\u5b58\u6863\uff0c\u8bf7\u5148\u5728\u4e3b\u8bbe\u5907\u4e0a\u4f20\u4e00\u6b21\u3002');
+    cloudSetStatus('Decrypting cloud save... / \u6b63\u5728\u89e3\u5bc6\u4e91\u7aef\u5b58\u6863\u2026', '');
     var payload=await cloudDecryptSnapshot(data.snapshot, cloudSyncState.key);
     await cloudRestoreSnapshotPayload(payload);
-    cloudSetStatus('Cloud save restored. Local data has been refreshed.', 'ok');
-  }catch(e){ cloudSetStatus(e.message || 'Restore failed', 'warn'); }
+    cloudSetStatus('Cloud save restored. Local data has been refreshed. / \u4e91\u7aef\u5b58\u6863\u5df2\u6062\u590d\uff0c\u672c\u673a\u6570\u636e\u5df2\u5237\u65b0\u3002', 'ok');
+  }catch(e){ cloudSetStatus(e.message || 'Restore failed / \u6062\u590d\u5931\u8d25', 'warn'); }
   finally{ cloudSetBusy(false); }
 }

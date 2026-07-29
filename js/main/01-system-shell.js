@@ -13,11 +13,12 @@ function goToScreen(id){
 function updatePasscodeSettingsUI(){
   const statusText = document.getElementById('passcode-status-text');
   const removeRow = document.getElementById('passcode-remove-row');
+  if(!statusText || !removeRow) return;
   if(userPasscode){
-    statusText.textContent = '修改锁屏密码';
+    statusText.innerHTML = '<b>Change Passcode</b><small>修改密码 / 更新锁屏保护</small>';
     removeRow.style.display = 'flex';
   } else {
-    statusText.textContent = '设置锁屏密码';
+    statusText.innerHTML = '<b>Passcode</b><small>密码 / 解锁保护</small>';
     removeRow.style.display = 'none';
   }
 }
