@@ -1,0 +1,14 @@
+:root{
+  --app-text-color:#1a1a1a;          /* 字体颜色（设置里可调） */
+  --app-font:'Inter','Nunito',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+  --ink:var(--app-text-color); --ink-soft:#666; --ink-faint:#999;
+  --plum:#555; --plum-deep:#333; --plum-tint:rgba(0,0,0,0.05);
+  --glass:rgba(255,255,255,0.25); --glass-strong:rgba(255,255,255,0.4); --glass-border:rgba(255,255,255,0.5);
+  --bubble-mine:rgba(26,26,26,0.85);
+  --coral:#1a1a1a; --ios-blue:#1a1a1a; --ios-green:#1a1a1a;
+  --section-bg:rgba(255,255,255,0.25);
+  --separator:rgba(0,0,0,0.06);
+  --bg:#f0f0f5;
+  --glass-blur:blur(28px) saturate(180%);
+  --glass-blur-strong:blur(40px) saturate(200%);
+}

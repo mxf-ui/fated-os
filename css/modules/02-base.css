@@ -1,0 +1,25 @@
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none;}
+/* 表单元素必须允许选中/粘贴，否则在 Edge/Chromium 下无法把 API Key 粘进输入框 */
+input,textarea,select, [contenteditable="true"]{ -webkit-user-select:text; user-select:text; }
+html,body{ margin:0; height:100%; height:100dvh; background:#F2F2F7; font-family:var(--app-font); color:var(--ink);
+  display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.stage-note{ display:none; }
+
+.phone{ position:relative; width:100vw; height:100vh; height:100dvh; border-radius:0; padding:0; background:#F2F2F7; overflow:hidden; }
+.screen{ position:relative; width:100%; height:100%; border-radius:0; overflow:hidden; background:#F2F2F7; }
+/* ===== 手机端全屏适配（iOS / Android）—— 键盘弹出时容器随可视区域自然缩小，避免底部留白 ===== */
+@supports (height:100dvh){ :root{ --app-h:100dvh; } }
+@supports (height:100svh){ :root{ --app-h:100svh; } }
+@media (max-width:480px){
+  html,body{ position:relative; min-height:100%; min-height:100svh; margin:0; padding:0;
+    background:#F2F2F7; overflow:hidden; overscroll-behavior:none; -webkit-text-size-adjust:100%;
+    display:block; align-items:initial; justify-content:initial; }
+  .stage-note{ display:none; }
+  .phone{ position:relative; width:100vw; height:100vh; height:100svh; min-height:100vh; min-height:100svh; border-radius:0; padding:0; box-shadow:none; background:#F2F2F7; overflow:hidden; }
+  .screen{ position:relative; width:100%; height:100%; border-radius:0; overflow:hidden; }
+  .notch{ display:none; }
+  .music-menu{ min-width:60vw; }
+}
+.notch{ display:none; }
+.statusbar{ position:absolute; top:0; left:0; right:0; z-index:200; display:flex; align-items:center; justify-content:space-between; padding:10px 28px 4px; font-size:12px; font-weight:600; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.4); pointer-events:none; letter-spacing:-0.2px; }
+

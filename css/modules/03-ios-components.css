@@ -1,0 +1,39 @@
+/* ---- iOS-style toggle ---- */
+.ios-toggle{ width:51px; height:31px; border-radius:16px; background:#e9e9ea; cursor:pointer; position:relative; transition:background .3s; flex:none; }
+.ios-toggle.on{ background:var(--ios-green); }
+.ios-toggle::after{ content:''; position:absolute; top:2px; left:2px; width:27px; height:27px; border-radius:50%; background:#fff; transition:left .3s cubic-bezier(.4,0,.2,1); box-shadow:0 2px 4px rgba(0,0,0,0.15),0 0 0 0.5px rgba(0,0,0,0.04); }
+.ios-toggle.on::after{ left:22px; }
+
+/* ---- iOS-style list section ---- */
+.ios-section{ margin:16px 16px 0; border-radius:14px; overflow:hidden; background:var(--section-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
+.ios-section .ios-row{ display:flex; align-items:center; gap:12px; padding:12px 16px; font-size:15px; cursor:pointer; border-bottom:0.5px solid var(--separator); }
+.ios-section .ios-row:last-child{ border-bottom:none; }
+.ios-section .ios-row .row-icon{ width:30px; height:30px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:16px; flex:none; }
+.ios-section .ios-row .row-label{ flex:1; font-weight:500; }
+.ios-section .ios-row .row-value{ font-size:15px; color:var(--ink-faint); }
+.ios-section .ios-row .row-arrow{ color:var(--ink-faint); font-size:14px; }
+.ios-section .ios-footer{ padding:6px 16px 12px; font-size:11px; color:var(--ink-faint); line-height:1.4; }
+
+/* ---- iOS-style glass panel ---- */
+.ios-panel{ background:var(--glass-strong); backdrop-filter:blur(24px) saturate(180%); -webkit-backdrop-filter:blur(24px) saturate(180%); border:1px solid var(--glass-border); border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.04); }
+
+/* ---- improved glass ---- */
+.glass{ background:var(--glass); backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur); border:1px solid var(--glass-border); border-radius:16px; }
+.glass-strong{ background:var(--glass-strong); backdrop-filter:var(--glass-blur-strong); -webkit-backdrop-filter:var(--glass-blur-strong); border:1px solid var(--glass-border); border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.06); }
+
+/* Water glass bubble (WeChat) */
+.bubble{ border-radius:18px; padding:12px 16px; font-size:14px; line-height:1.5; max-width:75%; word-break:break-word; }
+.bubble.mine{ background:rgba(26,26,26,0.82); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:18px 18px 4px 18px; }
+.bubble.theirs{ background:rgba(255,255,255,0.45); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); color:var(--ink); border:1px solid rgba(255,255,255,0.6); border-radius:18px 18px 18px 4px; }
+.bubble.typing-bubble{ padding:14px 18px; }
+
+/* Back button - frosted glass circle */
+.back-btn{ width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--ink);cursor:pointer;background:rgba(255,255,255,0.3);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5); }
+.icobtn{ width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;font-weight:700;background:rgba(255,255,255,0.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.4); }
+
+/* iOS section - frosted glass */
+.ios-section{ margin:8px 16px; border-radius:14px; overflow:hidden; background:rgba(255,255,255,0.3); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.5); }
+
+.glass{ background:var(--glass); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border:1px solid var(--glass-border); }
+.glass-strong{ background:var(--glass-strong); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border:1px solid var(--glass-border); box-shadow:0 8px 20px rgba(120,80,95,.08); }
+
