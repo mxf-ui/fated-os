@@ -1,4 +1,4 @@
-﻿import { readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
@@ -56,4 +56,19 @@ assert(persistence.includes('function loadStateAssetsFromDB'), 'Expected Indexed
 assert(init.includes('loadStateBackupFromDB'), 'Expected initApp() to load IndexedDB core backup.');
 assert(init.includes('loadStateAssetsFromDB'), 'Expected initApp() to load IndexedDB asset data.');
 
+assert(/var\s+persistenceBooting\s*=\s*true/.test(persistence), 'Expected persistenceBooting to start true.');
+assert(/function\s+isPersistenceBooting\s*\(\)/.test(persistence), 'Expected isPersistenceBooting() helper.');
+assert(/function\s+markPersistenceReady\s*\(\)/.test(persistence), 'Expected markPersistenceReady() helper.');
+assert(/isPersistenceBooting\(\)/.test(saveStateBody), 'Expected saveState() to skip writes while boot restore is running.');
+assert(/activePlugins\s*:\s*buildActivePluginsSnapshot\(\)/.test(persistence), 'Expected buildLightState() to persist active plugins.');
+assert(/personaSeq\s*:\s*personaSeq/.test(persistence), 'Expected buildLightState() to persist personaSeq.');
+assert(/function\s+syncPersonaSeqFromContacts\s*\(\)/.test(persistence), 'Expected syncPersonaSeqFromContacts() helper.');
+assert(/syncPersonaSeqFromContacts\(\)/.test(persistence), 'Expected snapshots to recalculate personaSeq after contacts load.');
+
+const shellPath = resolve(root, 'js/main/01-system-shell.js');
+const shell = readFileSync(shellPath, 'utf8');
+assert(/function addPlugin\(type,\s*opts\)/.test(shell), 'Expected addPlugin() to accept startup no-save options.');
+assert(/!opts\.skipSave[\s\S]*saveState\(\)/.test(shell), 'Expected addPlugin() to save only for user actions.');
+assert(/addPlugin\(t,\s*\{skipSave:true\}\)/.test(init), 'Expected startup plugin seed to avoid saving during restore.');
+assert(/seedStartupPlugins\(\)[\s\S]*markPersistenceReady\(\)[\s\S]*saveState\(\)/.test(init), 'Expected initApp() to save only after IndexedDB restore and plugin remount.');
 console.log('Persistence structure verified.');
