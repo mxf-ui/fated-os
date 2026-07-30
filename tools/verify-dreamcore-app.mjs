@@ -133,6 +133,9 @@ if (!css.includes('@keyframes dreamSlotWake')) fail('Dream CSS must include a sa
 });
 
 if (!dream.includes("['S+','S','A','B','C']")) fail('Dream scoring must use the required ranks.');
+if (!css.includes('Dreamcore scroll fix')) fail('Dream sheet must include the scroll fix guard.');
+if (!css.includes('#sheet-dream .dream-body{ flex:1 1 auto; min-height:0;')) fail('Dream setup view must be vertically scrollable.');
+if (!css.includes('#sheet-dream .dream-run-page{ min-height:0; height:100%; overflow-y:auto;')) fail('Dream run view must be vertically scrollable.');
 if (/[\u{1F300}-\u{1FAFF}]/u.test(dream + css)) fail('Dream feature must not contain emoji glyphs.');
 
 if (!process.exitCode) console.log('Dreamcore app verification passed.');
