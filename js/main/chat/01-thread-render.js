@@ -114,7 +114,11 @@ function renderCard(m){
   const av = '<div style="width:54px;height:54px;border-radius:50%;overflow:hidden;background:#eee;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.18);margin:8px auto;">'+uav+'</div>';
   const wallet='<div class="ico ico-wallet"></div>';
   let body='', status='';
-  if(m.cardType==='transfer' || m.cardType==='family'){
+  if(m.cardType==='product'){
+    var img = m.img ? '<div class="product-card-img" style="background-image:url('+m.img+')"></div>' : '<div class="product-card-img empty"></div>';
+    body='<div class="card-row product-card-row">'+img+'<div><div class="card-title">'+esc(m.title||'\u76f4\u64ad\u63a8\u8350')+'</div><div class="card-sub"><b>'+esc(m.name||'\u5546\u54c1')+'</b><br><span class="card-amount">\u00a5'+esc(String(m.price||'0'))+'</span>'+(m.note?(' \u00b7 '+esc(m.note)):'')+'</div></div></div>';
+    status='<div class="card-status '+(m.status==='done'?'done':'wait')+'">'+(m.status==='done'?'\u5df2\u4e0b\u5355':'\u70b9\u5f00\u770b\u76f4\u64ad')+'</div>';
+  } else if(m.cardType==='transfer' || m.cardType==='family'){
     if(m.status==='done'){
       const doneTag = m.cardType==='family' ? ('✓ 已绑定 · ¥'+m.amount+'.00') : '✓ 已领取';
       const title = m.cardType==='family' ? m.title : ('转账 · <span class="card-amount">¥'+m.amount+'.00</span>');

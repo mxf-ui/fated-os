@@ -21,6 +21,8 @@ function goDefault(){
     danmakuCustom: '',
     worldBookBind: '',
     products: [],
+    currentProductId: '',
+    productShareTarget: '',
     orders: 0,
     isLive: false,
     qaQuestions: [],
@@ -40,12 +42,28 @@ function goEnsureStateShape(){
   var d = goDefault();
   Object.keys(d).forEach(function(k){ if(typeof goState[k] === 'undefined') goState[k] = d[k]; });
   if(!Array.isArray(goState.products)) goState.products = [];
+  goEnsureProductIds();
   if(!Array.isArray(goState.qaQuestions)) goState.qaQuestions = [];
   if(!Array.isArray(goState.qaUsedQuestions)) goState.qaUsedQuestions = [];
   if(!Array.isArray(goState.liveEvents)) goState.liveEvents = [];
   if(!Array.isArray(goState.partnerChat)) goState.partnerChat = [];
   if(!Array.isArray(goState.history)) goState.history = [];
   if(!goState.livePartner && goState.qaPartner) goState.livePartner = goState.qaPartner;
+}
+
+function goNewProductId(){
+  return 'prod-' + Date.now().toString(36) + '-' + Math.floor(Math.random()*100000).toString(36);
+}
+function goEnsureProductIds(){
+  if(!goState || !Array.isArray(goState.products)) return;
+  goState.products.forEach(function(p, i){
+    if(!p.id) p.id = 'prod-existing-' + i + '-' + Math.floor(Math.random()*100000).toString(36);
+    if(typeof p.name === 'undefined') p.name = '';
+    if(typeof p.price === 'undefined') p.price = '';
+    if(typeof p.img === 'undefined') p.img = '';
+  });
+  if(goState.currentProductId && !goState.products.some(function(p){ return p.id === goState.currentProductId; })) goState.currentProductId = '';
+  if(!goState.currentProductId && goState.products.length) goState.currentProductId = goState.products[0].id;
 }
 
 function goReadImageFile(file, maxWidth, quality, cb){

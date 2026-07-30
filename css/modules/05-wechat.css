@@ -261,3 +261,8 @@ textarea.field-input{ resize:none; height:90px; line-height:1.5; }
 .slider-row{ margin-top:16px; }
 .slider-row input[type=range]{ width:100%; accent-color:var(--plum-deep); }
 
+
+
+.product-card-row{ align-items:center; }
+.product-card-img{ width:58px; height:58px; border-radius:13px; background-size:cover; background-position:center; background-color:#e8f7ef; flex:none; border:1px solid rgba(38,124,80,.12); }
+.product-card-img.empty{ background:linear-gradient(135deg,#eefbf4,#c8efd7); }

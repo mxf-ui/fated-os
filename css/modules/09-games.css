@@ -560,3 +560,33 @@
   .go-live-control-grid{ grid-template-columns:1fr; }
   .go-type-card .s{ max-width:140px; }
 }
+
+
+.go-product-row.active{ border-color:rgba(43,156,97,.34); background:linear-gradient(180deg,#ffffff,#effbf4); box-shadow:0 8px 22px rgba(34,119,75,.09); }
+.go-product-actions{ display:flex; flex-direction:column; gap:6px; flex:none; width:72px; }
+.go-product-actions .go-btn{ padding:7px 5px; min-height:28px; }
+.go-product-shelf{ display:flex; gap:10px; overflow-x:auto; padding:10px 2px 14px; margin:10px 0 2px; scrollbar-width:none; }
+.go-product-shelf::-webkit-scrollbar{ display:none; }
+.go-product-shelf.empty{ display:block; padding:10px 0; }
+.go-product-shelf-card{ flex:0 0 142px; min-height:172px; border-radius:14px; padding:9px; border:1px solid rgba(41,126,82,.12); background:rgba(255,255,255,.86); box-shadow:0 10px 24px rgba(31,102,65,.1); cursor:pointer; transition:transform .18s, border-color .18s, box-shadow .18s; }
+.go-product-shelf-card.active{ border-color:rgba(33,153,90,.42); box-shadow:0 14px 30px rgba(28,132,78,.16); transform:translateY(-1px); }
+.go-product-shelf-card .pic{ width:100%; aspect-ratio:1/1; border-radius:10px; background-size:cover; background-position:center; margin-bottom:8px; }
+.go-product-shelf-card .meta b{ display:block; color:#17392d; font-size:13px; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.go-product-shelf-card .meta small{ display:block; color:#1f8a5b; font-size:12px; font-weight:800; margin-top:2px; }
+.go-product-shelf-card .talk,.go-product-shelf-card .share{ width:100%; margin-top:7px; height:28px; border-radius:999px; border:1px solid rgba(33,132,82,.16); background:#e9f9f0; color:#176942; font-size:11px; font-weight:800; cursor:pointer; }
+.go-product-shelf-card .share{ background:#fff; color:#49745f; }
+.go-live-product-badge{ position:absolute; right:12px; bottom:16px; z-index:5; max-width:46%; display:flex; align-items:center; gap:8px; padding:8px; border-radius:16px; background:rgba(255,255,255,.9); border:1px solid rgba(255,255,255,.65); box-shadow:0 12px 26px rgba(12,45,30,.18); backdrop-filter:blur(12px); }
+.go-live-product-badge .pic{ width:42px; height:42px; border-radius:10px; background-size:cover; background-position:center; flex:none; }
+.go-live-product-badge small{ display:block; color:#3a8c61; font-size:10px; font-weight:900; line-height:1; }
+.go-live-product-badge b{ display:block; max-width:92px; color:#17392d; font-size:12px; line-height:1.15; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:4px; }
+.go-live-product-badge span{ color:#1f8a5b; font-size:11px; font-weight:900; }
+.go-share-head{ display:flex; align-items:center; gap:10px; padding:10px; margin-bottom:10px; border-radius:14px; background:#fff; border:1px solid rgba(41,126,82,.12); }
+.go-share-head .pic{ width:52px; height:52px; border-radius:12px; background-size:cover; background-position:center; flex:none; }
+.go-share-head b{ display:block; color:#17392d; font-size:14px; }
+.go-share-head small{ display:block; margin-top:3px; color:#6b947f; font-size:11px; line-height:1.35; }
+@media (max-width:390px){
+  .go-product-shelf-card{ flex-basis:132px; }
+  .go-live-product-badge{ max-width:52%; right:8px; bottom:12px; }
+  .go-live-product-badge b{ max-width:78px; }
+  .go-product-actions{ width:66px; }
+}

@@ -13,6 +13,7 @@ function goStartLive(){
   s.liveStartTime = Date.now();
   goLiveSeconds = 0;
   s.orders = 0;
+  if(s.liveType === 'ecommerce') goEnsureProductIds();
   s.asmrProgress = 0;
   s.qaCurrent = 0;
   s.qaQuestions = [];
@@ -89,6 +90,7 @@ function goRenderLive(){
     '<div class="go-live-type-badge">'+typeName+'</div>'+
     '<div class="go-live-viewers"><span id="go-viewer-count">'+Math.floor(Math.random()*200+80)+'</span> \u89c2\u770b</div>'+
     goRenderLivePartnerBadge()+
+    goRenderTalkingProductBadge()+
     '<div class="go-live-overlay">'+avHtml+'<div class="go-live-id">'+esc(s.liveId)+'</div><div class="go-live-api-chip">'+(goApiReady()?'\u5df2\u63a5\u5165':'\u5f85\u914d\u7f6eAPI')+'</div></div>'+
     '<div class="go-danmaku-area" id="go-danmaku-area"></div>'+
     '</div>';
@@ -102,7 +104,8 @@ function goRenderLive(){
     '<div><b>'+((s.qaUsedQuestions && s.qaUsedQuestions.length) || 0)+'</b><small>\u95ee\u7b54\u53bb\u91cd</small></div>'+
     '<div><b>'+(goApiReady()?'ON':'OFF')+'</b><small>\u5168\u5c40API</small></div>'+
     '</div>';
-  c.innerHTML = stage + dashHtml + goRenderLiveControls() + typeHtml;
+  var ecommerceShelf = s.liveType === 'ecommerce' ? goRenderProductShelf() : '';
+  c.innerHTML = stage + ecommerceShelf + dashHtml + goRenderLiveControls() + typeHtml;
   if(s.liveType === 'ecommerce') goUpdateProductDisplay();
   goApplyCamera();
   goStartDanmaku();
