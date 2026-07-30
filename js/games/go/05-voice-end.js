@@ -17,13 +17,27 @@ function goSpeakPartnerText(text, partnerId){
 }
 
 /* ---- Voice Input ---- */
+function goFocusPartnerText(){ var el = document.getElementById('go-partner-text'); if(el){ el.focus(); el.select && el.select(); } }
+function goCanPartnerVoice(){
+  if(!goState.livePartner){ goToast('\u8bf7\u5148\u9009\u62e9 WeChat \u8fde\u9ea6\u597d\u53cb'); return false; }
+  if(!goTtsReady()){ goToast('\u8bf7\u5148\u5728\u8bbe\u7f6e\u91cc\u914d\u7f6e\u8bed\u97f3 API'); goFocusPartnerText(); return false; }
+  return true;
+}
+function goSendPartnerText(){
+  if(!goCanPartnerVoice()) return;
+  var el = document.getElementById('go-partner-text');
+  var text = (el && el.value || '').trim();
+  if(!text){ goToast('\u8bf7\u8f93\u5165\u8981\u548c\u8fde\u9ea6\u597d\u53cb\u8bf4\u7684\u8bdd'); goFocusPartnerText(); return; }
+  if(el) el.value = '';
+  goCompletePartnerVoice(text);
+}
 function goVoiceInput(ctx){
-  if(ctx === 'partner'){
-    if(!goState.livePartner){ goToast('\u8bf7\u5148\u9009\u62e9 WeChat \u8fde\u9ea6\u597d\u53cb'); return; }
-    if(!goTtsReady()){ goToast('\u8bf7\u5148\u5728\u8bbe\u7f6e\u91cc\u914d\u7f6e\u8bed\u97f3 API'); return; }
-  }
+  if(ctx === 'partner' && !goCanPartnerVoice()) return;
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ goToast('\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u8bed\u97f3\u8f93\u5165'); return; }
+  if(!SR){
+    if(ctx === 'partner'){ goToast('\u5f53\u524d\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u8bed\u97f3\u8bc6\u522b\uff0c\u53ef\u4ee5\u8f93\u5165\u6587\u5b57\u8fde\u9ea6'); goFocusPartnerText(); return; }
+    goToast('\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u8bed\u97f3\u8f93\u5165'); return;
+  }
   if(goVoiceRec){ goVoiceRec.stop(); goVoiceRec = null; return; }
   goVoiceRec = new SR();
   goVoiceRec.lang = 'zh-CN';
@@ -31,7 +45,8 @@ function goVoiceInput(ctx){
   goVoiceRec.interimResults = false;
   goVoiceRec.onstart = function(){
     goToast('\u6b63\u5728\u5f55\u97f3... \u518d\u6b21\u70b9\u51fb\u505c\u6b62');
-    var btn = document.getElementById(ctx === 'partner' ? '' : 'go-pitch-btn') || document.getElementById('go-voice-btn');
+    var btnId = ctx === 'partner' ? 'go-partner-voice-btn' : (ctx === 'ecommerce' || ctx === 'product' ? 'go-pitch-btn' : 'go-voice-btn');
+    var btn = document.getElementById(btnId);
     if(btn){ btn.textContent = '\u505c\u6b62\u5f55\u97f3'; btn.style.background = '#c0392b'; }
   };
   goVoiceRec.onresult = function(e){
@@ -45,13 +60,24 @@ function goVoiceInput(ctx){
     else if(ctx === 'asmr' || ctx === 'voice' || ctx === 'beauty') goCompleteVoiceSession(text);
     else if(ctx === 'partner') goCompletePartnerVoice(text);
   };
-  goVoiceRec.onerror = function(){ goVoiceRec = null; goResetVoiceButtons(); goToast('\u8bed\u97f3\u8bc6\u522b\u5931\u8d25'); };
+  goVoiceRec.onerror = function(){
+    goVoiceRec = null;
+    goResetVoiceButtons();
+    if(ctx === 'partner'){ goToast('\u8bed\u97f3\u8bc6\u522b\u5931\u8d25\uff0c\u53ef\u4ee5\u5148\u8f93\u5165\u6587\u5b57\u8ba9\u5bf9\u65b9\u8bed\u97f3\u56de\u590d'); goFocusPartnerText(); return; }
+    goToast('\u8bed\u97f3\u8bc6\u522b\u5931\u8d25');
+  };
   goVoiceRec.onend = function(){ goVoiceRec = null; goResetVoiceButtons(); };
   goVoiceRec.start();
 }
 function goResetVoiceButtons(){
-  var btns = [document.getElementById('go-pitch-btn'), document.getElementById('go-voice-btn')];
-  btns.forEach(function(btn){ if(btn){ btn.textContent = btn.id === 'go-pitch-btn' ? '\u5f00\u59cb\u8bed\u97f3\u8bb2\u89e3' : '\u5f00\u59cb\u8bed\u97f3'; btn.style.background = ''; } });
+  var btns = [document.getElementById('go-pitch-btn'), document.getElementById('go-voice-btn'), document.getElementById('go-partner-voice-btn')];
+  btns.forEach(function(btn){
+    if(!btn) return;
+    if(btn.id === 'go-pitch-btn') btn.textContent = '\u5f00\u59cb\u8bed\u97f3\u8bb2\u89e3';
+    else if(btn.id === 'go-partner-voice-btn') btn.textContent = goState.livePartner ? ('\u8bed\u97f3\u8fde\u9ea6\uff1a' + goContactName(goState.livePartner)) : '\u9009\u62e9\u8fde\u9ea6\u597d\u53cb';
+    else btn.textContent = '\u5f00\u59cb\u8bed\u97f3';
+    btn.style.background = '';
+  });
 }
 function goCompletePartnerVoice(userText){
   var pid = goState.livePartner;

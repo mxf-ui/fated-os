@@ -552,6 +552,10 @@
 .go-partner-msg p{ margin:0; color:#17392d; font-size:13px; line-height:1.45; }
 .go-game-icon{ color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; }
 .go-game-icon span{ color:#fff; }
+.go-voice-status{ margin-top:10px; display:inline-flex; align-items:center; padding:5px 9px; border-radius:999px; background:rgba(225,249,236,.9); color:#23835a; font-size:11px; font-weight:800; }
+.go-partner-compose{ margin-top:10px; display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; }
+.go-partner-input{ min-width:0; height:38px; border:1px solid rgba(35,111,76,.18); border-radius:18px; padding:0 12px; background:rgba(255,255,255,.86); color:#17392d; outline:none; font-size:12px; }
+.go-partner-input:focus{ border-color:rgba(47,184,116,.55); box-shadow:0 0 0 3px rgba(47,184,116,.12); }
 @media (max-width:390px){
   .go-live-control-grid{ grid-template-columns:1fr; }
   .go-type-card .s{ max-width:140px; }

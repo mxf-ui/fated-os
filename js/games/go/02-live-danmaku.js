@@ -58,12 +58,13 @@ function goRenderLiveControls(){
   var camText = goState.cameraOn ? '\u5173\u95ed\u6444\u50cf\u5934' : '\u6253\u5f00\u6444\u50cf\u5934';
   var voiceText = partner ? '\u8bed\u97f3\u8fde\u9ea6\uff1a'+esc(partner.name||'WeChat') : '\u9009\u62e9\u8fde\u9ea6\u597d\u53cb';
   var note = partner ? '<div class="go-live-control-note">'+esc(partner.name||'WeChat')+' \u53ef\u4ee5\u770b\u5230\u4f60\u7684\u76f4\u64ad\u753b\u9762\uff1b\u6253\u5f00\u6444\u50cf\u5934\u540e\u9ed8\u8ba4\u53ef\u89c1\u3002</div>' : '<div class="go-live-control-note">\u6240\u6709\u76f4\u64ad\u7c7b\u578b\u90fd\u53ef\u4ee5\u4ece WeChat \u8054\u7cfb\u4eba\u9009\u62e9\u8fde\u9ea6\u5bf9\u8c61\u3002</div>';
+  var voiceState = typeof goTtsReady === 'function' && goTtsReady() ? '\u8bed\u97f3API\u5df2\u8fde\u63a5' : '\u8bed\u97f3API\u672a\u914d\u7f6e';
   return '<div class="go-card go-live-controls"><div class="go-label">\u76f4\u64ad\u5de5\u5177</div><div class="go-live-control-grid">'+
     '<button class="go-btn sm ghost" onclick="goPickBackground()">\u4e0a\u4f20\u80cc\u666f</button>'+
     '<button class="go-btn sm ghost" onclick="goOpenPartnerModal()">\u8fde\u9ea6\u597d\u53cb</button>'+
     '<button class="go-btn sm ghost" onclick="goToggleCamera()">'+camText+'</button>'+
-    '<button class="go-btn sm primary" onclick="goVoiceInput(\'partner\')">'+voiceText+'</button>'+
-    '</div>'+note+'<div id="go-partner-chat" class="go-partner-chat">'+goRenderPartnerChat()+'</div></div>';
+    '<button id="go-partner-voice-btn" class="go-btn sm primary" onclick="goVoiceInput(\'partner\')">'+voiceText+'</button>'+
+    '</div>'+note+'<div class="go-voice-status">'+voiceState+'</div><div class="go-partner-compose"><input id="go-partner-text" class="go-partner-input" placeholder="\u8bed\u97f3\u8bc6\u522b\u5931\u8d25\u65f6\uff0c\u8f93\u5165\u4f60\u8981\u8bf4\u7684\u8bdd"><button class="go-btn sm primary" onclick="goSendPartnerText()">\u53d1\u9001\u5e76\u8bed\u97f3\u56de\u590d</button></div><div id="go-partner-chat" class="go-partner-chat">'+goRenderPartnerChat()+'</div></div>';
 }
 function goRenderPartnerChat(){
   var list = Array.isArray(goState.partnerChat) ? goState.partnerChat.slice(-5) : [];

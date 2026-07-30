@@ -119,7 +119,7 @@ function cfgInit(){
   cfgRenderModelOptions();
   cfgRenderVoiceIds();
   cfgRenderMemoryBooks();
-  if(cfgEl('cfg-tts-provider')) cfgSwitchTTS();
+  cfgRenderTTSForm();
   updateCfgStatus();
 }
 function cfgSelectProfile(){
@@ -164,6 +164,7 @@ function cfgDeleteProfile(){
 }
 function cfgSaveAll(){
   cfgReadProfileForm();
+  cfgReadTTSForm();
   Object.keys(contacts).filter(function(k){return !contacts[k].isGroup;}).forEach(function(k){
     var vi=cfgEl('cfg-voice-'+k); if(vi) apiConfig.voiceIds[k]=vi.value;
     var mb=cfgEl('cfg-mem-'+k); if(mb) apiConfig.memoryBooks[k]=mb.value;
@@ -192,11 +193,85 @@ function cfgFetchModels(){
 }
 function cfgSwitchModel(){ cfgSelectProfile(); }
 function cfgSwitchCustomFormat(){ cfgReadProfileForm(); }
+function cfgEnsureTTSShape(){
+  apiConfig.ttsProvider = apiConfig.ttsProvider || 'elevenlabs';
+  apiConfig.tts = apiConfig.tts || {};
+  apiConfig.tts.elevenlabs = apiConfig.tts.elevenlabs || {};
+  apiConfig.tts.minimax = apiConfig.tts.minimax || {};
+  apiConfig.tts.custom = apiConfig.tts.custom || {};
+  if(!apiConfig.tts.elevenlabs.model) apiConfig.tts.elevenlabs.model = 'eleven_multilingual_v2';
+  if(!apiConfig.tts.minimax.model) apiConfig.tts.minimax.model = 'speech-01';
+}
+function cfgInputValue(id){ var el=cfgEl(id); return el ? (el.value || '').trim() : ''; }
+function cfgSetInputValue(id, value){ var el=cfgEl(id); if(el) el.value = value || ''; }
+function cfgReadTTSForm(){
+  cfgEnsureTTSShape();
+  var provider = cfgEl('cfg-tts-provider');
+  if(provider) apiConfig.ttsProvider = provider.value || 'elevenlabs';
+  apiConfig.tts.elevenlabs.key = cfgInputValue('cfg-11l-key');
+  apiConfig.tts.elevenlabs.model = cfgInputValue('cfg-11l-model') || 'eleven_multilingual_v2';
+  apiConfig.tts.minimax.key = cfgInputValue('cfg-mm-key');
+  apiConfig.tts.minimax.groupId = cfgInputValue('cfg-mm-group');
+  apiConfig.tts.minimax.model = cfgInputValue('cfg-mm-model') || 'speech-01';
+  apiConfig.tts.custom.endpoint = cfgInputValue('cfg-tts-custom-endpoint');
+  apiConfig.tts.custom.key = cfgInputValue('cfg-tts-custom-key');
+  apiConfig.tts.custom.voice = cfgInputValue('cfg-tts-custom-voice');
+  return apiConfig.tts;
+}
+function cfgRenderTTSForm(){
+  cfgEnsureTTSShape();
+  var provider = cfgEl('cfg-tts-provider');
+  if(provider) provider.value = apiConfig.ttsProvider || 'elevenlabs';
+  cfgSetInputValue('cfg-11l-key', apiConfig.tts.elevenlabs.key);
+  cfgSetInputValue('cfg-11l-model', apiConfig.tts.elevenlabs.model || 'eleven_multilingual_v2');
+  cfgSetInputValue('cfg-mm-key', apiConfig.tts.minimax.key);
+  cfgSetInputValue('cfg-mm-group', apiConfig.tts.minimax.groupId);
+  cfgSetInputValue('cfg-mm-model', apiConfig.tts.minimax.model || 'speech-01');
+  cfgSetInputValue('cfg-tts-custom-endpoint', apiConfig.tts.custom.endpoint);
+  cfgSetInputValue('cfg-tts-custom-key', apiConfig.tts.custom.key);
+  cfgSetInputValue('cfg-tts-custom-voice', apiConfig.tts.custom.voice);
+  cfgShowTTSProvider();
+}
+function cfgShowTTSProvider(){
+  cfgEnsureTTSShape();
+  var p = apiConfig.ttsProvider || 'elevenlabs';
+  var eleven = cfgEl('cfg-tts-eleven'); if(eleven) eleven.style.display = p === 'elevenlabs' ? 'block' : 'none';
+  var minimax = cfgEl('cfg-tts-minimax'); if(minimax) minimax.style.display = p === 'minimax' ? 'block' : 'none';
+  var custom = cfgEl('cfg-tts-custom'); if(custom) custom.style.display = p === 'custom' ? 'block' : 'none';
+}
 function cfgSwitchTTS(){
-  apiConfig.ttsProvider=document.getElementById('cfg-tts-provider').value;
-  document.getElementById('cfg-tts-eleven').style.display=apiConfig.ttsProvider==='elevenlabs'?'block':'none';
-  document.getElementById('cfg-tts-minimax').style.display=apiConfig.ttsProvider==='minimax'?'block':'none';
-  document.getElementById('cfg-tts-custom').style.display=apiConfig.ttsProvider==='custom'?'block':'none';
+  cfgReadTTSForm();
+  cfgShowTTSProvider();
+  cfgSetText('cfg-tts-test-status', '\u5207\u6362\u5df2\u5e94\u7528\uff0c\u4fdd\u5b58\u540e\u5bf9\u804a\u5929\u548c GO \u76f4\u64ad\u5168\u5c40\u751f\u6548');
+}
+function cfgValidateTTS(){
+  cfgReadTTSForm();
+  var p = apiConfig.ttsProvider, t = apiConfig.tts;
+  if(p === 'elevenlabs' && !t.elevenlabs.key) return {ok:false, msg:'\u8bf7\u586b\u5199 ElevenLabs API Key'};
+  if(p === 'minimax' && (!t.minimax.key || !t.minimax.groupId)) return {ok:false, msg:'\u8bf7\u586b\u5199 MiniMax API Key \u548c Group ID'};
+  if(p === 'custom' && (!t.custom.endpoint || !t.custom.key)) return {ok:false, msg:'\u8bf7\u586b\u5199\u81ea\u5b9a\u4e49 TTS \u5730\u5740\u548c API Key'};
+  return {ok:true, msg:'\u8bed\u97f3\u914d\u7f6e\u53ef\u7528'};
+}
+function cfgGetTTSTestVoice(){
+  var first = Object.keys(apiConfig.voiceIds || {}).find(function(k){ return apiConfig.voiceIds[k]; });
+  return first ? apiConfig.voiceIds[first] : (apiConfig.tts && apiConfig.tts.custom && apiConfig.tts.custom.voice) || '';
+}
+function cfgTestTTS(){
+  var valid = cfgValidateTTS();
+  cfgShowTTSProvider();
+  if(!valid.ok){ cfgSetText('cfg-tts-test-status', valid.msg); showToast(valid.msg, 2200, 'err'); return; }
+  saveState();
+  cfgSetText('cfg-tts-test-status', '\u6b63\u5728\u6d4b\u8bd5\u8bed\u97f3\u8fde\u63a5\uff0c\u8bf7\u542c\u662f\u5426\u64ad\u653e\u6d4b\u8bd5\u97f3\u9891...');
+  showToast('\u6b63\u5728\u6d4b\u8bd5\u8bed\u97f3\u8fde\u63a5', 1400, 'ok');
+  try{
+    if(typeof speakWithTTS !== 'function') throw new Error('TTS player unavailable');
+    speakWithTTS('\u8bed\u97f3\u6d4b\u8bd5\u6210\u529f\u3002GO \u76f4\u64ad\u8fde\u9ea6\u4f1a\u4f7f\u7528\u8fd9\u91cc\u7684\u8bed\u97f3\u914d\u7f6e\u3002', cfgGetTTSTestVoice(), {noFallback:true})
+      .then(function(){ cfgSetText('cfg-tts-test-status', '\u8bed\u97f3 API \u8fde\u63a5\u6210\u529f\uff0c\u5df2\u64ad\u653e\u6d4b\u8bd5\u97f3\u9891\u3002'); showToast('\u8bed\u97f3 API \u8fde\u63a5\u6210\u529f', 1800, 'ok'); })
+      .catch(function(e){ cfgSetText('cfg-tts-test-status', '\u8bed\u97f3 API \u8fde\u63a5\u5931\u8d25\uff1a'+String(e.message||e).substring(0,80)); showToast('\u8bed\u97f3 API \u8fde\u63a5\u5931\u8d25', 2200, 'err'); });
+  }catch(e){
+    cfgSetText('cfg-tts-test-status', '\u8bed\u97f3\u6d4b\u8bd5\u5931\u8d25\uff1a'+String(e.message||e).substring(0,80));
+    showToast('\u8bed\u97f3\u6d4b\u8bd5\u5931\u8d25', 2200, 'err');
+  }
 }
 function cfgToggleCap(el,cap){ apiConfig.capabilities[cap]=el.querySelector('input').checked; el.classList.toggle('picked',apiConfig.capabilities[cap]); }
 function cfgRenderVoiceIds(){

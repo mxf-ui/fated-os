@@ -84,23 +84,30 @@ function speakText(t){
   }catch(e){}
 }
 /* 通过配置的 TTS 服务商（含自定义国内中转站）朗读文本 */
-function speakWithTTS(text, voiceId){
+function speakWithTTS(text, voiceId, opts){
+  opts = opts || {};
   var p=apiConfig.ttsProvider, t=apiConfig.tts;
-  function fallback(){ try{ if('speechSynthesis' in window){ var u=new SpeechSynthesisUtterance(text); u.lang='zh-CN'; speechSynthesis.cancel(); speechSynthesis.speak(u);} }catch(e){} }
+  function fallback(err){
+    if(opts.noFallback) return Promise.reject(err || new Error('TTS request failed'));
+    try{ if('speechSynthesis' in window){ var u=new SpeechSynthesisUtterance(text); u.lang='zh-CN'; speechSynthesis.cancel(); speechSynthesis.speak(u);} }catch(e){}
+    return Promise.resolve(false);
+  }
+  function ensureOk(r){ if(!r || !r.ok) throw new Error('HTTP '+(r ? r.status : 0)); return r; }
   try{
     if(p==='elevenlabs'){
       var vid=voiceId||'21m00Tcm4TlvDq8ikWAM';
-      fetch('https://api.elevenlabs.io/v1/text-to-speech/'+encodeURIComponent(vid), {method:'POST', headers:{'Content-Type':'application/json','xi-api-key':t.elevenlabs.key}, body:JSON.stringify({text:text, model_id:t.elevenlabs.model||'eleven_multilingual_v2'})})
-        .then(function(r){ return r.blob(); }).then(function(b){ playAudioBlob(b); }).catch(fallback);
+      return fetch('https://api.elevenlabs.io/v1/text-to-speech/'+encodeURIComponent(vid), {method:'POST', headers:{'Content-Type':'application/json','xi-api-key':t.elevenlabs.key}, body:JSON.stringify({text:text, model_id:t.elevenlabs.model||'eleven_multilingual_v2'})})
+        .then(ensureOk).then(function(r){ return r.blob(); }).then(function(b){ playAudioBlob(b); return true; }).catch(fallback);
     } else if(p==='minimax'){
       var url='https://api.minimax.chat/v1/t2a_v2?GroupId='+encodeURIComponent(t.minimax.groupId);
-      fetch(url, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+t.minimax.key}, body:JSON.stringify({model:t.minimax.model||'speech-01', text:text, voice_setting:{voice_id:(voiceId||'female-qn-qingse'), speed:1, vol:1, pitch:0}})})
-        .then(function(r){return r.json();}).then(function(d){ var b64=d&&d.data&&d.data.audio; if(b64){ var bin=atob(b64); var arr=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); playAudioBlob(new Blob([arr],{type:'audio/mp3'})); } else fallback(); }).catch(fallback);
+      return fetch(url, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+t.minimax.key}, body:JSON.stringify({model:t.minimax.model||'speech-01', text:text, voice_setting:{voice_id:(voiceId||'female-qn-qingse'), speed:1, vol:1, pitch:0}})})
+        .then(ensureOk).then(function(r){return r.json();}).then(function(d){ var b64=d&&d.data&&d.data.audio; if(!b64) throw new Error((d && d.msg) || 'No audio returned'); var bin=atob(b64); var arr=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); playAudioBlob(new Blob([arr],{type:'audio/mp3'})); return true; }).catch(fallback);
     } else if(p==='custom'){
-      fetch(t.custom.endpoint, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+t.custom.key}, body:JSON.stringify({text:text, voice:(t.custom.voice||voiceId||''), model:''})})
-        .then(function(r){ var ct=r.headers.get('content-type')||''; if(ct.indexOf('audio')>-1){ return r.blob().then(playAudioBlob); } return r.json().then(function(d){ var b64=d&&(d.audio||(d.data&&d.data.audio)||d.data); if(b64){ if(typeof b64==='string'&&b64.indexOf(',')>-1) b64=b64.split(',')[1]; var bin=atob(b64); var arr=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); playAudioBlob(new Blob([arr],{type:'audio/mpeg'})); } else fallback(); }); }).catch(fallback);
-    } else fallback();
-  }catch(e){ fallback(); }
+      return fetch(t.custom.endpoint, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+t.custom.key}, body:JSON.stringify({text:text, voice:(t.custom.voice||voiceId||''), model:''})})
+        .then(ensureOk).then(function(r){ var ct=r.headers.get('content-type')||''; if(ct.indexOf('audio')>-1){ return r.blob().then(function(b){ playAudioBlob(b); return true; }); } return r.json().then(function(d){ var b64=d&&(d.audio||(d.data&&d.data.audio)||d.data); if(!b64) throw new Error((d && d.error) || 'No audio returned'); if(typeof b64==='string'&&b64.indexOf(',')>-1) b64=b64.split(',')[1]; var bin=atob(b64); var arr=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); playAudioBlob(new Blob([arr],{type:'audio/mpeg'})); return true; }); }).catch(fallback);
+    }
+    return fallback(new Error('No TTS provider selected'));
+  }catch(e){ return fallback(e); }
 }
 function startRecord(){
   if(isRecording){ stopRecord(); return; }
