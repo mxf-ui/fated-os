@@ -671,6 +671,28 @@ function dreamGenerateScene(){
     saveState();
   });
 }
+
+function dreamMaybeAutoSceneImage(scene, run){
+  if(!run || typeof imageGenGenerate !== 'function' || !imageGenReady()) return;
+  if(run.imageGenBusy) return;
+  run.imageGenBusy = true;
+  saveState();
+  imageGenGenerate({source:'dream', text:scene, world:(run.worldConfig && run.worldConfig.background) || run.world || '', role:'mysterious narrative dungeon scene', size:'landscape'}, function(res){
+    if(!dreamState.run || dreamState.run.id !== run.id) return;
+    run.imageGenBusy = false;
+    if(res && res.url){
+      run.sceneImage = res.url;
+      var slot = dreamSlot();
+      if(slot) slot.sceneImage = res.url;
+      saveState();
+      dreamRenderRun();
+      dreamRenderSetup();
+      return;
+    }
+    saveState();
+  });
+}
+
 function dreamParseScene(text, includeCards, run){
   var out = {scene:'', objective:'', cards:[]};
   var lines = String(text || '').split(/\n+/).map(dreamCleanText).filter(Boolean);

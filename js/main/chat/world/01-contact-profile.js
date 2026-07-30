@@ -20,6 +20,7 @@ function openContactProfile(){
   document.getElementById('cp-memory-threshold').value=mem.threshold||20;
   document.getElementById('cp-memory-summary').textContent=mem.summary||'(暂无记忆)';
   var proTog=document.getElementById('cp-proactive-toggle'); proTog.classList.toggle('on', c.proactive!==false);
+  var imgTog=document.getElementById('cp-imagegen-toggle'); if(imgTog) imgTog.classList.toggle('on', c.imageGenEnabled===true);
   document.getElementById('cp-block-btn').textContent=c.blocked?'取消拉黑':'拉黑';
   openSheet('contact-profile');
 }
@@ -38,6 +39,7 @@ function saveContactProfile(){
   c.memory.enabled=document.getElementById('cp-memory-toggle').classList.contains('on');
   c.memory.threshold=parseInt(document.getElementById('cp-memory-threshold').value,10)||20;
   c.proactive=document.getElementById('cp-proactive-toggle').classList.contains('on');
+  var imgTog=document.getElementById('cp-imagegen-toggle'); c.imageGenEnabled=!!(imgTog && imgTog.classList.contains('on'));
   renderChatList(); renderThread(); saveState(); saveChatThread(id); closeSheet('contact-profile'); showToast('已保存',1200);
 }
 function clearCurrentChatFromProfile(){

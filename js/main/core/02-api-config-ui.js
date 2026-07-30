@@ -120,6 +120,7 @@ function cfgInit(){
   cfgRenderVoiceIds();
   cfgRenderMemoryBooks();
   cfgRenderTTSForm();
+  cfgRenderImageGenForm();
   updateCfgStatus();
 }
 function cfgSelectProfile(){
@@ -165,6 +166,7 @@ function cfgDeleteProfile(){
 function cfgSaveAll(){
   cfgReadProfileForm();
   cfgReadTTSForm();
+  cfgReadImageGenForm();
   Object.keys(contacts).filter(function(k){return !contacts[k].isGroup;}).forEach(function(k){
     var vi=cfgEl('cfg-voice-'+k); if(vi) apiConfig.voiceIds[k]=vi.value;
     var mb=cfgEl('cfg-mem-'+k); if(mb) apiConfig.memoryBooks[k]=mb.value;
@@ -273,6 +275,84 @@ function cfgTestTTS(){
     showToast('\u8bed\u97f3\u6d4b\u8bd5\u5931\u8d25', 2200, 'err');
   }
 }
+
+function cfgEnsureImageGenShape(){
+  if(typeof imageGenEnsureConfig === 'function') return imageGenEnsureConfig();
+  apiConfig.imageGen = apiConfig.imageGen || {};
+  var c = apiConfig.imageGen;
+  if(typeof c.enabled !== 'boolean') c.enabled = false;
+  if(!c.provider) c.provider = 'pollinations';
+  if(!c.endpoint) c.endpoint = c.provider === 'pollinations' ? 'https://image.pollinations.ai' : '';
+  if(c.key === undefined) c.key = '';
+  if(!c.model) c.model = c.provider === 'pollinations' ? 'flux' : 'gpt-image-1';
+  if(!c.size) c.size = 'portrait';
+  if(!c.style) c.style = 'cinematic mobile illustration, soft green light, delicate details, clean composition, no text in image';
+  if(c.negative === undefined) c.negative = 'low quality, blurry, watermark, extra text, distorted hands';
+  if(c.lastPreview === undefined) c.lastPreview = '';
+  return c;
+}
+function cfgReadImageGenForm(){
+  var c = cfgEnsureImageGenShape();
+  var enabled = cfgEl('cfg-image-enabled');
+  var provider = cfgEl('cfg-image-provider');
+  c.enabled = !!(enabled && enabled.classList.contains('on'));
+  c.provider = provider ? (provider.value || 'pollinations') : c.provider;
+  c.endpoint = cfgInputValue('cfg-image-endpoint') || (c.provider === 'pollinations' ? 'https://image.pollinations.ai' : '');
+  c.key = cfgInputValue('cfg-image-key');
+  c.model = cfgInputValue('cfg-image-model') || (c.provider === 'pollinations' ? 'flux' : 'gpt-image-1');
+  c.style = cfgInputValue('cfg-image-style');
+  c.negative = cfgInputValue('cfg-image-negative');
+  var size = cfgEl('cfg-image-size');
+  c.size = size ? (size.value || 'portrait') : c.size;
+  return c;
+}
+function cfgRenderImageGenForm(){
+  var c = cfgEnsureImageGenShape();
+  var enabled = cfgEl('cfg-image-enabled'); if(enabled) enabled.classList.toggle('on', c.enabled === true);
+  var provider = cfgEl('cfg-image-provider'); if(provider) provider.value = c.provider || 'pollinations';
+  cfgSetInputValue('cfg-image-endpoint', c.endpoint || '');
+  cfgSetInputValue('cfg-image-key', c.key || '');
+  cfgSetInputValue('cfg-image-model', c.model || '');
+  cfgSetInputValue('cfg-image-style', c.style || '');
+  cfgSetInputValue('cfg-image-negative', c.negative || '');
+  var size = cfgEl('cfg-image-size'); if(size) size.value = c.size || 'portrait';
+  var prev = cfgEl('cfg-image-preview');
+  if(prev && c.lastPreview){ prev.style.display='block'; prev.style.backgroundImage='url('+c.lastPreview+')'; }
+  cfgSwitchImageProvider(false);
+}
+function cfgSwitchImageGen(){
+  var el = cfgEl('cfg-image-enabled'); if(el) el.classList.toggle('on');
+  cfgReadImageGenForm();
+  cfgSetText('cfg-image-test-status', apiConfig.imageGen.enabled ? '\u81ea\u52a8\u751f\u56fe\u5df2\u5f00\u542f\uff0c\u4fdd\u5b58\u540e\u5168\u5c40\u751f\u6548' : '\u81ea\u52a8\u751f\u56fe\u5df2\u5173\u95ed');
+}
+function cfgSwitchImageProvider(showNote){
+  var c = cfgReadImageGenForm();
+  if(c.provider === 'pollinations'){
+    if(!c.endpoint) c.endpoint = 'https://image.pollinations.ai';
+    if(!c.model) c.model = 'flux';
+    cfgSetInputValue('cfg-image-endpoint', c.endpoint);
+    cfgSetInputValue('cfg-image-model', c.model);
+  }
+  if(showNote !== false) cfgSetText('cfg-image-test-status', c.provider === 'pollinations' ? '\u5df2\u5207\u6362 Pollinations\uff0cKey \u53ef\u7559\u7a7a' : '\u5df2\u5207\u6362 OpenAI \u517c\u5bb9\u751f\u56fe\u63a5\u53e3');
+}
+function cfgTestImageGen(){
+  var c = cfgReadImageGenForm();
+  c.enabled = true;
+  var enabled = cfgEl('cfg-image-enabled'); if(enabled) enabled.classList.add('on');
+  if(typeof saveState === 'function') saveState();
+  if(typeof imageGenGenerate !== 'function'){ cfgSetText('cfg-image-test-status', '\u751f\u56fe\u6a21\u5757\u672a\u52a0\u8f7d'); return; }
+  var prompt = cfgInputValue('cfg-image-test-prompt') || '\u6d45\u7eff\u8272 iOS \u98ce\u683c\u865a\u62df\u624b\u673a\u91cc\u7684\u89d2\u8272\u804a\u5929\u63d2\u753b';
+  cfgSetText('cfg-image-test-status', '\u6b63\u5728\u751f\u6210\u6d4b\u8bd5\u56fe...');
+  imageGenGenerate({source:'settings-test', text:prompt, role:'API settings preview', size:c.size || 'portrait'}, function(res){
+    if(!res || !res.url){ cfgSetText('cfg-image-test-status', '\u751f\u56fe\u6d4b\u8bd5\u5931\u8d25\uff0c\u8bf7\u68c0\u67e5 Endpoint / Key / Model'); showToast('\u751f\u56fe\u6d4b\u8bd5\u5931\u8d25', 2200, 'err'); return; }
+    c.lastPreview = res.url;
+    var prev = cfgEl('cfg-image-preview'); if(prev){ prev.style.display='block'; prev.style.backgroundImage='url('+res.url+')'; }
+    if(typeof saveState === 'function') saveState();
+    cfgSetText('cfg-image-test-status', '\u751f\u56fe API \u8fde\u63a5\u6210\u529f\uff0c\u5df2\u4fdd\u5b58\u4e3a\u5168\u5c40\u914d\u7f6e');
+    showToast('\u751f\u56fe API \u8fde\u63a5\u6210\u529f', 1800, 'ok');
+  });
+}
+
 function cfgToggleCap(el,cap){ apiConfig.capabilities[cap]=el.querySelector('input').checked; el.classList.toggle('picked',apiConfig.capabilities[cap]); }
 function cfgRenderVoiceIds(){
   var box=document.getElementById('cfg-voice-ids');

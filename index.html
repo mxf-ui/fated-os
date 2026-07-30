@@ -533,6 +533,14 @@
         </div>
         <div style="padding:0 14px 8px;font-size:12px;color:#888;">关闭后，该联系人不会在空闲时主动给你发消息</div>
       </div>
+      <div class="cfg-sec" style="margin-top:16px;">AUTO IMAGE</div>
+      <div class="ios-section" style="margin:8px 0 0;">
+        <div class="ios-row" style="justify-content:space-between;padding:10px 14px;">
+          <div class="row-label"><b>Auto Image</b><small style="display:block;font-size:11px;color:#8a9c97;margin-top:2px;">&#33258;&#21160;&#37197;&#22270; / &#25353;&#20154;&#35774;&#29983;&#25104;&#32842;&#22825;&#25554;&#30011;</small></div>
+          <div class="ios-toggle" id="cp-imagegen-toggle" onclick="this.classList.toggle('on');"></div>
+        </div>
+        <div style="padding:0 14px 8px;font-size:12px;color:#888;">&#24320;&#21551;&#21518;&#65292;&#36825;&#20010; WeChat &#32852;&#31995;&#20154;&#30340; AI &#22238;&#22797;&#20250;&#25353;&#20154;&#35774;&#21644;&#19990;&#30028;&#20070;&#33258;&#21160;&#29983;&#25104;&#37197;&#22270;&#12290;</div>
+      </div>
       <div style="margin-top:24px;display:flex;gap:10px;">
         <div class="big-btn" style="flex:1;background:#8e8e93;color:#fff;" onclick="toggleBlockContact()" id="cp-block-btn">拉黑</div>
       </div>
@@ -900,6 +908,61 @@
         <div class="api-inline-note">Persona Memory Books</div>
         <div id="cfg-memory-books"></div>
       </div>
+
+
+
+      <div class="api-field-block api-switch-row">
+        <div>
+          <label>Image Gen / &#33258;&#21160;&#29983;&#22270;</label>
+          <p>&#20840;&#23616;&#29983;&#22270;&#24320;&#20851;&#12290;WeChat &#32852;&#31995;&#20154;&#12289;&#21311;&#27969;&#12289;&#38654;&#32455;&#26790;&#26680;&#37117;&#35835;&#21462;&#36825;&#37324;&#30340;&#37197;&#32622;&#12290;</p>
+        </div>
+        <button type="button" id="cfg-image-enabled" class="ios-toggle" onclick="cfgSwitchImageGen()" aria-label="Toggle image generation"></button>
+      </div>
+
+      <div class="api-field-block">
+        <label>&#29983;&#22270;&#26381;&#21153; / IMAGE PROVIDER</label>
+        <select id="cfg-image-provider" class="api-line-input" onchange="cfgSwitchImageProvider()">
+          <option value="pollinations">Pollinations &#20813; Key &#27979;&#35797;</option>
+          <option value="openai">OpenAI &#20860;&#23481;&#29983;&#22270;</option>
+        </select>
+      </div>
+
+      <div class="api-field-block">
+        <label>&#29983;&#22270;&#22320;&#22336; / IMAGE ENDPOINT</label>
+        <input id="cfg-image-endpoint" class="api-line-input" placeholder="https://api.openai.com/v1 &#25110;&#20013;&#36716;&#31449; /v1">
+      </div>
+
+      <div class="api-field-block">
+        <label>&#29983;&#22270;&#23494;&#38053; / IMAGE KEY</label>
+        <input id="cfg-image-key" class="api-line-input" placeholder="sk-... / Pollinations &#21487;&#30041;&#31354;" autocomplete="off">
+      </div>
+
+      <div class="api-field-block">
+        <label>&#29983;&#22270;&#27169;&#22411; / IMAGE MODEL</label>
+        <input id="cfg-image-model" class="api-line-input" placeholder="gpt-image-1 / dall-e-3 / flux">
+      </div>
+
+      <div class="api-field-block">
+        <label>&#30011;&#38754;&#27668;&#36136; / STYLE PROMPT</label>
+        <textarea id="cfg-image-style" class="api-line-input" style="min-height:74px;resize:vertical;line-height:1.55;" placeholder="&#20840;&#23616;&#30011;&#39118;&#65292;&#20250;&#21644;&#20154;&#35774;&#12289;&#19990;&#30028;&#35266;&#12289;&#32842;&#22825;&#20869;&#23481;&#21512;&#24182;&#25104;&#29983;&#22270;&#25552;&#31034;&#35789;"></textarea>
+      </div>
+
+      <div class="api-field-block">
+        <label>&#21453;&#21521;&#25552;&#31034;&#35789; / NEGATIVE</label>
+        <textarea id="cfg-image-negative" class="api-line-input" style="min-height:52px;resize:vertical;line-height:1.55;" placeholder="low quality, watermark, text"></textarea>
+      </div>
+
+      <div class="api-advanced-row">
+        <select id="cfg-image-size" class="api-small-input">
+          <option value="portrait">&#31446;&#22270; 832x1216</option>
+          <option value="square">&#26041;&#22270; 1024x1024</option>
+          <option value="landscape">&#27178;&#22270; 1216x832</option>
+        </select>
+        <input id="cfg-image-test-prompt" class="api-small-input" placeholder="&#27979;&#35797;&#30011;&#38754;&#25552;&#31034;&#35789;">
+      </div>
+      <button type="button" class="api-test-btn" onclick="cfgTestImageGen()">&#27979;&#35797;&#29983;&#22270;&#36830;&#25509; / Test Image</button>
+      <div id="cfg-image-test-status" class="api-inline-note" style="text-align:center;min-height:16px;"></div>
+      <div id="cfg-image-preview" style="display:none;margin:10px 0 16px;height:170px;border-radius:18px;background-size:cover;background-position:center;border:1px solid rgba(31,107,92,.16);box-shadow:0 16px 34px rgba(31,107,92,.1);"></div>
 
       <button type="button" class="api-save-btn" onclick="cfgSaveAll()">&#20445;&#23384;&#37197;&#32622;</button>
       <button type="button" class="api-test-btn" onclick="testAPIConnection()">&#27979;&#35797;&#36830;&#25509;</button>
@@ -1813,6 +1876,7 @@
 <script src="js/main/02-passcode-profile.js"></script>
 <script src="js/main/core/00-api-config-state.js"></script>
 <script src="js/main/core/01-font-config.js"></script>
+<script src="js/main/core/09-image-generation.js"></script>
 <script src="js/main/core/02-api-config-ui.js"></script>
 <script src="js/main/core/03-api-status-test.js"></script>
 <script src="js/main/core/04-indexeddb.js"></script>

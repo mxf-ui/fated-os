@@ -17,7 +17,7 @@ export async function onRequestGet() {
   return new Response(JSON.stringify({
     ok: true,
     service: 'fated-os-proxy',
-    endpoints: ['/api/chat', '/api/models', '/api/search', '/api/transcribe', '/api/auth/register', '/api/auth/login', '/api/auth/me', '/api/sync'],
+    endpoints: ['/api/chat', '/api/models', '/api/image', '/api/search', '/api/transcribe', '/api/auth/register', '/api/auth/login', '/api/auth/me', '/api/sync'],
     time: Date.now()
   }), {
     status: 200,

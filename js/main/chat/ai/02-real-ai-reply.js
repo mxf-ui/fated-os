@@ -43,6 +43,7 @@ function realAISpeak(contact, fromId, customPrompt, groupContext){
         chatTarget.pendingCount = 0;
         renderThread();
         saveChatThread(chatId);
+        if(typeof imageGenMaybeAttachChatIllustration==='function') imageGenMaybeAttachChatIllustration(contact, chatTarget, chatId, id, reply);
         maybeSummarizeAfter(currentContact);
         if(typeof notifyIncoming==='function') notifyIncoming(groupContext || contact, reply);
       });

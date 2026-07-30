@@ -87,6 +87,35 @@ function nilflowPool(){
   ].map(function(u){ return Object.assign({}, u, nilflowPersona(u.id)); });
 }
 function nilflowEsc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+function nilflowMaybeAutoPostImage(post, text){
+  if(!post || post.media || typeof imageGenGenerate !== 'function' || !imageGenReady()) return;
+  imageGenGenerate({source:'nilflow-post', text:text, role:'anonymous social feed illustration', world:'NilFlow anonymous platform, private identity, minimalist social post', size:'landscape'}, function(res){
+    if(!res || !res.url || !nilflowState || !Array.isArray(nilflowState.posts)) return;
+    var target = nilflowState.posts.find(function(p){ return p.id === post.id; });
+    if(!target || target.media) return;
+    target.media = res.url;
+    target.mediaType = 'image/generated';
+    nilflowSave();
+    if(nilflowState.tab === 'home') nilflowRender();
+  });
+}
+function nilflowMaybeAutoChatImage(id, user, userText, reply){
+  if(typeof imageGenGenerate !== 'function' || !imageGenReady()) return;
+  imageGenGenerate({source:'nilflow-chat', text:(userText || '')+' / '+(reply || ''), persona:(user && user.persona) || '', world:(user && user.worldview) || 'anonymous private chat', role:(user && user.id) || 'anonymous user', size:'portrait'}, function(res){
+    if(!res || !res.url || !nilflowState || !nilflowState.chats[id]) return;
+    nilflowState.chats[id].push({from:'them', text:'', media:res.url, mediaType:'image/generated', ts:Date.now()});
+    nilflowSave();
+    if(nilflowState.tab === 'messages' && nilflowActiveChat === id) nilflowRender();
+  });
+}
+function nilflowRenderChatMessage(m){
+  var cls=m.from==='me'?'me':m.from==='system'?'system':'them';
+  var retry=m.failed?'<button class="nilflow-inline-retry" onclick="nilflowRetryReply(\''+nilflowEsc(nilflowActiveChat)+'\')">&#37325;&#35797;</button>':'';
+  var media=m.media?'<div class="nilflow-chat-image"><img src="'+nilflowEsc(m.media)+'" alt=""></div>':'';
+  return '<div class="nilflow-bubble '+cls+'">'+(m.text?nilflowEsc(m.text):'')+media+retry+'</div>';
+}
+
 function nilflowToast(text){
   var n=document.getElementById('nilflow-toast');
   if(!n) return;
@@ -341,7 +370,7 @@ function nilflowRenderChatPanel(){
   var user=nilflowFindUser(nilflowActiveChat)||{id:nilflowActiveChat};
   var msgs=nilflowState.chats[nilflowActiveChat]||[];
   return '<div class="nilflow-chat-panel"><div class="nilflow-chat-head">'+nilflowAvatarHtml(user,'small')+'<div><b>'+nilflowEsc(user.id)+'</b><small>&#21482;&#23637;&#31034;&#24179;&#21488;&#21311;&#21517;ID &#183; &#30001;&#20840;&#23616;API&#39537;&#21160;</small></div><button onclick="nilflowStartVoice(\''+nilflowEsc(user.id)+'\')">&#35821;&#38899;</button></div>'
-    + '<div class="nilflow-chat-log">'+msgs.map(function(m){ var cls=m.from==='me'?'me':m.from==='system'?'system':'them'; var retry=m.failed?'<button class="nilflow-inline-retry" onclick="nilflowRetryReply(\''+nilflowEsc(nilflowActiveChat)+'\')">&#37325;&#35797;</button>':''; return '<div class="nilflow-bubble '+cls+'">'+nilflowEsc(m.text)+retry+'</div>'; }).join('')+'</div>'
+    + '<div class="nilflow-chat-log">'+msgs.map(nilflowRenderChatMessage).join('')+'</div>'
     + nilflowRenderVoicePanel()
     + '<div class="nilflow-chat-input"><input id="nilflow-chat-text" maxlength="300" placeholder="&#36755;&#20837;&#21311;&#21517;&#28040;&#24687;"><button onclick="nilflowSendMessage()">&#21457;&#36865;</button></div></div>';
 }
@@ -385,6 +414,7 @@ function nilflowRetryReply(id){
     if(reply){
       nilflowApplyRelationship(user, lastMe, reply);
       next.push({from:'them', text:reply, ts:Date.now()});
+      nilflowMaybeAutoChatImage(id, user, lastMe, reply);
     }else{
       next.push({from:'system', text:'\u5168\u5c40 API \u8c03\u7528\u5931\u8d25\uff0c\u8bf7\u68c0\u67e5\u8bbe\u7f6e\u91cc\u7684 API \u914d\u7f6e\u540e\u91cd\u8bd5\u3002', ts:Date.now(), failed:true});
     }
@@ -418,7 +448,9 @@ function nilflowCreatePost(){
   var styleEl=document.getElementById('nilflow-post-style');
   var text=textEl?textEl.value.trim():'';
   if(!text){ nilflowToast('\u5148\u5199\u4e00\u70b9\u5185\u5bb9'); return; }
-  nilflowState.posts.unshift({id:nilflowId(), author:nilflowState.profile.id.trim(), avatar:nilflowState.profile.avatar||'', text:text, style:styleEl?styleEl.value:'minimal', likes:0, likedBy:[], comments:0, commentList:[], reposts:0, ts:Date.now(), media:nilflowPostMedia?nilflowPostMedia.data:null, mediaType:nilflowPostMedia?nilflowPostMedia.type:''});
+  var post={id:nilflowId(), author:nilflowState.profile.id.trim(), avatar:nilflowState.profile.avatar||'', text:text, style:styleEl?styleEl.value:'minimal', likes:0, likedBy:[], comments:0, commentList:[], reposts:0, ts:Date.now(), media:nilflowPostMedia?nilflowPostMedia.data:null, mediaType:nilflowPostMedia?nilflowPostMedia.type:''};
+  nilflowState.posts.unshift(post);
+  if(!nilflowPostMedia) nilflowMaybeAutoPostImage(post, text);
   nilflowPostMedia=null;
   nilflowState.tab='home';
   nilflowSave();

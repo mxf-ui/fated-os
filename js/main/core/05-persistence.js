@@ -55,6 +55,7 @@ function buildContactsSnapshot(){
       memory:c.memory||{enabled:true, threshold:20, summary:'', lastMsgCount:0},
       groupUserPrompt:c.groupUserPrompt||'',
       proactive:c.proactive!==false,
+      imageGenEnabled:c.imageGenEnabled===true,
       bio:c.bio||'',
       wxid:c.wxid||'',
       relations:c.relations||[]
@@ -161,6 +162,8 @@ function mergeApiConfig(saved){
     apiConfig.activeProfileId = apiConfig.profiles[0].id;
   }
   if(typeof ensureApiProfiles==='function') ensureApiProfiles();
+  if(typeof cfgEnsureImageGenShape==='function') cfgEnsureImageGenShape();
+  else if(typeof imageGenEnsureConfig==='function') imageGenEnsureConfig();
 }
 function applyContactsSnapshot(list){
   if(!Array.isArray(list)) return;
@@ -180,6 +183,7 @@ function applyContactsSnapshot(list){
     if(contacts[id].persona===undefined) contacts[id].persona=contacts[id].tone||'';
     if(contacts[id].userPrompt===undefined) contacts[id].userPrompt='';
     if(contacts[id].proactive===undefined) contacts[id].proactive=true;
+    if(contacts[id].imageGenEnabled===undefined) contacts[id].imageGenEnabled=false;
     if(contacts[id].bio===undefined) contacts[id].bio='';
     if(contacts[id].cover===undefined) contacts[id].cover='';
     if(contacts[id].wxid===undefined) contacts[id].wxid=id;

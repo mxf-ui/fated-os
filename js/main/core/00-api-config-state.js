@@ -29,6 +29,7 @@ var apiConfig = {
     custom:{name:'默认 OpenAI 兼容',key:'',endpoint:'https://api.openai.com/v1',model:'gpt-4o',apiFormat:'openai',temperature:0.7,stream:false}
   },
   tts:{elevenlabs:{key:'',model:'eleven_multilingual_v2'},minimax:{key:'',groupId:'',model:'speech-01'},custom:{key:'',endpoint:'',voice:''}},
+  imageGen:{enabled:false, provider:'pollinations', endpoint:'https://image.pollinations.ai', key:'', model:'flux', size:'portrait', style:'cinematic mobile illustration, soft green light, delicate details, clean composition, no text in image', negative:'low quality, blurry, watermark, extra text, distorted hands', lastPreview:''},
   voiceIds:{tester1:''},
   memoryBooks:{tester1:''},
   proxyUrl:'http://127.0.0.1:8080',
