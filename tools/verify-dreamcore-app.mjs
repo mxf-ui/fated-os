@@ -88,6 +88,33 @@ if (!dream.includes('function dreamPickSceneImage')) fail('Dream dungeon scenes 
 if (!dream.includes('function dreamSendPlayerMessage')) fail('Dream run chat must allow user messages after contacts enter.');
 if (!dream.includes('slot.wallpaper')) fail('Dream slot wallpaper must be persisted inside dream state.');
 if (!dream.includes('slot.sceneImage')) fail('Dream scene image must be persisted inside dream state.');
+
+[
+  'function dreamApiReady',
+  'function dreamBuildContactMemoryPrompt',
+  'function dreamBuildRelationshipMemoryPrompt',
+  'function dreamBuildRunLogPrompt',
+  'function dreamBuildScriptMurderSystem',
+  'function dreamBuildContactActionPrompt',
+  'function dreamBuildNarratorPrompt',
+  'function dreamAppendDreamMemory',
+  'function dreamMarkApiFailure',
+  "fetch('/api/chat'",
+  'getWorldBookPrompt',
+  'memory.summary',
+  'seed.slice',
+  'worldBooks',
+  'script-murder',
+  'no local fallback',
+  'persona',
+  'userPrompt',
+  'tone'
+].forEach((needle) => {
+  if (!dream.includes(needle)) fail('Dream advanced AI roleplay missing: ' + needle);
+});
+if (dream.includes('\\u4f1a\\u5148\\u7528\\u672c\\u5730\\u4fdd\\u5e95\\u5267\\u60c5\\u542f\\u52a8')) fail('Dream API status must not promise local fallback story.');
+if (/function dreamContactFirstMessage[\\s\\S]*?function dreamGenerateOpeningBrief/.test(dream) && /function dreamContactFirstMessage[\\s\\S]*?function dreamGenerateOpeningBrief/.exec(dream)[0].includes('dreamFallbackContact')) fail('Dream first contact message must not use local fallback persona text.');
+if (/function dreamContactReact[\\s\\S]*?function dreamCompleteRun/.test(dream) && /function dreamContactReact[\\s\\S]*?function dreamCompleteRun/.exec(dream)[0].includes('dreamFallbackContact')) fail('Dream contact reactions must not use local fallback persona text.');
 if (!index.includes('id="dream-file-input"')) fail('Dream sheet needs a hidden file input for wallpapers and scene images.');
 if (!css.includes('.dream-slot-preview')) fail('Dream CSS must render save slot wallpaper previews.');
 if (!css.includes('.dream-scene-image')) fail('Dream CSS must render uploaded dungeon scene images.');

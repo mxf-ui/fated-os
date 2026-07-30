@@ -58,6 +58,8 @@ function dreamEnsureStateShape(){
     if(typeof dreamState.run.awaitingCards !== 'boolean') dreamState.run.awaitingCards = false;
     if(typeof dreamState.run.mainTask !== 'string') dreamState.run.mainTask = dreamState.run.objective || '';
     if(typeof dreamState.run.briefed !== 'boolean') dreamState.run.briefed = false;
+    if(!Array.isArray(dreamState.run.dreamMemories)) dreamState.run.dreamMemories = [];
+    if(!dreamState.run.contactDreamMemory || typeof dreamState.run.contactDreamMemory !== 'object') dreamState.run.contactDreamMemory = {};
   }
   return dreamState;
 }
@@ -251,7 +253,7 @@ function dreamRenderApiStatus(){
   if(!api) return;
   var p = dreamActiveApiProfile();
   var ready = !!(p && p.key && p.endpoint && p.model);
-  api.innerHTML = ready ? '<b>\u5168\u5c40 API \u5df2\u8fde\u63a5</b><small>'+esc(p.name || p.model || '\u5f53\u524d\u6a21\u578b')+'</small>' : '<b>\u5168\u5c40 API \u672a\u914d\u7f6e</b><small>\u4f1a\u5148\u7528\u672c\u5730\u4fdd\u5e95\u5267\u60c5\u542f\u52a8\uff0c\u914d\u597d API \u540e\u751f\u6210\u66f4\u7ec6\u7684\u65c1\u767d</small>';
+  api.innerHTML = ready ? '<b>\u5168\u5c40 API \u5df2\u8fde\u63a5</b><small>'+esc(p.name || p.model || '\u5f53\u524d\u6a21\u578b')+'</small>' : '<b>\u5168\u5c40 API \u672a\u914d\u7f6e</b><small>\u96fe\u7ec7\u68a6\u6838\u9700\u8981\u8bbe\u7f6e\u91cc\u7684 API \u6d4b\u8bd5\u901a\u8fc7\u540e\u624d\u80fd\u5f00\u59cb\u526f\u672c</small>';
   api.classList.toggle('warn', !ready);
 }
 function dreamRenderDocs(){
@@ -301,15 +303,165 @@ function dreamRenderContactList(){
     return '<div class="dream-contact-card'+on+'"><button type="button" class="dream-contact'+on+'" onclick="dreamToggleContactPermission(\''+dreamJSString(id)+'\')">'+dreamAvatar(id)+'<span><b>'+esc(dreamContactName(id))+'</b><small>'+esc(setting.enabled ? '\u5df2\u5141\u8bb8\u8fdb\u5165\u526f\u672c' : '\u672a\u5f00\u542f\u6743\u9650')+'</small></span></button><input class="dream-contact-role" value="'+esc(desc)+'" oninput="dreamUpdateContactRole(\''+dreamJSString(id)+'\',this.value)" placeholder="\u7ed1\u5b9a\u526f\u672c\u8eab\u4efd"></div>';
   }).join('') : '<div class="dream-empty">\u8fd8\u6ca1\u6709\u53ef\u7528\u7684 WeChat \u8054\u7cfb\u4eba</div>';
 }
-function dreamContactProfile(id){
+function dreamContactWorldBookPrompt(id){
+  var c = contacts && contacts[id] ? contacts[id] : {};
+  var parts = [];
+  if(typeof getWorldBookPrompt === 'function'){
+    var bound = getWorldBookPrompt(id);
+    if(bound) parts.push(bound);
+  }
+  var ids = Array.isArray(c.worldBooks) ? c.worldBooks : [];
+  ids.forEach(function(wid){
+    if(typeof worldBooks !== 'undefined' && worldBooks && worldBooks[wid] && worldBooks[wid].content){
+      parts.push('[Bound worldBooks] '+(worldBooks[wid].name || wid)+'\n'+worldBooks[wid].content);
+    }
+  });
+  return parts.join('\n\n').slice(0, 9000);
+}
+function dreamMemoryLine(m, ownerId){
+  if(!m || m.kind === 'typing') return '';
+  var from = m.from || (m.mine ? 'me' : ownerId);
+  var name = from === 'me' ? dreamPlayerName() : dreamContactName(from);
+  var text = m.text || m.note || m.title || m.name || (m.kind ? '['+m.kind+']' : '');
+  if(!text) return '';
+  return name+': '+dreamCleanText(text).slice(0, 180);
+}
+function dreamBuildContactMemoryPrompt(id){
   var c = contacts && contacts[id] ? contacts[id] : {};
   var setting = dreamContactSetting(id);
+  var parts = [
+    '[WeChat contact sync]',
+    'id: '+id,
+    'name: '+dreamContactName(id),
+    'dungeon role: '+(setting.role || 'unset'),
+    'persona: '+(c.persona || c.tone || c.bio || 'unset'),
+    'userPrompt: '+(c.userPrompt || 'unset'),
+    'tone: '+(c.tone || 'unset')
+  ];
+  if(c.memory && c.memory.enabled !== false && c.memory.summary) parts.push('memory.summary: '+c.memory.summary);
+  if(c.relations && c.relations.length) parts.push('relations: '+JSON.stringify(c.relations).slice(0, 1600));
+  var seed = Array.isArray(c.seed) ? c.seed.slice(-30) : [];
+  if(seed.length) parts.push('recent seed.slice(-30):\n'+seed.map(function(m){ return dreamMemoryLine(m, id); }).filter(Boolean).join('\n'));
+  var wb = dreamContactWorldBookPrompt(id);
+  if(wb) parts.push('worldBooks:\n'+wb);
+  return parts.join('\n').slice(0, 12000);
+}
+function dreamBuildRelationshipMemoryPrompt(run){
+  run = run || dreamState.run;
+  var ids = run && Array.isArray(run.contacts) ? run.contacts : [];
+  var parts = ['[Relationship memory between selected WeChat contacts]'];
+  ids.forEach(function(id){
+    var c = contacts && contacts[id] ? contacts[id] : null;
+    if(c && c.relations && c.relations.length) parts.push(dreamContactName(id)+' relations: '+JSON.stringify(c.relations).slice(0, 1000));
+  });
+  Object.keys(contacts || {}).forEach(function(gid){
+    var g = contacts[gid];
+    if(!g || !g.isGroup || !Array.isArray(g.members)) return;
+    var overlap = g.members.filter(function(mid){ return ids.indexOf(mid) >= 0; });
+    if(overlap.length < 2) return;
+    parts.push('group: '+(g.displayName || g.name || gid)+' members: '+overlap.map(dreamContactName).join(', '));
+    if(g.groupUserPrompt) parts.push('groupUserPrompt: '+g.groupUserPrompt);
+    if(g.memory && g.memory.enabled !== false && g.memory.summary) parts.push('memory.summary: '+g.memory.summary);
+    var seed = Array.isArray(g.seed) ? g.seed.slice(-24) : [];
+    if(seed.length) parts.push('group seed.slice(-24):\n'+seed.map(function(m){ return dreamMemoryLine(m, m.from || gid); }).filter(Boolean).join('\n'));
+    if(typeof getWorldBookPrompt === 'function'){
+      var wb = getWorldBookPrompt(gid);
+      if(wb) parts.push('group worldBooks:\n'+wb);
+    }
+  });
+  return parts.join('\n').slice(0, 14000);
+}
+function dreamBuildRunLogPrompt(run){
+  run = run || dreamState.run;
+  if(!run) return '';
+  var lines = (run.messages || []).slice(-24).map(function(m){
+    var who = m.role === 'contact' ? dreamContactName(m.contactId) : (m.role === 'user' ? dreamPlayerName() : m.role);
+    return who+': '+dreamCleanText(m.text || '').slice(0, 240);
+  }).filter(Boolean);
+  var memories = (run.dreamMemories || []).slice(-18).map(function(x){ return (x.speaker || x.role || 'memory')+': '+dreamCleanText(x.text || '').slice(0, 180); });
   return [
-    '\u59d3\u540d: '+dreamContactName(id),
-    '\u526f\u672c\u8eab\u4efd: '+(setting.role || '\u672a\u6307\u5b9a'),
-    '\u539f\u672c\u4eba\u8bbe: '+(c.persona || c.userPrompt || c.tone || c.bio || '\u6682\u65e0'),
-    '\u4e16\u754c\u4e66\u7ea6\u675f: \u5fc5\u987b\u4fdd\u6301\u4ed6\u81ea\u5df1\u672c\u6765\u7684\u4eba\u8bbe\u548c\u5df2\u5199\u5165\u7684\u4e16\u754c\u89c4\u5219'
-  ].join('\n');
+    '[Current dungeon run log]',
+    'objective: '+(run.mainTask || run.objective || ''),
+    'progress: '+(run.progress || 0)+'/'+(run.maxStages || 4),
+    'inventory: '+(run.inventory || []).map(function(x){ return x.name || x.title || x.rank || ''; }).filter(Boolean).join(', '),
+    'usedCards: '+(run.usedCards || []).join(', '),
+    lines.join('\n'),
+    memories.length ? '[Dream run memories]\n'+memories.join('\n') : ''
+  ].filter(Boolean).join('\n').slice(0, 12000);
+}
+function dreamBuildScriptMurderSystem(mode){
+  return [
+    'You are the live engine for Fated OS Dreamcore, a script-murder interactive dungeon. Reply in Chinese unless quoted canon says otherwise.',
+    'Hard canon: uploaded dungeon documents, world book, contact persona, userPrompt, tone, memory.summary, seed.slice chat history, and relationship memory are binding.',
+    'WeChat contacts must feel alive: use their private motives, habits, relationship history, hesitations, jealousy, trust, conflicts, and speaking rhythm. Never write generic template lines.',
+    'NPCs may appear when the uploaded setting allows it. The narrator may control NPCs, clues, rules, scenes, threats, and rewards. Do not overwrite contact identity.',
+    'Give user and WeChat contacts enough time to roleplay and investigate. Do not rush card tasks; cards appear only at meaningful pressure points.',
+    'No emoji. Do not mention AI, model, prompt, system, fallback, or local generation in character.',
+    'no local fallback: if there is not enough canon, ask the scene to reveal uncertainty through clues instead of inventing unrelated setting.',
+    mode ? ('mode: '+mode) : ''
+  ].filter(Boolean).join('\n');
+}
+function dreamBuildContactActionPrompt(id, trigger){
+  var run = dreamState.run;
+  return [
+    dreamBuildWorldPrompt(run),
+    dreamBuildContactMemoryPrompt(id),
+    dreamBuildRelationshipMemoryPrompt(run),
+    dreamBuildRunLogPrompt(run),
+    '[Trigger]',
+    trigger || 'continue',
+    'Write only what '+dreamContactName(id)+' says or does now, 1-3 natural lines. Keep the original persona, relationship memory, tone, and current dungeon fear/desire. The contact may question, hide information, accuse, cooperate, hesitate, or reveal clues according to memory. No narrator voice. No emoji.'
+  ].join('\n\n');
+}
+function dreamBuildNarratorPrompt(includeCards){
+  var run = dreamState.run;
+  var profiles = (run.contacts || []).map(dreamBuildContactMemoryPrompt).join('\n\n---\n\n');
+  var cardFormat = includeCards ? '\nCARD|title|effect|risk\nCARD|title|effect|risk\nCARD|title|effect|risk' : '';
+  var cardRule = includeCards ? 'Generate 2-4 card tasks from the uploaded dungeon template or world rules. They must be concrete actions the players can choose, not generic choices.' : 'Do not generate cards yet. Continue scene pressure and clues while leaving room for user/contact dialogue.';
+  return [
+    dreamBuildWorldPrompt(run),
+    '[Participants]',
+    profiles,
+    dreamBuildRelationshipMemoryPrompt(run),
+    dreamBuildRunLogPrompt(run),
+    '[Narrator rules]',
+    cardRule,
+    'The story is mainly advanced by user and WeChat contacts talking and investigating. NPCs are allowed. The narrator should create scene, clue, danger, motive, and task pressure, but should not speak as selected contacts.',
+    'Strict output format:',
+    'OBJECTIVE|current main objective',
+    'SCENE|immersive narrator scene with identity, clue, task pressure, and enough room for roleplay'+cardFormat,
+    'No emoji.'
+  ].join('\n\n');
+}
+function dreamAppendDreamMemory(run, speakerId, text){
+  if(!run || !text) return;
+  if(!Array.isArray(run.dreamMemories)) run.dreamMemories = [];
+  var speaker = speakerId === 'user' ? dreamPlayerName() : (speakerId === 'narrator' || speakerId === 'system' ? speakerId : dreamContactName(speakerId));
+  run.dreamMemories.push({speaker:speaker, role:speakerId || '', text:dreamCleanText(text).slice(0, 240), at:Date.now()});
+  if(run.dreamMemories.length > 80) run.dreamMemories = run.dreamMemories.slice(-80);
+  if(speakerId && speakerId !== 'user' && speakerId !== 'narrator' && speakerId !== 'system'){
+    if(!run.contactDreamMemory) run.contactDreamMemory = {};
+    if(!Array.isArray(run.contactDreamMemory[speakerId])) run.contactDreamMemory[speakerId] = [];
+    run.contactDreamMemory[speakerId].push({text:dreamCleanText(text).slice(0, 220), at:Date.now()});
+    if(run.contactDreamMemory[speakerId].length > 30) run.contactDreamMemory[speakerId] = run.contactDreamMemory[speakerId].slice(-30);
+  }
+}
+function dreamPushMessage(run, msg){
+  if(!run || !msg) return;
+  run.messages.push(msg);
+  dreamAppendDreamMemory(run, msg.role === 'contact' ? msg.contactId : msg.role, msg.text || '');
+}
+function dreamMarkApiFailure(text){
+  dreamBusy = false;
+  dreamEnsureStateShape();
+  var run = dreamState.run;
+  if(run) dreamPushMessage(run, {role:'system', text:text || 'Dreamcore API failed. Please test the global API in Settings and retry.', at:Date.now()});
+  dreamState.phase = run ? 'run' : dreamState.phase;
+  dreamRenderRun();
+  saveState();
+}
+function dreamContactProfile(id){
+  return dreamBuildContactMemoryPrompt(id);
 }
 function dreamFormatTime(ts){ var d = new Date(ts); return (d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
 function dreamSelectSlot(i){
@@ -406,6 +558,10 @@ function dreamActiveApiProfile(){
   if(apiConfig.profiles && apiConfig.profiles.length) return apiConfig.profiles.find(function(p){ return p.id === apiConfig.activeProfileId; }) || apiConfig.profiles[0];
   return apiConfig.models && (apiConfig.models.custom || apiConfig.models[apiConfig.activeModel]);
 }
+function dreamApiReady(){
+  var p = dreamActiveApiProfile();
+  return !!(p && p.key && p.endpoint && p.model);
+}
 function dreamParseAIText(data){
   if(!data) return '';
   if(typeof data.content === 'string') return data.content;
@@ -422,12 +578,12 @@ function dreamTimeout(ms, cb){
 }
 function dreamCallAI(prompt, systemPrompt, cb){
   var p = dreamActiveApiProfile();
-  var finish = dreamTimeout(6500, cb);
-  if(!p || !p.key || !p.endpoint || !p.model){ finish(null); return; }
+  var finish = dreamTimeout(9000, cb);
+  if(!dreamApiReady()){ finish(null); return; }
   var msgs = [];
   if(systemPrompt) msgs.push({role:'system', content:systemPrompt});
   msgs.push({role:'user', content:prompt});
-  fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({messages:msgs, provider:'custom', key:p.key, endpoint:p.endpoint, dataModel:p.model, model:p.model, apiFormat:p.apiFormat || 'openai', max_tokens:680, temperature:typeof p.temperature === 'number' ? p.temperature : 0.86, stream:false})}).then(function(r){ return r.json(); }).then(function(d){ finish(dreamCleanText(dreamParseAIText(d))); }).catch(function(){ finish(null); });
+  fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({messages:msgs, provider:'custom', key:p.key, endpoint:p.endpoint, dataModel:p.model, model:p.model, apiFormat:p.apiFormat || 'openai', max_tokens:1000, temperature:typeof p.temperature === 'number' ? p.temperature : 0.82, stream:false})}).then(function(r){ return r.json(); }).then(function(d){ finish(dreamCleanText(dreamParseAIText(d))); }).catch(function(){ finish(null); });
 }
 function dreamCleanText(text){ return String(text || '').replace(/[\u{1F300}-\u{1FAFF}]/gu, '').replace(/\s+/g, ' ').trim(); }
 function dreamStartRun(){
@@ -438,6 +594,7 @@ function dreamStartRun(){
   if(!cfg.background && cfg.docText) cfg.background = dreamFirstWords(cfg.docText, 1200);
   if(!cfg.name) cfg.name = cfg.background ? cfg.background.slice(0, 12) : '\u672a\u547d\u540d\u4e16\u754c';
   if(!cfg.background){ dreamToast('\u8bf7\u5148\u5bfc\u5165\u4e16\u754c\u6587\u6863\u6216\u5199\u5165\u4e16\u754c\u89c2'); return; }
+  if(!dreamApiReady()){ dreamToast('\u8bf7\u5148\u5230\u8bbe\u7f6e\u91cc\u914d\u7f6e\u5e76\u6d4b\u8bd5\u901a\u8fc7 API'); return; }
   slot.worldConfig = cfg;
   slot.world = cfg.background;
   var enabled = dreamContactIds().filter(dreamContactEnabled);
@@ -446,7 +603,7 @@ function dreamStartRun(){
   var mainTask = dreamDeriveMainTask(cfg, slot);
   dreamState.view = 'run';
   dreamState.phase = 'vortex';
-  dreamState.run = {id:'dream-'+Date.now().toString(36), startedAt:Date.now(), world:cfg.background, worldConfig:Object.assign({}, cfg), rewardPool:slot.rewardPool || '', templateLibrary:slot.templateLibrary || '', sceneImage:slot.sceneImage || '', contacts:enabled, contactSettings:JSON.parse(JSON.stringify(slot.contactSettings || {})), inventory:(slot.inventory || []).slice(), progress:0, maxStages:4, turns:0, score:0, rank:'', rewards:[], messages:[], choices:[], usedCards:[], awaitingCards:false, briefed:false, mainTask:mainTask, objective:mainTask};
+  dreamState.run = {id:'dream-'+Date.now().toString(36), startedAt:Date.now(), world:cfg.background, worldConfig:Object.assign({}, cfg), rewardPool:slot.rewardPool || '', templateLibrary:slot.templateLibrary || '', sceneImage:slot.sceneImage || '', contacts:enabled, contactSettings:JSON.parse(JSON.stringify(slot.contactSettings || {})), inventory:(slot.inventory || []).slice(), progress:0, maxStages:4, turns:0, score:0, rank:'', rewards:[], messages:[], choices:[], usedCards:[], dreamMemories:[], contactDreamMemory:{}, awaitingCards:false, briefed:false, mainTask:mainTask, objective:mainTask};
   dreamOpenRunView();
   dreamRenderSetup();
   saveState();
@@ -470,24 +627,12 @@ function dreamContactFirstMessage(done){
   var first = run.contacts[0];
   dreamBusy = true;
   dreamRenderRun();
-  var fallback = dreamFallbackContact(first);
-  var fallbackTimer = setTimeout(function(){
-    if(!dreamBusy || !dreamState.run || dreamState.run.id !== run.id) return;
-    dreamBusy = false;
-    run.messages.push({role:'contact', contactId:first, text:fallback, at:Date.now()});
-    dreamState.phase = 'run';
-    dreamRenderRun();
-    saveState();
-    if(done) done();
-    done = null;
-  }, 850);
-  var prompt = dreamBuildWorldPrompt(run)+'\n\n'+dreamContactProfile(first)+'\n\n\u4f60\u521a\u88ab\u62c9\u5165\u8fd9\u4e2a\u81ea\u5b9a\u4e49\u4e16\u754c\u3002\u89c4\u5219\uff1a\u5fc5\u987b\u7531 WeChat \u8054\u7cfb\u4eba\u5148\u53d1\u8d77\u804a\u5929\u3002\u8bf7\u4ee5\u4f60\u672c\u4eba\u53e3\u543b\u8bf4\u7b2c\u4e00\u53e5\uff0c\u4e0d\u8d85\u8fc745\u5b57\uff0c\u4e0d\u8981\u65c1\u767d\uff0c\u4e0d\u8981\u8868\u60c5\u7b26\u53f7\u3002';
-  dreamCallAI(prompt, '\u4f60\u662f WeChat \u8054\u7cfb\u4eba\uff0c\u4e0d\u662f\u65c1\u767d\u3002\u4f60\u5fc5\u987b\u4fdd\u6301\u539f\u672c\u4eba\u8bbe\u3002', function(text){
+  var prompt = dreamBuildContactActionPrompt(first, 'The portal has just pulled everyone into the dungeon. Rule: the WeChat contact must send the first message before narrator briefing. Start with a living, memory-aware first line, under 80 Chinese characters.');
+  dreamCallAI(prompt, dreamBuildScriptMurderSystem('contact-first-message'), function(text){
     if(!dreamState.run || dreamState.run.id !== run.id) return;
-    if(!dreamBusy && run.messages.some(function(m){ return m.role === 'contact' && m.contactId === first; })) return;
-    clearTimeout(fallbackTimer);
+    if(!text){ dreamMarkApiFailure('\u5168\u5c40 API \u672a\u914d\u7f6e\u6216\u8c03\u7528\u5931\u8d25\uff0c\u8bf7\u5148\u5728\u8bbe\u7f6e\u91cc\u5b8c\u6210 API \u6d4b\u8bd5\u540e\u91cd\u8bd5\u526f\u672c\u3002'); return; }
     dreamBusy = false;
-    run.messages.push({role:'contact', contactId:first, text:text || fallback, at:Date.now()});
+    dreamPushMessage(run, {role:'contact', contactId:first, text:text, at:Date.now()});
     dreamState.phase = 'run';
     dreamRenderRun();
     saveState();
@@ -499,15 +644,11 @@ function dreamGenerateOpeningBrief(){
   var run = dreamState.run;
   if(!run || run.briefed) return;
   run.briefed = true;
-  run.messages.push({role:'narrator', text:dreamBuildIdentityBrief(run), at:Date.now()});
+  dreamPushMessage(run, {role:'narrator', text:dreamBuildIdentityBrief(run), at:Date.now()});
   run.choices = [];
   run.awaitingCards = false;
   dreamRenderRun();
   saveState();
-}
-function dreamFallbackContact(id){
-  var pool = ['\u6211\u5148\u8bf4\uff0c\u8fd9\u91cc\u7684\u89c4\u5219\u548c\u5e73\u65f6\u4e0d\u4e00\u6837\u3002','\u5148\u522b\u5f80\u524d\u8d70\uff0c\u6211\u770b\u89c1\u4e00\u9053\u95e8\u5728\u7b49\u6211\u4eec\u3002','\u6211\u6765\u5f00\u5934\uff0c\u5148\u627e\u5230\u8fd9\u4e2a\u4e16\u754c\u8981\u6211\u4eec\u5b8c\u6210\u7684\u4efb\u52a1\u3002'];
-  return pool[Math.floor(Math.random()*pool.length)];
 }
 function dreamGenerateScene(){
   dreamEnsureStateShape();
@@ -516,29 +657,13 @@ function dreamGenerateScene(){
   var cardReady = dreamShouldGenerateCards(run);
   dreamBusy = true;
   dreamRenderRun();
-  var immediate = dreamParseScene('', cardReady, run);
-  var fallbackTimer = setTimeout(function(){
-    if(!dreamBusy || !dreamState.run || dreamState.run.id !== run.id) return;
-    dreamBusy = false;
-    run.messages.push({role:'narrator', text:immediate.scene, at:Date.now()});
-    run.objective = immediate.objective || run.objective;
-    run.choices = cardReady ? immediate.cards : [];
-    run.awaitingCards = cardReady;
-    dreamRenderRun();
-    saveState();
-  }, 900);
-  var log = run.messages.slice(-10).map(function(m){ return (m.role === 'contact' ? dreamContactName(m.contactId) : m.role)+'\uff1a'+m.text; }).join('\n');
-  var profiles = run.contacts.map(dreamContactProfile).join('\n\n');
-  var cardFormat = cardReady ? '\nCARD|\u6807\u9898|\u6548\u679c|\u98ce\u9669\nCARD|\u6807\u9898|\u6548\u679c|\u98ce\u9669\nCARD|\u6807\u9898|\u6548\u679c|\u98ce\u9669' : '';
-  var cardRule = cardReady ? '\u73b0\u5728\u662f\u5173\u952e\u8282\u70b9\uff0c\u5fc5\u987b\u6839\u636e\u526f\u672c\u6a21\u677f\u751f\u62102-4\u5f20\u5361\u724c\u4efb\u52a1\u3002' : '\u73b0\u5728\u53ea\u63a8\u8fdb\u65c1\u767d\uff0c\u4e0d\u8981\u7ed9\u5361\u724c\uff0c\u7ed9\u73a9\u5bb6\u548c WeChat \u8054\u7cfb\u4eba\u5145\u8db3\u65f6\u95f4\u901a\u8fc7\u804a\u5929\u6f14\u7ece\u3002';
-  var prompt = dreamBuildWorldPrompt(run)+'\n\n\u53c2\u4e0e\u8005:\n'+profiles+'\n\n\u4e3b\u7ebf\u4efb\u52a1:\n'+(run.mainTask || run.objective)+'\n\n\u5df2\u53d1\u751f:\n'+log+'\n\n'+cardRule+'\n\u683c\u5f0f:\nOBJECTIVE|\u5f53\u524d\u4e3b\u7ebf\u76ee\u6807\nSCENE|\u65c1\u767d'+cardFormat+'\n\u4e0d\u8981\u8868\u60c5\u7b26\u53f7\u3002';
-  dreamCallAI(prompt, '\u4f60\u662f\u65e0\u9650\u526f\u672c\u65c1\u767d\u3002\u5267\u60c5\u4e3b\u8981\u7531 user \u548c WeChat \u8054\u7cfb\u4eba\u901a\u8fc7\u804a\u5929\u6f14\u7ece\u63a8\u8fdb\uff0c\u4f60\u53ea\u5728\u5173\u952e\u8282\u70b9\u7ed9\u5361\u724c\u4efb\u52a1\u3002', function(text){
+  var prompt = dreamBuildNarratorPrompt(cardReady);
+  dreamCallAI(prompt, dreamBuildScriptMurderSystem('narrator'), function(text){
     if(!dreamState.run || dreamState.run.id !== run.id) return;
-    if(!dreamBusy && run.choices && run.choices.length) return;
-    clearTimeout(fallbackTimer);
+    if(!text){ dreamMarkApiFailure('\u65c1\u767d\u751f\u6210\u5931\u8d25\uff0c\u8bf7\u5728\u8bbe\u7f6e\u91cc\u786e\u8ba4\u5168\u5c40 API \u6d4b\u8bd5\u901a\u8fc7\u540e\u7ee7\u7eed\u526f\u672c\u3002'); return; }
     dreamBusy = false;
     var parsed = dreamParseScene(text, cardReady, run);
-    run.messages.push({role:'narrator', text:parsed.scene, at:Date.now()});
+    dreamPushMessage(run, {role:'narrator', text:parsed.scene, at:Date.now()});
     run.objective = parsed.objective || run.objective;
     run.choices = cardReady ? parsed.cards : [];
     run.awaitingCards = cardReady;
@@ -555,8 +680,11 @@ function dreamParseScene(text, includeCards, run){
     if(includeCards && line.indexOf('CARD|') === 0){ var p = line.split('|'); out.cards.push({id:'card-'+Date.now().toString(36)+'-'+out.cards.length, title:p[1] || '\u672a\u77e5\u9009\u9879', effect:p[2] || '\u6539\u53d8\u526f\u672c\u8d70\u5411', risk:p[3] || '\u98ce\u9669\u672a\u660e'}); }
   });
   if(!out.objective) out.objective = (run && (run.mainTask || run.objective)) || '\u5b8c\u6210\u65c1\u767d\u53d1\u5e03\u7684\u6838\u5fc3\u4efb\u52a1';
-  if(!out.scene) out.scene = dreamFallbackScene(run);
-  if(includeCards && out.cards.length < 2) out.cards = dreamFallbackCards(out.cards, run);
+  if(!out.scene) out.scene = dreamCleanText(text).slice(0, 900) || ((run && (run.mainTask || run.objective)) || '\u65c1\u767d\u6b63\u5728\u7b49\u5f85\u66f4\u6e05\u6670\u7684\u526f\u672c\u56de\u5e94');
+  if(includeCards && out.cards.length < 2){
+    var templated = dreamTemplateCards(run).concat(out.cards || []);
+    out.cards = templated.length >= 2 ? templated.slice(0, 4) : out.cards;
+  }
   return out;
 }
 function dreamFallbackScene(){
@@ -598,7 +726,7 @@ function dreamChooseCard(i){
   if(!run || !run.choices || !run.choices[i] || dreamBusy) return;
   var card = run.choices[i];
   run.usedCards.push(card.title);
-  run.messages.push({role:'user', text:'\u5361\u724c '+(i+1)+'\uff1a'+card.title+'\u3002'+card.effect+'\u3002\u98ce\u9669\uff1a'+card.risk, at:Date.now()});
+  dreamPushMessage(run, {role:'user', text:'\u5361\u724c '+(i+1)+'\uff1a'+card.title+'\u3002'+card.effect+'\u3002\u98ce\u9669\uff1a'+card.risk, at:Date.now()});
   run.progress += 1;
   run.turns = 0;
   run.awaitingCards = false;
@@ -629,7 +757,7 @@ function dreamSendPlayerMessage(){
     dreamToast('\u5f53\u524d\u662f\u5361\u724c\u8282\u70b9\uff0c\u8bf7\u8f93\u5165\u5bf9\u5e94\u5361\u724c\u7f16\u53f7');
     return;
   }
-  run.messages.push({role:'user', text:text, at:Date.now()});
+  dreamPushMessage(run, {role:'user', text:text, at:Date.now()});
   run.turns = (run.turns || 0) + 1;
   run.score += Math.min(4, Math.max(1, Math.round(text.length / 28)));
   saveState();
@@ -639,24 +767,15 @@ function dreamSendPlayerMessage(){
 function dreamContactReact(card, done){
   var run = dreamState.run;
   if(!run) return;
-  var id = run.contacts[Math.max(0, run.progress) % run.contacts.length];
+  var id = run.contacts[Math.max(0, run.progress + run.turns) % run.contacts.length];
   dreamBusy = true;
   dreamRenderRun();
-  var fallback = dreamFallbackContact(id);
-  var fallbackTimer = setTimeout(function(){
-    if(!dreamBusy || !dreamState.run || dreamState.run.id !== run.id) return;
-    dreamBusy = false;
-    run.messages.push({role:'contact', contactId:id, text:fallback, at:Date.now()});
-    saveState();
-    dreamRenderRun();
-    if(done) done();
-  }, 900);
-  dreamCallAI(dreamBuildWorldPrompt(run)+'\n\n'+dreamContactProfile(id)+'\n\n\u5f53\u524d\u5361\u724c\u6216\u4e8b\u4ef6:\n'+card.title+' / '+card.effect+' / '+card.risk+'\n\u8bf7\u4ee5 '+dreamContactName(id)+' \u7684\u53e3\u543b\u56de\u590d\u4e00\u53e5\uff0c\u4e0d\u8d85\u8fc750\u5b57\uff0c\u4e0d\u8981\u8868\u60c5\u7b26\u53f7\u3002', '\u4f60\u662f WeChat \u8054\u7cfb\u4eba\uff0c\u6b63\u5728\u68a6\u6838\u526f\u672c\u4e2d\u884c\u52a8\u3002', function(text){
+  var trigger = 'Current player event or card: '+(card.title || '')+' / '+(card.effect || '')+' / '+(card.risk || '')+'. Continue as this contact with memory-aware roleplay. If another selected contact has relevant shared memory, react to it naturally.';
+  dreamCallAI(dreamBuildContactActionPrompt(id, trigger), dreamBuildScriptMurderSystem('contact-reaction'), function(text){
     if(!dreamState.run || dreamState.run.id !== run.id) return;
-    if(!dreamBusy) return;
-    clearTimeout(fallbackTimer);
+    if(!text){ dreamMarkApiFailure('\u8054\u7cfb\u4eba\u6f14\u7ece\u5931\u8d25\uff0c\u8bf7\u786e\u8ba4\u8bbe\u7f6e\u91cc\u7684\u5168\u5c40 API \u53ef\u6b63\u5e38\u8c03\u7528\u3002'); return; }
     dreamBusy = false;
-    run.messages.push({role:'contact', contactId:id, text:text || fallback, at:Date.now()});
+    dreamPushMessage(run, {role:'contact', contactId:id, text:text, at:Date.now()});
     saveState();
     dreamRenderRun();
     if(done) done();
@@ -674,7 +793,7 @@ function dreamCompleteRun(){
   run.score = score;
   run.rewards = [reward];
   run.completedAt = Date.now();
-  run.messages.push({role:'system', text:'\u526f\u672c\u7ed3\u7b97\uff1a'+rank+' / '+reward.name, at:Date.now()});
+  dreamPushMessage(run, {role:'system', text:'\u526f\u672c\u7ed3\u7b97\uff1a'+rank+' / '+reward.name, at:Date.now()});
   var slot = dreamSlot();
   slot.runs.push({id:run.id, at:run.completedAt, rank:rank, score:score, reward:reward.name, contacts:run.contacts.slice(), world:(run.worldConfig && run.worldConfig.name) || run.world});
   slot.rewards.push(reward);
