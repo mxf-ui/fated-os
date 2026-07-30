@@ -120,7 +120,7 @@ async function cloudLogout(){
 function cloudCollectChats(){
   return Object.keys(contacts||{}).filter(function(id){ return id!=='me'; }).map(function(id){
     var c=contacts[id]||{};
-    return { id:id, seed:c.seed||[], pendingCount:c.pendingCount||0, blocked:!!c.blocked, unread:c.unread||0, memory:c.memory||null, worldBooks:c.worldBooks||[], groupUserPrompt:c.groupUserPrompt||'' };
+    return { id:id, seed:c.seed||[], pendingCount:c.pendingCount||0, blocked:!!c.blocked, unread:c.unread||0, memory:c.memory||null, worldBooks:c.worldBooks||[], groupUserPrompt:c.groupUserPrompt||'', taDeletedByPartner:!!c.taDeletedByPartner, taDeletedBy:c.taDeletedBy||'', taDeletedAt:c.taDeletedAt||0, taDeletedPrevBlocked:!!c.taDeletedPrevBlocked };
   });
 }
 function cloudApplyChats(rows){
@@ -134,6 +134,10 @@ function cloudApplyChats(rows){
     if(row.memory) contacts[row.id].memory=row.memory;
     if(Array.isArray(row.worldBooks)) contacts[row.id].worldBooks=row.worldBooks;
     if(typeof row.groupUserPrompt==='string') contacts[row.id].groupUserPrompt=row.groupUserPrompt;
+    contacts[row.id].taDeletedByPartner=!!row.taDeletedByPartner;
+    contacts[row.id].taDeletedBy=row.taDeletedBy||'';
+    contacts[row.id].taDeletedAt=row.taDeletedAt||0;
+    contacts[row.id].taDeletedPrevBlocked=!!row.taDeletedPrevBlocked;
   });
 }
 function cloudWriteKV(key, data){

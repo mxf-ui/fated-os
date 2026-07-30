@@ -5,8 +5,10 @@
   var taTake = {open:false, app:'home', running:false, step:0, queue:[], speech:[], selectedContact:null, selectedHidden:null, voice:true, report:null, snapshot:null, acting:null};
   var taTimers = [];
   var appList = [
-    ['wechat','WeChat','\u5fae\u4fe1'], ['contacts','Contacts','\u8054\u7cfb\u4eba'], ['diary','Diary','\u65e5\u8bb0'], ['notes','Notes','\u5907\u5fd8'],
-    ['wallet','Wallet','\u94b1\u5305'], ['shop','Shop','\u8d2d\u7269'], ['browse','Browser','\u6d4f\u89c8'], ['couple','Couple','\u60c5\u4fa3']
+    ['wechat','WeChat','微信'], ['moments','Moments','朋友圈'], ['forum','Forum','论坛'], ['contacts','Contacts','联系人'],
+    ['music','Listen','一起听'], ['novel','Novel','小说'], ['go','GO Live','GO 直播'], ['nilflow','Nilflow','匿流'],
+    ['dream','Dreamcore','雾织梦核'], ['game','Game','游戏'], ['suoha','Suoha','梭哈'], ['settings','Settings','设置'],
+    ['diary','Diary','日记'], ['notes','Notes','备忘'], ['wallet','Wallet','钱包'], ['shop','Shop','购物'], ['browse','Browser','浏览'], ['couple','Couple','情侣']
   ];
 
   function h(v){ if(typeof esc==='function') return esc(String(v||'')); return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -16,52 +18,139 @@
   function partner(){ return contacts && contacts[partnerId()] ? contacts[partnerId()] : null; }
   function displayName(c,id){ return (c && (c.displayName || c.name)) || id || 'TA'; }
   function appName(k){ var a=appList.filter(function(x){ return x[0]===k; })[0]; return a ? a[1]+' '+a[2] : k; }
+  function arr(v){ return Array.isArray(v) ? v : []; }
+  function plain(v){ return String(v==null?'':v).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(); }
+  function moneyValue(v){ var n=parseFloat(String(v||'').replace(/[^0-9.-]/g,'')); return isFinite(n) ? n : 0; }
   function isVisibleContact(id){ var c=contacts[id]; return !!(c && id!=='me' && !c.isGroup && !c.blocked && !c.taDeletedByPartner); }
-  function shortText(m){ if(!m) return ''; if(m.kind==='photo') return '['+'\u56fe\u7247'+']'; if(m.kind==='voice') return '['+'\u8bed\u97f3'+'] '+(m.text||''); if(m.kind==='card') return '['+'\u5361\u7247'+'] '+(m.name||m.text||m.note||''); if(m.kind==='pat') return m.text||''; return m.text||''; }
+  function shortText(m){
+    if(!m) return '';
+    if(typeof m==='string') return m;
+    if(m.kind==='photo') return '[图片] '+(m.name||m.text||'');
+    if(m.kind==='voice') return '[语音] '+(m.text||'');
+    if(m.kind==='card') return '[卡片] '+(m.name||m.text||m.note||m.cardType||'');
+    if(m.kind==='pat') return m.text||'';
+    return m.text||m.name||m.title||m.note||'';
+  }
+  function detectMoneySignal(text){ return /亲属卡|亲密付|转账|红包|礼物|付款|支付|下单|商品卡片|外卖|product|transfer|family|redpacket|gift|order/i.test(String(text||'')); }
   function limit(s,n){ s=String(s||''); return s.length>n ? s.slice(0,n)+'...' : s; }
   function avatarHTML(c){ if(c && typeof contactAvatar==='function') return contactAvatar(c); return '<span style="font-size:12px;font-weight:800;color:#426d58;">TA</span>'; }
   function data(){ return (typeof coupleData==='function') ? coupleData() : {}; }
   function todayKey(){ if(typeof ymdKey==='function') return ymdKey(new Date()); var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
 
+  window.coupleTaBuildDesktopApps=function(){
+    var source=(typeof appIcons!=='undefined' && Array.isArray(appIcons)) ? appIcons : [];
+    var map={}; source.forEach(function(a){ if(a && (a.id||a[0])) map[a.id||a[0]]=a; });
+    return appList.map(function(a){ var icon=map[a[0]]||{}; return {id:a[0],en:a[1],name:a[2],label:a[1]+' '+a[2],hidden:!!icon.hidden,img:icon.img||''}; });
+  };
+  function latestMessages(c,n){ return arr(c&&c.seed).slice(-(n||12)).map(function(m){ return {mine:!!m.mine,from:m.from||'',kind:m.kind||'text',cardType:m.cardType||'',name:m.name||'',price:m.price||'',text:shortText(m),ts:m.ts||0}; }); }
+  function taJealousSignalsFromChats(ids){
+    var out=[];
+    ids.forEach(function(id){ var c=contacts[id]; arr(c&&c.seed).forEach(function(m){ var text=[shortText(m),m.cardType,m.name,m.price,m.note].join(' '); if(detectMoneySignal(text)){ out.push({type:'money',app:'wechat',contactId:id,contactName:displayName(c,id),text:limit(text,90),amount:moneyValue(text),ts:m.ts||0}); } }); });
+    return out.sort(function(a,b){ return (b.amount-a.amount)||((b.ts||0)-(a.ts||0)); }).slice(0,12);
+  }
+  function snapshotMusic(){ var st=(typeof musicState!=='undefined')?musicState:null; if(!st) return {available:false}; var song=arr(st.songs)[st.idx||0]||{}; return {available:true,playing:!!st.playing,contact:st.contact||'',contactName:displayName(contacts&&contacts[st.contact],st.contact),current:(song.title||'')+(song.artist?' - '+song.artist:''),songs:arr(st.songs).slice(0,12).map(function(x){return {title:x.title||'',artist:x.artist||''};}),listeningDays:st.listeningDays||0,hasBackground:!!st.bg}; }
+  function snapshotNovel(){ var st=(typeof novelState!=='undefined')?novelState:null; if(!st) return {available:false}; return {available:true,title:st.title||'',pageIdx:st.pageIdx||0,pages:arr(st.pages).length,contact:st.contact||'',contactName:displayName(contacts&&contacts[st.contact],st.contact),excerpt:limit(plain(arr(st.pages)[st.pageIdx||0]||st.text||''),220),chat:arr(st.chatMsgs).slice(-8).map(function(m){return {mine:!!m.mine,text:m.text||''};})}; }
+  function snapshotNilflow(){ var st=(typeof nilflowState!=='undefined')?nilflowState:null; if(!st) return {available:false}; return {available:true,profile:st.profile||{},friends:arr(st.friends).slice(0,8),posts:arr(st.posts).slice(0,10).map(function(p){return {id:p.id,author:p.authorId||p.author,text:p.text||p.body||'',likes:arr(p.likes).length,comments:arr(p.comments).length};}),chats:Object.keys(st.chats||{}).slice(0,8).map(function(id){return {id:id,count:arr(st.chats[id]).length,last:shortText(arr(st.chats[id]).slice(-1)[0])};})}; }
+  function snapshotDream(){ var st=(typeof dreamState!=='undefined')?dreamState:null; if(!st) return {available:false}; var slot=arr(st.slots)[st.activeSlot||0]||{}; var run=st.run||{}; return {available:true,activeSlot:st.activeSlot||0,worldName:slot.name||slot.worldName||'',selectedContacts:arr(st.selectedContacts),phase:st.phase||'',objective:run.objective||run.mainTask||slot.mainTask||'',rank:run.rank||'',messages:arr(run.messages).slice(-10).map(function(m){return {role:m.role||m.from||'',text:m.text||m.content||''};}),choices:arr(run.choices).map(function(c){return c.title||c.text||c;})}; }
+  function snapshotGo(){ var st=(typeof goState!=='undefined')?goState:null; if(!st) return {available:false}; return {available:true,mode:st.mode||'',host:st.host||'',linkMicContactId:st.linkMicContactId||'',linkMicName:displayName(contacts&&contacts[st.linkMicContactId],st.linkMicContactId),products:arr(st.products).slice(0,10).map(function(p){return {name:p.name||'',price:p.price||'',desc:p.desc||'',hasImg:!!p.img};}),orders:arr(st.orders).slice(-10),events:arr(st.liveEvents).slice(-12).map(function(e){return e.text||e.title||String(e);})}; }
+  function snapshotForum(){ var st=(typeof forumState!=='undefined')?forumState:null; if(!st) return {available:false}; return {available:true,filter:st.filter||'',posts:arr(st.posts).slice(0,10).map(function(p){return {title:p.title||'',text:p.text||p.body||'',author:p.author||'',likes:arr(p.likes).length,comments:arr(p.comments).length};})}; }
+  function snapshotGame(){ return {available:true,records:(typeof gameState!=='undefined')?gameState:{},summary:plain((localStorage&&localStorage.getItem('fated_game_records'))||'')}; }
+  function snapshotSuoha(){ return {available:true,records:(typeof suohaState!=='undefined')?suohaState:{},summary:plain((localStorage&&localStorage.getItem('fated_suoha_records'))||'')}; }
+  function snapshotSettings(){ return {available:true,apiConfigured:!!(typeof apiConfig!=='undefined'&&apiConfig&&apiConfig.apiKey),provider:(typeof apiConfig!=='undefined'&&apiConfig&&(apiConfig.provider||apiConfig.apiMode||apiConfig.endpoint))||'',model:(typeof apiConfig!=='undefined'&&apiConfig&&(apiConfig.model||apiConfig.chatModel))||'',tts:!!(typeof ttsConfigured==='function'&&ttsConfigured()),image:!!(typeof imageApiConfigured==='function'&&imageApiConfigured())}; }
+
   window.coupleTaBuildPhoneSnapshot=function(){
     var d=data();
     var ids=Object.keys(contacts||{}).filter(function(id){ return isVisibleContact(id); });
     var hidden=Object.keys(contacts||{}).filter(function(id){ var c=contacts[id]; return c && c.taDeletedByPartner; });
-    var wechat=ids.map(function(id){ var c=contacts[id]; var seed=Array.isArray(c.seed)?c.seed:[]; var last=seed.length?seed[seed.length-1]:null; return {id:id,name:displayName(c,id),persona:c.persona||c.tone||'',memory:c.memory&&c.memory.summary?c.memory.summary:'',count:seed.length,lastText:shortText(last),messages:seed.slice(-12).map(function(m){ return {mine:!!m.mine,from:m.from||'',kind:m.kind||'text',text:shortText(m),ts:m.ts||0}; })}; });
+    var wechat=ids.map(function(id){ var c=contacts[id]; var seed=arr(c.seed); var last=seed.length?seed[seed.length-1]:null; return {id:id,name:displayName(c,id),persona:c.persona||c.tone||'',memory:c.memory&&c.memory.summary?c.memory.summary:'',count:seed.length,lastText:shortText(last),messages:latestMessages(c,14)}; });
     var browse=[];
     if(Array.isArray(d.browseUser)) browse=browse.concat(d.browseUser);
     try{ if(typeof genDailyBrowse==='function') browse=browse.concat(genDailyBrowse(todayKey())); }catch(e){}
+    var moneySignals=taJealousSignalsFromChats(ids);
     var snapshot={
       partner:partnerId(), partnerName:displayName(partner(), partnerId()), userName:(typeof userName!=='undefined'?userName:'User'),
-      contacts:ids.map(function(id){ var c=contacts[id]; return {id:id,name:displayName(c,id),persona:c.persona||c.tone||'',messageCount:Array.isArray(c.seed)?c.seed.length:0}; }),
+      desktopApps:window.coupleTaBuildDesktopApps(),
+      contacts:ids.map(function(id){ var c=contacts[id]; return {id:id,name:displayName(c,id),persona:c.persona||c.tone||'',memory:c.memory&&c.memory.summary?c.memory.summary:'',messageCount:arr(c.seed).length}; }),
       hiddenContacts:hidden.map(function(id){ var c=contacts[id]; return {id:id,name:displayName(c,id),deletedAt:c.taDeletedAt||0,by:c.taDeletedBy||''}; }),
       wechat:wechat,
-      diary:Array.isArray(d.diary)?d.diary.slice(-20):[],
-      notes:Array.isArray(d.notes)?d.notes.slice(-20):[],
-      wallet:{balance:(typeof walletBalance==='number'?walletBalance:null), tx:Array.isArray(walletTx)?walletTx.slice(0,20):[]},
-      shop:Array.isArray(d.shop)?d.shop.slice(0,20):[],
+      moneySignals:moneySignals,
+      taJealous:moneySignals,
+      diary:arr(d.diary).slice(-20),
+      notes:arr(d.notes).slice(-20),
+      wallet:{balance:(typeof walletBalance==='number'?walletBalance:null), tx:arr(typeof walletTx!=='undefined'?walletTx:[]).slice(0,20)},
+      shop:arr(d.shop).slice(0,20),
       browse:browse.slice(-30),
-      couple:{checkin:d.checkin||{}, location:d.location||null, foodOrders:Array.isArray(d.foodOrders)?d.foodOrders.slice(-10):[]},
-      moments:(typeof moments!=='undefined'&&Array.isArray(moments))?moments.slice(0,12).map(function(m){return {authorId:m.authorId,text:m.text,ts:m.ts,likes:m.likes&&m.likes.length||0,comments:m.comments&&m.comments.length||0};}):[]
+      couple:{checkin:d.checkin||{}, location:d.location||null, foodOrders:arr(d.foodOrders).slice(-10), taHistory:arr(d.taTakeoverHistory).slice(0,12)},
+      moments:(typeof moments!=='undefined'&&Array.isArray(moments))?moments.slice(0,12).map(function(m){return {authorId:m.authorId,text:m.text,ts:m.ts,likes:arr(m.likes).length,comments:arr(m.comments).length};}):[],
+      forum:snapshotForum(),
+      music:snapshotMusic(),
+      novel:snapshotNovel(),
+      go:snapshotGo(),
+      nilflow:snapshotNilflow(),
+      dream:snapshotDream(),
+      game:snapshotGame(),
+      suoha:snapshotSuoha(),
+      settings:snapshotSettings()
     };
     return snapshot;
   };
 
   function snapshotBrief(s){
-    var hot=s.wechat.slice().sort(function(a,b){return b.count-a.count;}).slice(0,4).map(function(c){return c.name+': '+c.count+'\u6761, \u6700\u8fd1 '+limit(c.lastText,36);}).join('\n');
-    var notes=s.notes.map(function(x){return typeof x==='string'?x:(x.text||x.title||'');}).filter(Boolean).slice(-4).join(' / ');
-    var diary=s.diary.map(function(x){return typeof x==='string'?x:(x.text||x.title||'');}).filter(Boolean).slice(-3).join(' / ');
-    var shop=s.shop.map(function(x){return (x.name||'')+' '+(x.price||'');}).filter(Boolean).slice(0,5).join(' / ');
-    var browse=s.browse.map(function(x){return x.text||x.title||String(x);}).filter(Boolean).slice(0,8).join(' / ');
-    return ['\u7528\u6237: '+s.userName,'TA: '+s.partnerName,'WeChat\n'+(hot||'\u65e0\u53ef\u89c1\u8054\u7cfb\u4eba'),'\u65e5\u8bb0: '+(diary||'\u65e0'),'\u5907\u5fd8: '+(notes||'\u65e0'),'\u94b1\u5305: '+(s.wallet.balance===null?'\u672a\u540c\u6b65':s.wallet.balance),'\u8d2d\u7269: '+(shop||'\u65e0'),'\u6d4f\u89c8: '+(browse||'\u65e0')].join('\n');
+    var hot=arr(s.wechat).slice().sort(function(a,b){return b.count-a.count;}).slice(0,4).map(function(c){return c.name+': '+c.count+'条, 最近 '+limit(c.lastText,36);}).join('\n');
+    var money=arr(s.moneySignals).slice(0,5).map(function(x){return x.contactName+': '+x.text;}).join(' / ');
+    var notes=arr(s.notes).map(function(x){return typeof x==='string'?x:(x.text||x.title||'');}).filter(Boolean).slice(-4).join(' / ');
+    var diary=arr(s.diary).map(function(x){return typeof x==='string'?x:(x.text||x.title||'');}).filter(Boolean).slice(-3).join(' / ');
+    var shop=arr(s.shop).map(function(x){return (x.name||'')+' '+(x.price||'');}).filter(Boolean).slice(0,5).join(' / ');
+    var browse=arr(s.browse).map(function(x){return x.text||x.title||String(x);}).filter(Boolean).slice(0,8).join(' / ');
+    var apps=arr(s.desktopApps).map(function(a){return a.name;}).join('、');
+    return ['用户: '+s.userName,'TA: '+s.partnerName,'桌面 app: '+apps,'WeChat\n'+(hot||'无可见联系人'),'吃醋/金钱信号: '+(money||'暂无'),'一起听: '+((s.music&&s.music.current)||'暂无'),'小说: '+((s.novel&&s.novel.title)||'暂无'),'匿流帖子: '+arr(s.nilflow&&s.nilflow.posts).length,'雾织梦核: '+((s.dream&&s.dream.worldName)||'暂无'),'GO直播商品: '+arr(s.go&&s.go.products).length,'日记: '+(diary||'无'),'备忘: '+(notes||'无'),'钱包: '+(s.wallet.balance===null?'未同步':s.wallet.balance),'购物: '+(shop||'无'),'浏览: '+(browse||'无')].join('\n');
   }
 
+  window.coupleTaBuildAppEvidence=function(app, snapshot, action){
+    var s=snapshot||window.coupleTaBuildPhoneSnapshot();
+    var k=app || (action&&action.app) || taTake.app;
+    if(k==='wechat' && action && action.contactId){ var chat=arr(s.wechat).filter(function(x){return x.id===action.contactId;})[0]; return {app:k, action:action, chat:chat, moneySignals:arr(s.moneySignals).filter(function(x){return x.contactId===action.contactId;}).slice(0,4)}; }
+    if(k==='wechat') return {app:k, chats:arr(s.wechat).slice(0,6), moneySignals:arr(s.moneySignals).slice(0,6)};
+    if(k==='contacts') return {app:k, contacts:arr(s.contacts).slice(0,20), hiddenContacts:arr(s.hiddenContacts), moneySignals:arr(s.moneySignals).slice(0,4)};
+    if(k==='moments') return {app:k, moments:arr(s.moments).slice(0,10)};
+    if(k==='forum') return {app:k, forum:s.forum};
+    if(k==='music') return {app:k, music:s.music};
+    if(k==='novel') return {app:k, novel:s.novel};
+    if(k==='go') return {app:k, go:s.go};
+    if(k==='nilflow') return {app:k, nilflow:s.nilflow};
+    if(k==='dream') return {app:k, dream:s.dream};
+    if(k==='game') return {app:k, game:s.game};
+    if(k==='suoha') return {app:k, suoha:s.suoha};
+    if(k==='settings') return {app:k, settings:s.settings};
+    if(k==='diary') return {app:k, diary:arr(s.diary).slice(-12)};
+    if(k==='notes') return {app:k, notes:arr(s.notes).slice(-12)};
+    if(k==='wallet') return {app:k, wallet:s.wallet, moneySignals:arr(s.moneySignals).slice(0,8)};
+    if(k==='shop') return {app:k, shop:arr(s.shop).slice(0,12)};
+    if(k==='browse') return {app:k, browse:arr(s.browse).slice(-14)};
+    if(k==='couple') return {app:k, couple:s.couple, hiddenContacts:arr(s.hiddenContacts), moneySignals:arr(s.moneySignals).slice(0,6)};
+    return {app:k, action:action, brief:snapshotBrief(s)};
+  };
+
   window.coupleTaActionQueue=function(snapshot){
-    var hot=snapshot.wechat.slice().sort(function(a,b){return b.count-a.count;});
-    var rival=hot.filter(function(c){return c.id!==snapshot.partner;})[0] || null;
-    var q=[{type:'open_app',app:'wechat'},{type:'inspect_chat',app:'wechat',contactId:hot[0]&&hot[0].id},{type:'open_app',app:'contacts'}];
-    if(rival) q.push({type:'hide_contact',app:'contacts',contactId:rival.id});
-    q=q.concat([{type:'open_app',app:'diary'},{type:'open_app',app:'notes'},{type:'open_app',app:'wallet'},{type:'open_app',app:'shop'},{type:'open_app',app:'browse'},{type:'finish_report',app:'couple'}]);
+    var hot=arr(snapshot.wechat).slice().sort(function(a,b){return b.count-a.count;});
+    var signal=arr(snapshot.moneySignals)[0] || null;
+    var rivalId=signal && signal.contactId!==snapshot.partner ? signal.contactId : null;
+    if(!rivalId){ var rival=hot.filter(function(c){return c.id!==snapshot.partner;})[0]; rivalId=rival&&rival.id; }
+    var q=[
+      {type:'open_app',app:'wechat'},
+      {type:'inspect_chat',app:'wechat',contactId:(signal&&signal.contactId)||(hot[0]&&hot[0].id)},
+      {type:'open_app',app:'moments'},
+      {type:'open_app',app:'forum'},
+      {type:'open_app',app:'contacts'}
+    ];
+    if(rivalId) q.push({type:'hide_contact',app:'contacts',contactId:rivalId,reason:signal&&signal.text});
+    q=q.concat([
+      {type:'open_app',app:'music'}, {type:'open_app',app:'novel'}, {type:'open_app',app:'go'},
+      {type:'open_app',app:'nilflow'}, {type:'open_app',app:'dream'}, {type:'open_app',app:'game'},
+      {type:'open_app',app:'suoha'}, {type:'open_app',app:'settings'}, {type:'open_app',app:'diary'},
+      {type:'open_app',app:'notes'}, {type:'open_app',app:'wallet'}, {type:'open_app',app:'shop'},
+      {type:'open_app',app:'browse'}, {type:'finish_report',app:'couple'}
+    ]);
     return q;
   };
 
@@ -75,15 +164,18 @@
 
   window.coupleTaCallAI=function(action, snapshot, callback){
     var pid=partnerId();
+    var snap=snapshot||window.coupleTaBuildPhoneSnapshot();
+    var evidence=window.coupleTaBuildAppEvidence((action&&action.app)||taTake.app, snap, action||{});
     var persona=(typeof getPersonaPrompt==='function'&&pid)?getPersonaPrompt(pid):'';
     var world=(typeof getWorldBookPrompt==='function'&&pid)?getWorldBookPrompt(pid):'';
     var time=(typeof nowContext==='function')?nowContext():'';
-    var system=persona+'\n'+world+'\n'+time+'\n\n\u4f60\u73b0\u5728\u662f\u604b\u4eba TA\uff0c\u6b63\u5728\u67e5\u770b user \u5728 Fated OS \u5c0f\u624b\u673a\u91cc\u7684\u7ad9\u5185\u6570\u636e\u3002\u4f60\u53ea\u80fd\u6839\u636e\u8fd9\u4e2a\u7f51\u7ad9\u5185\u6570\u636e\u8bf4\u8bdd\uff0c\u4e0d\u8981\u58f0\u79f0\u8bbf\u95ee\u771f\u5b9e\u624b\u673a\u3001\u771f\u5b9e WeChat \u6216\u7cfb\u7edf\u9690\u79c1\u3002\u4fdd\u6301\u4f60\u7684\u4eba\u8bbe\u3001\u4f60\u4eec\u7684\u8bb0\u5fc6\u548c\u5173\u7cfb\u8bed\u6c14\u3002\u53ea\u8f93\u51fa\u4f60\u6b64\u523b\u5bf9 user \u8bf4\u7684\u4e2d\u6587\uff0c1-2\u53e5\uff0c\u4e0d\u8981\u540d\u5b57\u524d\u7f00\uff0c\u4e0d\u8981 emoji\uff0c\u4e0d\u8981\u89e3\u91ca\u7cfb\u7edf\u3002';
-    var user='\u5f53\u524d\u52a8\u4f5c: '+JSON.stringify(action||{})+'\n\n\u7ad9\u5185\u5c0f\u624b\u673a\u5feb\u7167:\n'+snapshotBrief(snapshot||window.coupleTaBuildPhoneSnapshot());
+    var system=persona+'\n'+world+'\n'+time+'\n\n你现在是恋人 TA，正在接管并查看 user 在 Fated OS 小手机里的站内数据。你只能根据这个网站内的数据说话，不能声称访问真实手机、真实 WeChat、系统通讯录、外部社交平台或现实隐私。你必须完全保持你的人设、世界书、共同记忆和当前关系语气。看到亲属卡、亲密付、转账、红包、礼物、购物、直播、匿流、小说、一起听、雾织梦核等具体证据时，要像真实恋人一样吃醋、追问、调侃或不高兴，但不要模板化，不要死话术。必须引用一个你刚刚看到的具体细节，语气自然、有占有欲、有人味。只输出此刻对 user 说的中文，1-2句，不要名字前缀，不要 emoji，不要解释系统。';
+    var user='当前动作: '+JSON.stringify(action||{})+'\n当前 app 证据: '+JSON.stringify(evidence||{})+'\n\n站内小手机总览:\n'+snapshotBrief(snap)+'\n\n要求：根据证据即时回应。优先评论最暧昧、最花钱、最容易吃醋的细节，例如亲属卡、亲密付、转账、礼物、频繁聊天、一起听对象、小说共读、匿流互动、直播连麦、雾织梦核副本关系。';
     if(typeof callRealAI==='function' && pid){
       callRealAI([{role:'user',content:user}], system, pid, function(reply){ callback((reply||'').trim()); });
     }else{
-      callback('\u6211\u5148\u770b\u4f60\u5728\u8fd9\u4e2a\u5c0f\u624b\u673a\u91cc\u7559\u4e0b\u7684\u8bb0\u5f55\uff0c\u7b49 API \u914d\u597d\u540e\u6211\u4f1a\u6309\u6211\u7684\u4eba\u8bbe\u66f4\u7ec6\u5730\u8bf4\u7ed9\u4f60\u542c\u3002');
+      var sig=arr(snap.moneySignals)[0];
+      callback(sig ? ('我看到你给 '+sig.contactName+' 留了 '+sig.text+'，这笔账你最好现在就跟我解释清楚。') : '我先把你这个小手机一页页看完，等 API 配好后我会按我的人设和记忆实时跟你说。');
     }
   };
 
@@ -137,25 +229,25 @@
     var ov=document.getElementById('screen-tatake');
     if(!ov){ ov=document.createElement('div'); ov.id='screen-tatake'; ov.className='topview'; var root=document.getElementById('screen')||document.body; root.appendChild(ov); }
     taTimers.forEach(function(t){clearTimeout(t);}); taTimers=[];
-    taTake={open:true, app:'home', running:true, step:0, queue:[], speech:[], selectedContact:null, selectedHidden:null, voice:true, report:null, snapshot:window.coupleTaBuildPhoneSnapshot(), acting:null};
+    taTake={open:true, app:'wechat', running:true, step:0, queue:[], speech:[], selectedContact:null, selectedHidden:null, voice:true, report:null, snapshot:window.coupleTaBuildPhoneSnapshot(), acting:{type:'open_app',app:'wechat'}};
     taTake.queue=window.coupleTaActionQueue(taTake.snapshot);
     ov.classList.add('active'); ov.style.background='#f6fbf8'; ov.style.color='#10251c'; ov.style.zIndex='90';
     addSpeech('system','\u5df2\u6388\u6743 TA \u67e5\u770b\u4f60\u5728 Fated OS \u91cc\u7684\u5c0f\u624b\u673a\u6570\u636e\u3002');
-    renderTaTakeover(); taTimers.push(setTimeout(runNext, 420));
+    renderTaTakeover(); taTimers.push(setTimeout(runNext, 80));
   };
   window.closeTaTakeover=function(){ taTimers.forEach(function(t){clearTimeout(t);}); taTimers=[]; taTake.open=false; taTake.running=false; var ov=document.getElementById('screen-tatake'); if(ov) ov.classList.remove('active'); };
-  window.taOpenApp=function(k){ taTake.running=false; taTake.app=k; taTake.snapshot=window.coupleTaBuildPhoneSnapshot(); renderTaTakeover(); };
+  window.taOpenApp=function(k){ taTake.running=false; taTake.app=k; taTake.acting={type:'manual_open_app',app:k}; taTake.snapshot=window.coupleTaBuildPhoneSnapshot(); renderTaTakeover(); window.coupleTaSpeak(taTake.acting, taTake.snapshot); };
   window.taBackHome=function(){ taTake.running=false; taTake.app='home'; renderTaTakeover(); };
   window.coupleTaToggleVoice=function(){ taTake.voice=!taTake.voice; renderTaTakeover(); };
   window.coupleTaSendUserLine=function(){ var i=document.getElementById('ta-user-line'); if(!i) return; var v=i.value.trim(); if(!v) return; i.value=''; addSpeech('user',v); renderTaTakeover(); window.coupleTaSpeak({type:'user_reply',text:v,app:taTake.app,currentContact:taTake.selectedContact}, window.coupleTaBuildPhoneSnapshot()); };
-  window.coupleTaOpenChat=function(id){ taTake.running=false; taTake.app='wechat'; taTake.selectedContact=id; taTake.acting={type:'inspect_chat',app:'wechat',contactId:id}; renderTaTakeover(); };
+  window.coupleTaOpenChat=function(id){ taTake.running=false; taTake.app='wechat'; taTake.selectedContact=id; taTake.acting={type:'inspect_chat',app:'wechat',contactId:id}; taTake.snapshot=window.coupleTaBuildPhoneSnapshot(); renderTaTakeover(); window.coupleTaSpeak(taTake.acting, taTake.snapshot); };
   window.coupleTaSelectHidden=function(id){ taTake.selectedHidden=id; renderTaTakeover(); };
 
   function shell(inner){
     var c=partner(); var running=taTake.running?'\u63a5\u7ba1\u4e2d':'\u624b\u52a8\u67e5\u770b';
     return '<div style="height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,#f7fffb 0%,#e8f7ef 100%);color:#10251c;">'+
       '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.78);border-bottom:1px solid rgba(71,119,92,.14);backdrop-filter:blur(14px);"><div onclick="closeTaTakeover()" style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(60,100,78,.18);cursor:pointer;font-size:19px;">\u2039</div><div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:800;">'+h(displayName(c,partnerId()))+' \u6b63\u5728\u67e5\u6211\u7684\u5c0f\u624b\u673a</div><div style="font-size:10px;color:#5f806f;margin-top:2px;">'+running+' ? '+h(actionTitle(taTake.acting))+'</div></div><div onclick="coupleTaToggleVoice()" style="font-size:10px;color:#234d39;border:1px solid rgba(60,100,78,.18);border-radius:999px;padding:6px 9px;cursor:pointer;">'+(taTake.voice?'Voice \u8bed\u97f3':'Text \u6587\u5b57')+'</div></div>'+
-      '<div style="flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;">'+inner+'</div>'+speechPanel()+'</div>';
+      '<div style="flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;">'+inner+'</div>'+speechPanel()+'</div>';
   }
   function speechPanel(){
     var rows=taTake.speech.slice(-6).map(function(m){ var mine=m.who==='user'; var sys=m.who==='system'; return '<div style="display:flex;justify-content:'+(mine?'flex-end':'flex-start')+';margin:5px 0;"><div style="max-width:84%;padding:8px 10px;border-radius:14px;font-size:11px;line-height:1.45;background:'+(sys?'rgba(74,119,91,.09)':(mine?'#2d6b4d':'#fff'))+';color:'+(mine?'#fff':'#1d3529')+';border:1px solid rgba(71,119,92,.12);">'+h(m.text)+'</div></div>'; }).join('');
@@ -176,14 +268,28 @@
   }
   function contactsHTML(s){ return '<div style="padding:10px;overflow:auto;">'+s.contacts.map(function(x){return '<div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(71,119,92,.12);border-radius:14px;padding:10px;margin-bottom:8px;"><div style="width:36px;height:36px;border-radius:12px;overflow:hidden;background:#e9f4ee;">'+avatarHTML(contacts[x.id])+'</div><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:850;">'+h(x.name)+'</div><div style="font-size:10px;color:#789084;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+h(x.persona||'\u672a\u586b\u5199\u4eba\u8bbe')+'</div></div>'+(x.id===partnerId()?'<div style="font-size:10px;color:#6b8a78;">TA</div>':'<div onclick="coupleTaHideContact(\''+x.id+'\');taOpenApp(\'contacts\')" style="font-size:11px;color:#b64747;font-weight:850;cursor:pointer;">\u5220\u9664</div>')+'</div>';}).join('')+restoreHTML()+'</div>'; }
   function listHTML(items, empty, mapper){ if(!items || !items.length) return card(empty,'\u6682\u65e0\u8bb0\u5f55',''); return items.map(mapper).join(''); }
+  function rowsHTML(items, empty, mapper){ return listHTML(arr(items), empty, mapper); }
+  function momentsHTML(s){ return '<div style="padding:10px;overflow:auto;">'+rowsHTML(s.moments,'Moments',function(x){return card('朋友圈', (x.authorId||'')+' · '+(x.likes||0)+'赞 / '+(x.comments||0)+'评', x.text||'');})+'</div>'; }
+  function forumHTML(s){ var f=s.forum||{}; return '<div style="padding:10px;overflow:auto;">'+card('Forum 论坛', '筛选 '+(f.filter||'全部'), 'TA 会查看你在论坛里的发帖、评论和互动痕迹。')+rowsHTML(f.posts,'Forum',function(x){return card(x.title||'帖子', (x.author||'匿名')+' · '+(x.likes||0)+'赞 / '+(x.comments||0)+'评', x.text||'');})+'</div>'; }
+  function musicHTML(s){ var m=s.music||{}; return '<div style="padding:10px;overflow:auto;">'+card('一起听', m.available?(m.playing?'正在听 ':'最近听 ')+(m.current||'未选择歌曲'):'暂无数据', '对象: '+(m.contactName||'未绑定')+' · 共听 '+(m.listeningDays||0)+' 天')+rowsHTML(m.songs,'Songs',function(x){return card(x.title||'歌曲', x.artist||'', '');})+'</div>'; }
+  function novelHTML(s){ var n=s.novel||{}; return '<div style="padding:10px;overflow:auto;">'+card('小说共读', n.available?(n.title||'未命名小说'):'暂无数据', '对象: '+(n.contactName||'未绑定')+' · 页数 '+((n.pageIdx||0)+1)+'/'+(n.pages||0))+card('当前片段', n.excerpt||'暂无正文', '')+rowsHTML(n.chat,'Novel Chat',function(x){return card(x.mine?'user':'联系人', x.text||'', '');})+'</div>'; }
+  function goHTML(s){ var g=s.go||{}; return '<div style="padding:10px;overflow:auto;">'+card('GO 直播', g.available?('连麦 '+(g.linkMicName||'无人')+' · 商品 '+arr(g.products).length+' 个'):'暂无数据', arr(g.events).slice(-4).join(' / '))+rowsHTML(g.products,'Products',function(x){return card(x.name||'商品', x.price||'', x.desc||'');})+rowsHTML(g.orders,'Orders',function(x){return card('订单', JSON.stringify(x), '');})+'</div>'; }
+  function nilflowHTML(s){ var n=s.nilflow||{}; return '<div style="padding:10px;overflow:auto;">'+card('匿流', n.available?((n.profile&&n.profile.id)||'匿名账号'):'暂无数据', '好友 '+arr(n.friends).length+' · 帖子 '+arr(n.posts).length)+rowsHTML(n.posts,'Nilflow Posts',function(x){return card(x.author||x.authorId||'匿名', x.text||'', (x.likes||0)+'赞 / '+(x.comments||0)+'评');})+rowsHTML(n.chats,'Nilflow Chats',function(x){return card(x.id, x.last||'暂无消息', x.count+' 条');})+'</div>'; }
+  function dreamHTML(s){ var d=s.dream||{}; return '<div style="padding:10px;overflow:auto;">'+card('雾织梦核', d.available?(d.worldName||'未命名世界'):'暂无数据', '阶段 '+(d.phase||'未开始')+' · 评级 '+(d.rank||'未结算'))+card('主线任务', d.objective||'暂无', '')+rowsHTML(d.messages,'Dream Messages',function(x){return card(x.role||'旁白', x.text||'', '');})+rowsHTML(d.choices,'Choices',function(x){return card('卡牌选择', x, '');})+'</div>'; }
+  function genericStateHTML(title,obj){ return '<div style="padding:10px;overflow:auto;">'+card(title, plain(JSON.stringify(obj||{})).slice(0,900)||'暂无记录', '')+'</div>'; }
+  function settingsHTML(s){ var cfg=s.settings||{}; return '<div style="padding:10px;overflow:auto;">'+card('API 设置', cfg.apiConfigured?'已配置':'未配置', 'Provider: '+(cfg.provider||'')+' · Model: '+(cfg.model||''))+card('语音 / 生图', 'TTS '+(cfg.tts?'已配置':'未配置')+' · Image '+(cfg.image?'已配置':'未配置'), '查岗实时语音会优先使用设置里的全局语音 API。')+'</div>'; }
   function appHTML(k,s){
     if(k==='wechat') return wechatHTML(s); if(k==='contacts') return contactsHTML(s);
-    if(k==='diary') return '<div style="padding:10px;overflow:auto;">'+listHTML(s.diary,'Diary',function(x){return card('\u65e5\u8bb0', typeof x==='string'?x:(x.title||x.date||'\u8bb0\u5f55'), typeof x==='string'?'':(x.text||x.body||''));})+'</div>';
-    if(k==='notes') return '<div style="padding:10px;overflow:auto;">'+listHTML(s.notes,'Notes',function(x){return card('\u5907\u5fd8', typeof x==='string'?x:(x.title||'\u5907\u5fd8'), typeof x==='string'?'':(x.text||x.body||''));})+'</div>';
-    if(k==='wallet') return '<div style="padding:10px;overflow:auto;">'+card('\u4f59\u989d', s.wallet.balance===null?'\u672a\u540c\u6b65':'? '+Number(s.wallet.balance).toFixed(2),'')+listHTML(s.wallet.tx,'Wallet',function(x){return card(x.title||'\u6d41\u6c34', (typeof x.amount==='number'?(x.amount>0?'+':'')+x.amount:'')+' '+(x.d||''),'');})+'</div>';
-    if(k==='shop') return '<div style="padding:10px;overflow:auto;">'+listHTML(s.shop,'Shop',function(x){return '<div style="display:flex;gap:10px;background:#fff;border:1px solid rgba(71,119,92,.12);border-radius:14px;padding:10px;margin-bottom:8px;">'+(x.img?'<img src="'+h(x.img)+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover;">':'<div style="width:48px;height:48px;border-radius:10px;background:#edf7f1;"></div>')+'<div><div style="font-size:12px;font-weight:850;">'+h(x.name||'\u5546\u54c1')+'</div><div style="font-size:11px;color:#5f806f;margin-top:4px;">'+h(x.price||'')+'</div></div></div>';})+'</div>';
-    if(k==='browse') return '<div style="padding:10px;overflow:auto;">'+listHTML(s.browse,'Browser',function(x){return card('\u6d4f\u89c8', x.text||x.title||String(x), x.date||'');})+'</div>';
-    return '<div style="padding:10px;overflow:auto;">'+card('Couple','\u68c0\u67e5\u5b8c\u6210', window.coupleTaReport?window.coupleTaReport():'')+'</div>';
+    if(k==='moments') return momentsHTML(s); if(k==='forum') return forumHTML(s);
+    if(k==='music') return musicHTML(s); if(k==='novel') return novelHTML(s); if(k==='go') return goHTML(s);
+    if(k==='nilflow') return nilflowHTML(s); if(k==='dream') return dreamHTML(s);
+    if(k==='game') return genericStateHTML('游戏', s.game); if(k==='suoha') return genericStateHTML('梭哈', s.suoha); if(k==='settings') return settingsHTML(s);
+    if(k==='diary') return '<div style="padding:10px;overflow:auto;">'+listHTML(s.diary,'Diary',function(x){return card('日记', typeof x==='string'?x:(x.title||x.date||'记录'), typeof x==='string'?'':(x.text||x.body||''));})+'</div>';
+    if(k==='notes') return '<div style="padding:10px;overflow:auto;">'+listHTML(s.notes,'Notes',function(x){return card('备忘', typeof x==='string'?x:(x.title||'备忘'), typeof x==='string'?'':(x.text||x.body||''));})+'</div>';
+    if(k==='wallet') return '<div style="padding:10px;overflow:auto;">'+card('余额', s.wallet.balance===null?'未同步':'¥ '+Number(s.wallet.balance).toFixed(2), '')+listHTML(s.wallet.tx,'Wallet',function(x){return card(x.title||'流水', (typeof x.amount==='number'?(x.amount>0?'+':'')+x.amount:'')+' '+(x.d||''), '');})+'</div>';
+    if(k==='shop') return '<div style="padding:10px;overflow:auto;">'+listHTML(s.shop,'Shop',function(x){return '<div style="display:flex;gap:10px;background:#fff;border:1px solid rgba(71,119,92,.12);border-radius:14px;padding:10px;margin-bottom:8px;">'+(x.img?'<img src="'+h(x.img)+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover;">':'<div style="width:48px;height:48px;border-radius:10px;background:#edf7f1;"></div>')+'<div><div style="font-size:12px;font-weight:850;">'+h(x.name||'商品')+'</div><div style="font-size:11px;color:#5f806f;margin-top:4px;">'+h(x.price||'')+'</div></div></div>';})+'</div>';
+    if(k==='browse') return '<div style="padding:10px;overflow:auto;">'+listHTML(s.browse,'Browser',function(x){return card('浏览', x.text||x.title||String(x), x.date||'');})+'</div>';
+    return '<div style="padding:10px;overflow:auto;">'+card('Couple','检查完成', window.coupleTaReport?window.coupleTaReport():'TA 已查看完站内小手机。')+restoreHTML()+'</div>';
   }
   function renderTaTakeover(){ var ov=document.getElementById('screen-tatake'); if(!ov) return; var s=taTake.snapshot||window.coupleTaBuildPhoneSnapshot(); if(taTake.app==='home') ov.innerHTML=homeHTML(); else ov.innerHTML=shell(appHTML(taTake.app,s)); var panel=document.querySelector('#screen-tatake [id="ta-user-line"]'); if(panel) panel.focus&&panel.focus(); }
 
