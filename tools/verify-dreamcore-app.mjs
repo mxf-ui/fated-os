@@ -83,6 +83,55 @@ if (!index.includes('id="dream-file-input"')) fail('Dream sheet needs a hidden f
 if (!css.includes('.dream-slot-preview')) fail('Dream CSS must render save slot wallpaper previews.');
 if (!css.includes('.dream-scene-image')) fail('Dream CSS must render uploaded dungeon scene images.');
 if (!css.includes('@keyframes dreamSlotWake')) fail('Dream CSS must include a save-slot wake animation.');
+
+[
+  'id="dream-view-setup"',
+  'id="dream-view-run"',
+  'id="dream-doc-input"',
+  'id="dream-world-name"',
+  'id="dream-era-input"',
+  'id="dream-rules-input"',
+  'id="dream-npc-input"',
+  'id="dream-factions-input"',
+  'id="dream-resources-input"',
+  'id="dream-rewards-input"',
+  'id="dream-templates-input"'
+].forEach((needle) => {
+  if (!index.includes(needle)) fail('Dream V1 split-view/backend UI missing: ' + needle);
+});
+
+[
+  'function dreamRenderView',
+  'function dreamReadWorldForm',
+  'function dreamPickWorldDoc',
+  'function dreamBindDocInput',
+  'function dreamToggleContactPermission',
+  'function dreamUpdateContactRole',
+  'function dreamOpenRunView',
+  'function dreamBackToSetup',
+  'worldConfig',
+  'contactSettings',
+  'rewardPool',
+  'templateLibrary',
+  'inventory'
+].forEach((needle) => {
+  if (!dream.includes(needle)) fail('Dream V1 behavior missing: ' + needle);
+});
+
+[
+  '.dream-view',
+  '.dream-view.active',
+  '.dream-run-page',
+  '.dream-world-grid',
+  '.dream-field',
+  '.dream-contact-role',
+  '.dream-run-back',
+  '.dream-progress-track',
+  '.dream-inventory'
+].forEach((needle) => {
+  if (!css.includes(needle)) fail('Dream V1 CSS missing: ' + needle);
+});
+
 if (!dream.includes("['S+','S','A','B','C']")) fail('Dream scoring must use the required ranks.');
 if (/[\u{1F300}-\u{1FAFF}]/u.test(dream + css)) fail('Dream feature must not contain emoji glyphs.');
 
