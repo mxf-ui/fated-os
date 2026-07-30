@@ -65,7 +65,7 @@ function gh(method, path, body) {
     tree: blobs
   });
   const commit = await gh('POST', '/repos/' + owner + '/' + repo + '/git/commits', {
-    message: 'Fix NilFlow scroll and global API replies',
+    message: 'Upgrade NilFlow AI chat and post interactions',
     tree: tree.sha,
     parents: [baseSha]
   });

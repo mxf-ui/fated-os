@@ -76,3 +76,13 @@
 .nilflow-toast{ position:fixed; left:50%; bottom:86px; z-index:9999; transform:translateX(-50%) translateY(18px); opacity:0; pointer-events:none; background:rgba(18,35,30,.92); color:#fff; border-radius:999px; padding:10px 14px; font-size:12px; transition:.2s ease; }
 .nilflow-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 @media (min-width:520px){ .nilflow-message-layout{ display:grid; grid-template-columns:188px 1fr; } .nilflow-session-list{ min-height:0; overflow-y:auto; overflow-x:hidden; flex-direction:column; } .nilflow-session{ min-width:0; width:100%; } }
+.nilflow-post-actions button.active{ background:#1f6b5c; color:#fff; border-color:#1f6b5c; }
+.nilflow-comments{ margin-top:10px; padding-top:10px; border-top:1px solid rgba(20,45,39,.08); display:flex; flex-direction:column; gap:8px; }
+.nilflow-comment{ display:flex; align-items:flex-start; gap:8px; font-size:12px; line-height:1.5; }
+.nilflow-comment b{ flex:0 0 auto; max-width:92px; color:#1f6b5c; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nilflow-comment span{ min-width:0; color:#26352f; word-break:break-word; }
+.nilflow-comment.muted span{ color:#84908c; font-size:11px; }
+.nilflow-comment-box{ display:flex; gap:8px; align-items:center; }
+.nilflow-comment-box input{ flex:1 1 auto; min-width:0; border:1px solid rgba(31,107,92,.14); border-radius:999px; background:#fbfefd; color:#111816; outline:none; padding:9px 11px; font-size:12px; box-sizing:border-box; }
+.nilflow-comment-box button,.nilflow-inline-retry{ border:1px solid rgba(31,107,92,.16); border-radius:999px; background:#e6f5ef; color:#1f6b5c; padding:7px 10px; font-size:11px; font-weight:800; }
+.nilflow-inline-retry{ display:block; margin:7px auto 0; }
