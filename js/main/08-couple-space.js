@@ -155,7 +155,8 @@ function coupleGenData(){
 
 function updateCoupleHeader(){
   var c = contacts[coupleState.partner];
-  document.getElementById('couple-names').textContent = userName + ' & ' + (c?c.name:'Partner');
+  var namesEl = document.getElementById('couple-names');
+  if(namesEl) namesEl.textContent = userName + ' & ' + (c?c.name:'Partner');
   // Update avatars
   var meAv = document.getElementById('couple-av-me');
   if(meAv){
@@ -168,18 +169,27 @@ function updateCoupleHeader(){
     pAv.style.background = c ? 'transparent' : '#eee';
   }
   var days = Math.floor((Date.now()-new Date('2026-04-12').getTime())/86400000);
-  document.getElementById('couple-days').textContent = 'Together '+days+' days';
+  var daysEl = document.getElementById('couple-days');
+  if(daysEl) daysEl.textContent = 'Together '+days+' days';
 }
 
 function coupleShowMain(){
-  document.getElementById('couple-main').style.display='block';
-  document.getElementById('couple-subview').style.display='none';
-  document.getElementById('couple-phone').style.display='none';
+  var main=document.getElementById('couple-main');
+  var sub=document.getElementById('couple-subview');
+  var phone=document.getElementById('couple-phone');
+  if(main){ main.style.display='block'; main.classList.add('couple-shell-green'); }
+  if(sub){ sub.style.display='none'; sub.classList.add('couple-shell-green'); }
+  if(phone){ phone.style.display='none'; phone.classList.add('couple-shell-green'); }
+  if(window.coupleRenderMainShell) window.coupleRenderMainShell();
 }
 function coupleBack(){
-  document.getElementById('couple-main').style.display='block';
-  document.getElementById('couple-subview').style.display='none';
-  document.getElementById('couple-phone').style.display='none';
+  var main=document.getElementById('couple-main');
+  var sub=document.getElementById('couple-subview');
+  var phone=document.getElementById('couple-phone');
+  if(main){ main.style.display='block'; main.classList.add('couple-shell-green'); }
+  if(sub){ sub.style.display='none'; sub.classList.add('couple-shell-green'); }
+  if(phone){ phone.style.display='none'; phone.classList.add('couple-shell-green'); }
+  if(window.coupleRenderMainShell) window.coupleRenderMainShell();
 }
 
 // === CHECK PARTNER'S PHONE ===
@@ -435,9 +445,12 @@ function coupleSendCheckin(){
 }
 
 function coupleShowSub(title,html){
-  document.getElementById('couple-main').style.display='none';
-  document.getElementById('couple-phone').style.display='none';
-  document.getElementById('couple-subview').style.display='block';
+  var main=document.getElementById('couple-main');
+  var phone=document.getElementById('couple-phone');
+  var sub=document.getElementById('couple-subview');
+  if(main){ main.style.display='none'; main.classList.add('couple-shell-green'); }
+  if(phone){ phone.style.display='none'; phone.classList.add('couple-shell-green'); }
+  if(sub){ sub.style.display='block'; sub.classList.add('couple-shell-green'); }
   document.getElementById('couple-subtitle').textContent = title;
   document.getElementById('couple-subcontent').innerHTML = html;
 }

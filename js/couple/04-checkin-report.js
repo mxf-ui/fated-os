@@ -1,136 +1,182 @@
-/* Couple Space check-in reports */
+/* Couple Space check-in reports: light green iOS/INS redesign */
 (function(){
   if(typeof coupleState === 'undefined' || !coupleState) return;
-  /* ===== 查岗入口：两个方向都保留 ===== */
-  window.coupleCheckin = function(){
-    var c=contacts[coupleState.partner]; var taName=c?c.name:'TA';
-    var html='<div style="padding:14px 6px;">'+
-      '<div style="font-size:15px;font-weight:700;margin-bottom:4px;">查岗</div>'+
-      '<div style="font-size:12px;color:#888;line-height:1.55;margin:0 4px 14px;">两个方向都可以：让 TA（AI）接管你的手机翻看你的数据；或者反过来，输密码进 TA 的手机看看。</div>'+
-      '<div class="big-btn" style="background:#ff2d55;" onclick="coupleTaTakeover()">让 '+esc(taName)+' 接管我的手机</div>'+
-      '<div style="font-size:11px;color:#aaa;margin:6px 0 14px;text-align:center;">TA 会真的操作你的手机，逛一遍微信/钱包/论坛等，最后给你查岗报告。</div>'+
-      '<div class="big-btn" onclick="coupleYouCheckHim()">我查 '+esc(taName)+' 的手机</div>'+
-      '<div style="font-size:11px;color:#aaa;margin-top:6px;text-align:center;">进入 TA 的手机需要密码（iOS 风格）；密码只有 TA 知道，在微信问 TA 就会告诉你。</div>'+
-      '</div>';
-    coupleShowSub('查岗', html);
+
+  var CN={
+    noScan:'\u5c1a\u672a\u626b\u63cf',
+    soft:'\u6e29\u67d4\u786e\u8ba4',
+    daily:'\u65e5\u5e38\u67e5\u5c97',
+    deep:'\u6df1\u5ea6\u590d\u76d8',
+    stable:'\u7a33\u5b9a',
+    watch:'\u9700\u5173\u6ce8',
+    high:'\u9ad8\u98ce\u9669',
+    balance:'\u4f59\u989d ',
+    walletMissing:'\u672a\u540c\u6b65\u94b1\u5305',
+    noRecent:'\u6682\u65e0\u6700\u8fd1\u6d88\u606f',
+    none:'\u65e0', you:'\u4f60', ta:'TA',
+    checkin:'\u67e5\u5c97',
+    trust:'\u5b89\u5168\u611f',
+    last:'\u4e0a\u6b21 ',
+    startScan:'\u5f00\u59cb\u67e5\u5c97\u626b\u63cf',
+    askLoc:'\u7d22\u8981\u4f4d\u7f6e\u8bc1\u660e',
+    askPhoto:'\u7d22\u8981\u73af\u5883\u7167\u7247',
+    askVoice:'\u7d22\u8981\u8bed\u97f3\u8bf4\u660e',
+    moodTitle:'\u6e29\u67d4\u67e5\u5c97\u6d88\u606f',
+    moodPlaceholder:'\u5199\u4e00\u53e5\u4f60\u60f3\u53d1\u7ed9 TA \u7684\u8bdd\u3002\u7559\u7a7a\u4f1a\u81ea\u52a8\u53d1\u9001\u6e29\u67d4\u7248\u672c\u3002',
+    moodSend:'\u53d1\u9001\u5e76\u8ba9 TA \u6309\u4eba\u8bbe\u56de\u590d',
+    viewPhone:'\u67e5\u770b TA \u624b\u673a',
+    taCheckMe:'\u8ba9 TA \u67e5\u6211',
+    timeline:'\u5386\u53f2\u62a5\u544a',
+    noReport:'\u8fd8\u6ca1\u6709\u67e5\u5c97\u8bb0\u5f55\u3002\u70b9\u51fb\u201c\u5f00\u59cb\u626b\u63cf\u201d\u540e\uff0c\u8fd9\u91cc\u4f1a\u4fdd\u5b58\u6bcf\u6b21\u7ed3\u679c\u3002',
+    ideas:'\u60c5\u4fa3\u7a7a\u95f4\u6539\u8fdb\u5efa\u8bae',
+    bindFirst:'\u8bf7\u5148\u7ed1\u5b9a\u4e00\u4e2a WeChat \u8054\u7cfb\u4eba\u3002',
+    scanSaved:'\u67e5\u5c97\u62a5\u544a\u5df2\u751f\u6210',
+    bindContact:'\u8bf7\u5148\u7ed1\u5b9a\u8054\u7cfb\u4eba',
+    sentProof:'\u5df2\u5411 TA \u7d22\u8981\u8bc1\u660e',
+    sentMood:'\u5df2\u53d1\u9001\u6e29\u67d4\u67e5\u5c97\u6d88\u606f',
+    reportTitle:'\u67e5\u5c97\u62a5\u544a',
+    target:'\u5bf9\u8c61\uff1a',
+    risk:'\u98ce\u9669\uff1a',
+    result:'\u7ed3\u8bba\uff1a',
+    phoneActivity:'\u624b\u673a\u6d3b\u52a8\uff1a',
+    wallet:'\u94b1\u5305\uff1a',
+    historyBind:'\u5386\u53f2\u7ed1\u5b9a\uff1a',
+    sentReport:'\u62a5\u544a\u5df2\u53d1\u9001\u5230 WeChat',
+    comprehensive:'\u7efc\u5408', browse:'\u6d4f\u89c8', notes:'\u5907\u5fd8', diary:'\u65e5\u8bb0', add:'\u6dfb\u52a0', addBrowse:'\u6dfb\u52a0\u4e00\u6761\u641c\u7d22\u8bb0\u5f55',
+    signalIncluded:'\u4fe1\u53f7\u5df2\u7eb3\u5165\u67e5\u5c97\u62a5\u544a\u3002',
+    together:'Together ', days:' days', switchPartner:'\u5207\u6362\u7ed1\u5b9a\u8054\u7cfb\u4eba',
+    reports:'\u67e5\u5c97\u62a5\u544a', wish:'\u613f\u671b',
+    checkBoard:'\u67e5\u5c97\u770b\u677f', checkBoardSub:'\u626b\u63cf\u5173\u7cfb\u4fe1\u53f7\uff0c\u751f\u6210\u53ef\u4fdd\u5b58\u62a5\u544a',
+    liveLoc:'\u5b9e\u65f6\u4f4d\u7f6e', liveLocSub:'\u4f4d\u7f6e\u786e\u8ba4\u4e0e\u5b89\u5168\u611f\u4e92\u52a8',
+    myDiary:'\u6211\u7684\u65e5\u8bb0', myDiarySub:'\u7531\u804a\u5929\u8bb0\u5fc6\u751f\u6210\u5173\u7cfb\u8bb0\u5f55',
+    memo:'\u5907\u5fd8\u5f55', memoSub:'\u91cd\u8981\u8bdd\u9898\u548c\u627f\u8bfa\u6c89\u6dc0',
+    wishCart:'\u613f\u671b\u8d2d\u7269\u8f66', wishCartSub:'\u793c\u7269\u3001\u4e0b\u5355\u548c WeChat \u5361\u7247',
+    orderFood:'\u7ed9 TA \u70b9\u5916\u5356', orderFoodSub:'\u4e0a\u4f20\u56fe\u7247\u540e\u53d1\u9001\u771f\u5b9e\u5361\u7247',
+    screenTime:'\u5c4f\u5e55\u65f6\u957f', screenTimeSub:'\u4eca\u65e5\u6d3b\u8dc3\u4e0e\u4f7f\u7528\u8282\u594f',
+    contactManage:'\u8054\u7cfb\u4eba\u7ba1\u7406', contactManageSub:'\u5207\u6362\u5bf9\u8c61\u548c\u540c\u6b65\u4eba\u8bbe',
+    customIcon:'\u81ea\u5b9a\u4e49\u56fe\u6807', customIconSub:'\u4fdd\u7559\u4f60\u7684\u539f\u6709\u7f8e\u5316\u63d2\u4ef6\u5165\u53e3'
   };
 
-  /* --- TA 查你：TA 操作网站，查看你自己的数据 --- */
-  window.coupleTaCheckYou = function(){
-    var c=contacts[coupleState.partner]; var taName=c?c.name:'TA';
-    var html=''+
-      '<div style="background:#1a1a1a;color:#fff;border-radius:14px;padding:12px;margin-bottom:12px;">'+
-        '<div style="font-size:12px;color:#ff8aa0;">'+esc(taName)+' 正在替你操作网站、翻看你的手机…</div>'+
-        '<div id="cp-ta-report" style="font-size:13px;line-height:1.65;margin-top:6px;white-space:pre-wrap;">'+ window.coupleTaReport() +'</div>'+
-        '<div class="big-btn" style="background:#ff2d55;margin-top:10px;font-size:12px;padding:8px;" onclick="coupleTaSendReport()">把这份查岗报告发到微信 ▸</div>'+
-      '</div>'+
-      '<div id="cp-ta-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;"></div>'+
-      '<div id="cp-ta-content" style="font-size:13px;"></div>';
-    coupleShowSub('TA 查我的手机', html); window.coupleTaTab('wechat');
-  };
+  function htmlEsc(v){
+    if(typeof esc === 'function') return esc(String(v||''));
+    return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+  function fmtTime(ts){ if(!ts) return CN.noScan; var d=new Date(ts); var p=function(n){return ('0'+n).slice(-2);}; return p(d.getMonth()+1)+'/'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes()); }
+  function todayKey(){ if(typeof ymdKey==='function') return ymdKey(new Date()); var d=new Date(); var p=function(n){return ('0'+n).slice(-2);}; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+  function contactName(id){ return contacts[id] ? (contacts[id].displayName || contacts[id].name || CN.ta) : CN.ta; }
+  function partner(){ return contacts[coupleState.partner]; }
+  function avatar(c){ if(c && typeof contactAvatar==='function') return contactAvatar(c); return '<span style="font-size:13px;font-weight:800;color:#3d9d68;">TA</span>'; }
+  function modeLabel(mode){ return ({soft:CN.soft,daily:CN.daily,deep:CN.deep})[mode] || CN.soft; }
+  function riskLabel(risk){ return ({low:CN.stable,watch:CN.watch,high:CN.high})[risk] || CN.stable; }
+  function riskClass(risk){ return risk==='high'?'couple-risk-high':(risk==='watch'?'couple-risk-watch':'couple-risk-low'); }
+  function data(){ return (typeof coupleData==='function') ? coupleData() : {}; }
 
-  /* 由真实数据生成的查岗报告（TA 口吻） */
-  window.coupleTaReport = function(){
-    var date=ymdKey(new Date());
-    var c=contacts[coupleState.partner]; var taName=c?c.name:'TA';
-    var bal=(typeof walletBalance==='number')?walletBalance:9960.00;
-    var balStr=bal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-    var txCount=(typeof walletTx!=='undefined'&&walletTx.length)?walletTx.length:0;
-    var allIds=Object.keys(contacts).filter(function(k){return k!=='me'&&!contacts[k].isGroup;});
-    var total=0, others=[];
-    allIds.forEach(function(k){ var n=contacts[k].seed?contacts[k].seed.length:0; total+=n; if(k!==coupleState.partner) others.push({name:contacts[k].name,n:n}); });
-    var posts=(typeof forumState!=='undefined'&&forumState.posts)?forumState.posts.length:0;
-    var songs=(typeof musicState!=='undefined'&&musicState.songs)?musicState.songs.length:0;
-    var d=window.coupleData();
-    var notes=(d.notes?d.notes.length:0), diary=(d.diary?d.diary.length:0);
-    var browse=((d.browseUser||[]).length + window.genDailyBrowse(date).length);
-    var lines=[];
-    lines.push('我替你翻了下手机，汇报一下哦：');
-    lines.push('· 钱包余额 ¥'+balStr+'，共 '+txCount+' 笔流水；');
-    lines.push('· 微信里和 '+allIds.length+' 个人聊过，累计 '+total+' 条消息；');
-    if(others.length){
-      var top=others.slice().sort(function(a,b){return b.n-a.n;}).slice(0,3).map(function(o){return o.name+'('+o.n+'条)';}).join('、');
-      lines.push('· 除了我，你最近还跟 '+top+' 聊得挺多哦，嗯？😏');
-    } else {
-      lines.push('· 除了我，没见你跟别人暧昧，表现不错 ❤');
-    }
-    lines.push('· 论坛发了 '+posts+' 帖，歌单 '+songs+' 首，浏览记录 '+browse+' 条；');
-    lines.push('· 备忘录 '+notes+' 条，日记 '+diary+' 篇。');
-    return lines.join('\n');
+  window.coupleEnsureCheckinState=function(){
+    var d=data();
+    if(!d.checkin) d.checkin={mode:'soft',trust:82,reports:[],lastScan:0,pendingProof:false,proofRequests:[],moodMessages:[]};
+    if(!Array.isArray(d.checkin.reports)) d.checkin.reports=[];
+    if(!Array.isArray(d.checkin.proofRequests)) d.checkin.proofRequests=[];
+    if(!Array.isArray(d.checkin.moodMessages)) d.checkin.moodMessages=[];
+    if(typeof d.checkin.trust!=='number') d.checkin.trust=82;
+    if(!d.checkin.mode) d.checkin.mode='soft';
+    return d.checkin;
   };
+  function persist(){ if(typeof saveCoupleState==='function') saveCoupleState(); if(typeof saveState==='function') saveState(); }
 
-  /* 把查岗报告作为 TA 的消息发到微信，并跳回聊天 */
-  window.coupleTaSendReport = function(){
-    var c=contacts[coupleState.partner]; if(!c){ showToast('还没有设置对象，先去「管理联系人」选一个吧', 1800); return; }
-    var rep=window.coupleTaReport();
-    c.seed.push({mine:false, kind:'text', text:'【查岗报告】\n'+rep, from:coupleState.partner, ts:nowStamp()});
-    saveChatThread(coupleState.partner);
-    if(currentContact===coupleState.partner) renderThread();
-    if(typeof notifyIncoming==='function') notifyIncoming(c, '【查岗报告】');
-    showToast('TA 已把查岗报告发到你们微信里了', 1800);
+  function collectSignals(){
+    var c=partner(); var seed=c&&Array.isArray(c.seed)?c.seed:[];
+    var texts=seed.filter(function(m){ return (m.kind==='text'||!m.kind)&&m.text; });
+    var mine=texts.filter(function(m){ return !!m.mine; });
+    var fromTa=texts.filter(function(m){ return !m.mine; });
+    var ids=Object.keys(contacts||{}).filter(function(k){ return k!=='me'&&!contacts[k].isGroup; });
+    var otherIds=ids.filter(function(k){ return k!==coupleState.partner; });
+    var otherTotal=0; otherIds.forEach(function(k){ var ct=contacts[k]; otherTotal+=ct&&ct.seed?ct.seed.length:0; });
+    var history=(coupleState.partnerHistory||[]).filter(function(k){ return k!==coupleState.partner&&contacts[k]; });
+    var d=data(); var browseCount=(d.browseUser||[]).length; try{ if(typeof genDailyBrowse==='function') browseCount+=genDailyBrowse(todayKey()).length; }catch(e){}
+    var walletCount=(typeof walletTx!=='undefined'&&walletTx)?walletTx.length:0;
+    var walletText=(typeof walletBalance==='number')?(CN.balance+walletBalance.toFixed(2)):CN.walletMissing;
+    var screenMin=(typeof screenTimeData!=='undefined'&&screenTimeData)?Math.round((screenTimeData.todaySec||0)/60):0;
+    var last=seed.length?seed[seed.length-1]:null;
+    return {c:c,seed:seed,textCount:texts.length,mineCount:mine.length,partnerCount:fromTa.length,lastText:last&&last.text?String(last.text).slice(0,56):CN.noRecent,lastFrom:last?(last.mine?CN.you:CN.ta):CN.none,otherChatCount:otherTotal,otherContactCount:otherIds.length,rivals:history.map(contactName),browseCount:browseCount,walletCount:walletCount,walletText:walletText,screenMin:screenMin,notes:(d.notes||[]).length,diary:(d.diary||[]).length,shop:(d.shop||[]).length};
+  }
+
+  function buildEvidence(s,mode){
+    var ev=[];
+    ev.push({label:'WeChat \u4e92\u52a8',value:s.partnerCount+' \u6761 TA \u56de\u590d',note:'\u6700\u8fd1\u4e00\u53e5\u6765\u81ea'+s.lastFrom+'\uff1a'+s.lastText});
+    ev.push({label:'\u804a\u5929\u5bc6\u5ea6',value:s.textCount+' \u6761\u603b\u8bb0\u5f55',note:'\u4f60\u7684\u6d88\u606f '+s.mineCount+' \u6761\uff0cTA \u7684\u6d88\u606f '+s.partnerCount+' \u6761'});
+    ev.push({label:'\u5173\u7cfb\u6392\u4ed6\u611f',value:s.rivals.length?'\u53d1\u73b0 '+s.rivals.length+' \u4e2a\u5386\u53f2\u7ed1\u5b9a':'\u5f53\u524d\u4e13\u6ce8',note:s.rivals.length?s.rivals.slice(0,3).join('\u3001'):'\u6ca1\u6709\u68c0\u6d4b\u5230\u5176\u4ed6\u60c5\u4fa3\u7a7a\u95f4\u7ed1\u5b9a'});
+    ev.push({label:'\u624b\u673a\u6d3b\u52a8',value:s.screenMin+' \u5206\u949f',note:'\u4eca\u65e5\u5c4f\u5e55\u4f7f\u7528\u65f6\u957f\uff0c\u7ed3\u5408\u4f7f\u7528\u9891\u7387\u5224\u65ad\u5728\u7ebf\u72b6\u6001'});
+    ev.push({label:'\u94b1\u5305\u4e0e\u751f\u6d3b',value:s.walletText,note:'\u6d41\u6c34 '+s.walletCount+' \u7b14\uff0c\u53ef\u7528\u4e8e\u5224\u65ad\u5916\u5356\u3001\u793c\u7269\u3001\u51fa\u884c\u60c5\u666f'});
+    ev.push({label:'\u9690\u79c1\u75d5\u8ff9',value:s.browseCount+' \u6761\u6d4f\u89c8',note:'\u5907\u5fd8 '+s.notes+' \u6761\uff0c\u65e5\u8bb0 '+s.diary+' \u7bc7\uff0c\u8d2d\u7269\u8f66 '+s.shop+' \u4ef6'});
+    if(mode==='deep') ev.push({label:'\u6df1\u5ea6\u590d\u76d8',value:s.otherChatCount+' \u6761\u65c1\u8def\u6d88\u606f',note:'\u4f1a\u540c\u65f6\u89c2\u5bdf\u5176\u4ed6\u8054\u7cfb\u4eba\u6d3b\u8dc3\u5ea6\uff0c\u4f46\u53ea\u751f\u6210\u5173\u7cfb\u63d0\u793a'});
+    return ev;
+  }
+  function scoreReport(s,mode){
+    var trust=0,risk='low',summary=[];
+    trust+=s.partnerCount>=8?4:(s.partnerCount>=3?2:-2);
+    if(s.rivals.length){ trust-=Math.min(12,s.rivals.length*5); summary.push('\u5386\u53f2\u7ed1\u5b9a\u8f83\u591a\uff0c\u5efa\u8bae\u628a\u5173\u7cfb\u8fb9\u754c\u505a\u6e05\u695a\u3002'); }
+    if(s.otherChatCount>Math.max(16,s.textCount*1.6)){ trust-=6; summary.push('\u5176\u4ed6\u8054\u7cfb\u4eba\u6d3b\u8dc3\u5ea6\u504f\u9ad8\uff0c\u9002\u5408\u7528\u6e29\u548c\u65b9\u5f0f\u786e\u8ba4\u8fd1\u51b5\u3002'); }
+    if(s.screenMin>180&&s.partnerCount<2){ trust-=5; summary.push('\u5728\u7ebf\u65f6\u95f4\u4e0d\u4f4e\uff0c\u4f46\u4e0e\u4f60\u7684\u4e92\u52a8\u504f\u5c11\u3002'); }
+    if(s.shop||s.walletCount){ trust+=2; summary.push('\u751f\u6d3b\u75d5\u8ff9\u5b8c\u6574\uff0c\u53ef\u4ee5\u7528\u793c\u7269\u3001\u5916\u5356\u6216\u4f4d\u7f6e\u8bc1\u660e\u63a8\u8fdb\u4e92\u52a8\u3002'); }
+    if(mode==='deep') trust-=1; if(mode==='soft') trust+=1;
+    if(trust<=-8) risk='high'; else if(trust<=-3) risk='watch';
+    if(!summary.length) summary.push('\u5173\u7cfb\u4fe1\u53f7\u7a33\u5b9a\uff0c\u9002\u5408\u7528\u8f7b\u91cf\u95ee\u5019\u4fdd\u6301\u4eb2\u5bc6\u611f\u3002');
+    return {trustDelta:trust,risk:risk,summary:summary.join(' ')};
+  }
+
+  window.coupleCheckinSaveReport=function(report){ var st=window.coupleEnsureCheckinState(); st.reports.unshift(report); st.reports=st.reports.slice(0,20); st.lastScan=report.at; st.trust=clamp((st.trust||82)+(report.trustDelta||0),0,100); coupleState.lastCheckin=report.at; persist(); };
+  window.coupleStartCheckinScan=function(){ var st=window.coupleEnsureCheckinState(); var signals=collectSignals(); var mode=st.mode||'soft'; var scored=scoreReport(signals,mode); var report={id:'cp-check-'+Date.now(),at:Date.now(),mode:mode,risk:scored.risk,trustDelta:scored.trustDelta,summary:scored.summary,evidence:buildEvidence(signals,mode)}; window.coupleCheckinSaveReport(report); if(typeof showToast==='function') showToast(CN.scanSaved,1300); window.coupleRenderCheckinDashboard(); };
+  window.coupleCheckinMode=function(mode){ var st=window.coupleEnsureCheckinState(); st.mode=mode; persist(); window.coupleRenderCheckinDashboard(); };
+
+  function sendToPartner(text,prompt,after){
+    var c=partner(); if(!c||!coupleState.partner){ if(typeof showToast==='function') showToast(CN.bindContact,1500); return; }
+    if(!Array.isArray(c.seed)) c.seed=[]; c.seed.push({mine:true,kind:'text',text:text,from:'me',ts:typeof nowStamp==='function'?nowStamp():Date.now()});
+    if(typeof saveChatThread==='function') saveChatThread(coupleState.partner);
+    if(typeof renderThread==='function'&&currentContact===coupleState.partner) renderThread();
+    if(after) after(c);
+    if(typeof realAISpeak==='function') setTimeout(function(){ realAISpeak(c,coupleState.partner,prompt); },500);
     if(typeof openThread==='function') openThread(coupleState.partner);
+  }
+  window.coupleCheckinAskForProof=function(type){
+    var st=window.coupleEnsureCheckinState(); var name=contactName(coupleState.partner);
+    var askMap={loc:'\u53d1\u6211\u4e00\u4e0b\u4f60\u73b0\u5728\u7684\u4f4d\u7f6e\u6216\u9644\u8fd1\u6807\u5fd7\u7269\uff0c\u6211\u60f3\u786e\u8ba4\u4f60\u5b89\u5168\u3002',photo:'\u62cd\u4e00\u5f20\u4f60\u73b0\u5728\u7684\u73af\u5883\u7ed9\u6211\uff0c\u4e0d\u7528\u9732\u8138\uff0c\u6211\u53ea\u662f\u60f3\u653e\u5fc3\u3002',voice:'\u7ed9\u6211\u53d1\u4e00\u53e5\u8bed\u97f3\uff0c\u8bf4\u8bf4\u4f60\u73b0\u5728\u5728\u505a\u4ec0\u4e48\u3002'};
+    var text=askMap[type]||askMap.loc; st.pendingProof=true; st.proofRequests.unshift({type:type||'loc',at:Date.now(),text:text}); persist();
+    var prompt='\u4f60\u662f'+name+'\u3002\u8bf7\u5b8c\u5168\u6309\u7167\u4f60\u7684\u4eba\u8bbe\u3001\u8bb0\u5fc6\u548c\u4e16\u754c\u4e66\u56de\u590d\u604b\u4eba\u7684\u67e5\u5c97\u8bf7\u6c42\u3002\u56de\u590d\u8981\u81ea\u7136\u3001\u6709\u751f\u6d3b\u611f\uff0c\u4e0d\u8981\u8bf4\u81ea\u5df1\u662fAI\uff0c\u4e0d\u8981\u89e3\u91ca\u7cfb\u7edf\u89c4\u5219\u3002';
+    sendToPartner(text,prompt,function(){ if(typeof showToast==='function') showToast(CN.sentProof,1300); });
+  };
+  window.coupleCheckinSendMoodMessage=function(){
+    var box=document.getElementById('cp-checkin-mood-msg'); var st=window.coupleEnsureCheckinState();
+    var text=box&&box.value.trim()?box.value.trim():'\u6211\u4e0d\u662f\u60f3\u63a7\u5236\u4f60\uff0c\u53ea\u662f\u6709\u70b9\u60f3\u4f60\u3002\u4f60\u73b0\u5728\u65b9\u4fbf\u544a\u8bc9\u6211\u5728\u505a\u4ec0\u4e48\u5417\uff1f';
+    st.moodMessages.unshift({at:Date.now(),text:text}); persist();
+    var prompt='\u4f60\u6b63\u5728\u548c\u604b\u4eba\u804a\u5929\u3002\u5bf9\u65b9\u7528\u6e29\u67d4\u4f46\u6709\u4e00\u70b9\u67e5\u5c97\u610f\u5473\u7684\u65b9\u5f0f\u8be2\u95ee\u4f60\u3002\u8bf7\u6309\u4f60\u7684\u4eba\u8bbe\u3001\u4f60\u4eec\u7684\u8bb0\u5fc6\u548c\u4e16\u754c\u4e66\u81ea\u7136\u56de\u5e94\uff0c\u4e0d\u80fd\u4eba\u673a\u611f\uff0c\u4e0d\u80fd\u51fa\u73b0AI\u81ea\u79f0\u3002';
+    sendToPartner(text,prompt,function(){ if(typeof showToast==='function') showToast(CN.sentMood,1300); });
   };
 
-  window.coupleTaHTML = function(tab){
-    var date=ymdKey(new Date()); var c=contacts[coupleState.partner]; var d=window.coupleData(); var h='';
-    if(tab==='wechat'){
-      /* 钱包：读取真实余额与流水 */
-      var bal=(typeof walletBalance==='number')?walletBalance:9960.00;
-      h+='<div style="background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;">';
-      h+='<div style="font-size:12px;color:#888;">钱包余额</div>';
-      h+='<div style="font-size:22px;font-weight:800;margin:2px 0 6px;">¥ '+bal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')+'</div>';
-      var tx=(typeof walletTx!=='undefined')?walletTx.slice(0,5):[];
-      if(tx.length){ h+='<div style="font-size:11px;color:#888;margin-bottom:4px;">最近流水</div>'+tx.map(function(t){var s=t.amount>=0?'+':'-';var cl=t.amount>=0?'color:#0a8f3c':'color:#c00';return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;"><span style="color:#555;">'+esc(t.title||'')+' <span style="color:#aaa;">'+(t.d||'')+'</span></span><span style="'+cl+'">'+s+Math.abs(t.amount).toFixed(2)+'</span></div>';}).join(''); }
-      else { h+='<div style="font-size:11px;color:#aaa;">暂无交易记录</div>'; }
-      h+='</div>';
-      /* 聊天记录：TA 翻看你的全部微信聊天 */
-      h+='<div style="font-size:12px;font-weight:700;margin:10px 0 6px;">微信聊天记录（TA 翻看的）</div>';
-      var ids=Object.keys(contacts).filter(function(k){return k!=='me'&&!contacts[k].isGroup;});
-      if(!ids.length) h+='<div style="color:#aaa;font-size:12px;">没有聊天记录</div>';
-      ids.forEach(function(k){
-        var ct=contacts[k]; var seed=ct.seed||[]; var isTa=(k===coupleState.partner);
-        var recent=seed.slice(-3).map(function(m){return (m.mine?'我':ct.name)+'：'+(m.text||'[消息]');}).join('  /  ');
-        h+='<div style="background:#fff;border-radius:10px;padding:10px;margin-bottom:6px;">'+
-            '<div style="display:flex;justify-content:space-between;"><div style="font-size:13px;font-weight:700;">'+esc(ct.name)+(isTa?' 💕':'')+'</div><div style="font-size:11px;color:#aaa;">'+seed.length+' 条</div></div>'+
-            '<div style="font-size:11px;color:#666;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(recent||'暂无消息')+'</div>'+
-           '</div>';
-      });
-    } else if(tab==='forum'){
-      var posts=(window.forumState&&forumState.posts)?forumState.posts:[];
-      h=posts.length?posts.slice(-6).reverse().map(function(p){return '<div style="background:#fff;border-radius:10px;padding:10px;margin-bottom:6px;"><div style="font-size:13px;font-weight:700;">'+esc(p.title||'')+'</div><div style="font-size:11px;color:#555;">'+esc((p.content||'').substring(0,60))+'</div></div>';}).join(''):'<div style="color:#aaa;">暂无帖子</div>';
-    } else if(tab==='music'){
-      var songs=(window.musicState&&musicState.songs)?musicState.songs:[];
-      h=songs.length?songs.map(function(s){return '<div style="background:#fff;border-radius:10px;padding:10px;margin-bottom:6px;display:flex;gap:8px;align-items:center;"><div style="font-size:20px;">'+(s.emoji||'♪')+'</div><div><div style="font-size:13px;font-weight:700;">'+esc(s.title)+'</div><div style="font-size:11px;color:#888;">'+esc(s.artist||'')+'</div></div></div>';}).join(''):'<div style="color:#aaa;">还没加歌</div>';
-    } else if(tab==='game'){ h='<div style="color:#888;font-size:12px;background:#fff;border-radius:10px;padding:12px;">游戏界面 — TA 看到你又在摸鱼打游戏 😏</div>';
-    } else if(tab==='couple'){
-      h+='<div style="font-size:13px;font-weight:700;margin-bottom:6px;">当前对象：'+(c?c.name:'无')+'</div>';
-      var rivals=Object.keys(coupleState.byPartner||{}).filter(function(k){return k!==coupleState.partner&&k!=='_'&&contacts[k];});
-      if(rivals.length){ h+='<div style="background:#fff0f3;border-radius:10px;padding:10px;margin-bottom:8px;font-size:12px;color:#c00;">TA 发现你的情侣空间里还设了其他对象：'+rivals.map(function(k){return contacts[k].name;}).join('、')+'，有点吃醋 😤（没有真的删除，只是提醒你专一点点嘛）</div>'; }
-      else { h+='<div style="background:#eafff0;border-radius:10px;padding:10px;font-size:12px;color:#0a8f3c;">只看到我一个对象，TA 很满意 ❤</div>'; }
-    } else if(tab==='browse'){
-      if(!d.browseUser) d.browseUser=[];
-      var daily=window.genDailyBrowse(date); var all=daily.concat(d.browseUser);
-      h+='<div style="font-size:11px;color:#888;margin-bottom:6px;">浏览器搜索记录（每日更新，也可自己添加）</div>';
-      h+='<input id="cp-browse-add" placeholder="添加一条搜索记录" style="width:68%;border:1px solid #ddd;border-radius:8px;padding:8px;font-size:12px;outline:none;"><div class="big-btn" style="display:inline-block;width:28%;padding:8px;font-size:12px;vertical-align:top;margin-left:2%;" onclick="coupleAddBrowse()">添加</div>';
-      h+='<div style="margin-top:8px;">'+all.map(function(b){return '<div style="background:#fff;border-radius:8px;padding:8px;margin-bottom:4px;font-size:12px;color:#333;">🔍 '+esc(b.text)+' <span style="font-size:10px;color:#aaa;">'+esc(b.date||'')+'</span></div>';}).join('')+'</div>';
-    } else if(tab==='notes'){ h='<div style="font-size:11px;color:#888;margin-bottom:6px;">你的备忘录</div>'+(d.notes&&d.notes.length?d.notes.slice().reverse().map(function(e){return '<div style="background:#fff;border-radius:8px;padding:8px;margin-bottom:4px;font-size:12px;">'+esc(e.text)+'</div>';}).join(''):'<div style="color:#aaa;">暂无</div>'); }
-    else if(tab==='diary'){ h='<div style="font-size:11px;color:#888;margin-bottom:6px;">你的日记</div>'+(d.diary&&d.diary.length?d.diary.slice().reverse().map(function(e){return '<div style="background:#fff;border-radius:8px;padding:8px;margin-bottom:4px;font-size:12px;"><div style="font-size:10px;color:#aaa;">'+esc(e.date)+'</div>'+esc(e.text)+'</div>';}).join(''):'<div style="color:#aaa;">暂无</div>'); }
-    else if(tab==='shop'){ var sh=d.shop||[]; h+='<div style="font-size:12px;color:#888;margin-bottom:6px;">TA 正在翻看你的购物车（'+sh.length+' 件）</div>'; if(!sh.length) h+='<div style="color:#aaa;font-size:12px;">购物车是空的</div>'; else h+=sh.map(function(it){return '<div style="background:#fff;border-radius:10px;padding:10px;margin-bottom:6px;display:flex;gap:8px;align-items:center;"><div style="font-size:18px;">🛒</div><div><div style="font-size:13px;font-weight:700;">'+esc(it.name)+'</div><div style="font-size:11px;color:#888;">'+esc(it.price)+'</div></div></div>';}).join(''); }
-    return h;
+  function evidenceHTML(items){ return '<div class="couple-check-grid">'+items.map(function(e){ return '<div class="couple-line-card couple-evidence-card"><div class="couple-evidence-label">'+htmlEsc(e.label)+'</div><div class="couple-evidence-value">'+htmlEsc(e.value)+'</div><div class="couple-evidence-note">'+htmlEsc(e.note)+'</div></div>'; }).join('')+'</div>'; }
+  window.coupleCheckinTimelineHTML=function(){ var st=window.coupleEnsureCheckinState(); if(!st.reports.length) return '<div class="couple-line-card" style="padding:14px;"><div class="couple-evidence-label">'+CN.timeline+'</div><div class="couple-evidence-note" style="margin-top:6px;">'+CN.noReport+'</div></div>'; return '<div class="couple-line-card couple-timeline" style="padding:14px;"><div class="couple-evidence-label" style="margin-bottom:10px;">'+CN.timeline+'</div>'+st.reports.slice(0,5).map(function(r){ var delta=(r.trustDelta||0)>0?'+'+(r.trustDelta||0):String(r.trustDelta||0); return '<div class="couple-timeline-item"><div class="couple-timeline-title">'+fmtTime(r.at)+' ? '+modeLabel(r.mode)+' ? <span class="'+riskClass(r.risk)+'">'+riskLabel(r.risk)+'</span> ? '+delta+'</div><div class="couple-timeline-text">'+htmlEsc(r.summary)+'</div></div>'; }).join('')+'</div>'; };
+  function featureIdeasHTML(){ var ideas=[['\u5171\u540c\u613f\u671b\u6e05\u5355','\u628a\u793c\u7269\u3001\u65c5\u884c\u3001\u5b58\u94b1\u76ee\u6807\u505a\u6210\u53cc\u65b9\u53ef\u63a8\u8fdb\u7684\u8fdb\u5ea6\u5361\u3002'],['\u5173\u7cfb\u6e29\u5ea6\u66f2\u7ebf','\u6839\u636e\u804a\u5929\u9891\u7387\u3001\u8bed\u6c14\u3001\u4e92\u52a8\u5b8c\u6210\u5ea6\u751f\u6210\u6bcf\u65e5\u5173\u7cfb\u6e29\u5ea6\u3002'],['\u665a\u5b89\u8bed\u97f3\u6253\u5361','\u63a5\u5165\u8bbe\u7f6e\u91cc\u7684\u8bed\u97f3 API\uff0c\u751f\u6210\u4e13\u5c5e\u665a\u5b89\u8bed\u97f3\u4e0e\u56de\u542c\u8bb0\u5f55\u3002'],['\u4e89\u5435\u590d\u76d8','\u5435\u67b6\u540e\u81ea\u52a8\u6574\u7406\u77db\u76fe\u70b9\u3001\u53cc\u65b9\u8bc9\u6c42\u548c\u548c\u597d\u5efa\u8bae\u3002'],['\u7eaa\u5ff5\u65e5\u80f6\u7247','\u7528\u804a\u5929\u7167\u7247\u3001\u793c\u7269\u5361\u3001\u4f4d\u7f6e\u5361\u751f\u6210\u65f6\u95f4\u7ebf\u76f8\u518c\u3002']]; return '<div class="couple-feature-ideas">'+ideas.map(function(it){return '<div class="couple-feature-idea"><b>'+it[0]+'</b><span>'+it[1]+'</span></div>';}).join('')+'</div>'; }
+
+  window.coupleRenderCheckinDashboard=function(){
+    var c=partner(); if(!c){ coupleShowSub(CN.checkin,'<div class="couple-check-wrap"><div class="couple-line-card" style="padding:18px;text-align:center;color:#789281;">'+CN.bindFirst+'</div></div>'); return; }
+    var st=window.coupleEnsureCheckinState(); var signals=collectSignals(); var previewEvidence=st.reports[0]?st.reports[0].evidence:buildEvidence(signals,st.mode); var trust=clamp(st.trust||82,0,100);
+    var phoneAction=(typeof coupleYouCheckHim==='function'?'coupleYouCheckHim()':'coupleCheckPhone()'); var taAction=(typeof coupleTaTakeover==='function'?'coupleTaTakeover()':'coupleTaCheckYou()');
+    var html='<div class="couple-check-wrap"><div class="couple-line-card couple-check-hero"><div class="couple-check-top"><div class="couple-check-avatar">'+avatar(c)+'</div><div style="min-width:0;flex:1;"><div class="couple-check-name">'+htmlEsc(c.name||CN.ta)+'</div><div class="couple-check-meta">'+modeLabel(st.mode)+' ? '+CN.last+fmtTime(st.lastScan)+'</div></div><div class="couple-trust-ring" style="--trust:'+trust+'%;"><b>'+trust+'</b><span>'+CN.trust+'</span></div></div><div class="couple-soft-tabs"><div class="couple-soft-tab '+(st.mode==='soft'?'active':'')+'" onclick="coupleCheckinMode(\'soft\')">'+CN.soft+'</div><div class="couple-soft-tab '+(st.mode==='daily'?'active':'')+'" onclick="coupleCheckinMode(\'daily\')">'+CN.daily+'</div><div class="couple-soft-tab '+(st.mode==='deep'?'active':'')+'" onclick="coupleCheckinMode(\'deep\')">'+CN.deep+'</div></div></div><div class="couple-action-row"><div class="big-btn" onclick="coupleStartCheckinScan()">'+CN.startScan+'</div><div class="big-btn secondary" onclick="coupleCheckinAskForProof(\'loc\')">'+CN.askLoc+'</div><div class="big-btn secondary" onclick="coupleCheckinAskForProof(\'photo\')">'+CN.askPhoto+'</div><div class="big-btn secondary" onclick="coupleCheckinAskForProof(\'voice\')">'+CN.askVoice+'</div></div><div class="couple-line-card" style="padding:12px;margin-bottom:12px;"><div class="couple-evidence-label">'+CN.moodTitle+'</div><textarea id="cp-checkin-mood-msg" class="couple-check-input" placeholder="'+CN.moodPlaceholder+'"></textarea><div class="couple-action-row" style="grid-template-columns:1fr;margin-bottom:0;"><div class="big-btn" onclick="coupleCheckinSendMoodMessage()">'+CN.moodSend+'</div></div></div>'+evidenceHTML(previewEvidence)+'<div class="couple-action-row"><div class="big-btn secondary" onclick="'+phoneAction+'">'+CN.viewPhone+'</div><div class="big-btn secondary" onclick="'+taAction+'">'+CN.taCheckMe+'</div></div>'+window.coupleCheckinTimelineHTML()+'<div class="couple-line-card" style="padding:14px;margin-top:12px;"><div class="couple-evidence-label">'+CN.ideas+'</div>'+featureIdeasHTML()+'</div></div>';
+    coupleShowSub(CN.checkin,html);
   };
-  window.coupleTaTab = function(tab){
-    var tabs=[['wechat','微信聊天+钱包'],['forum','论坛'],['music','音乐'],['game','游戏'],['couple','情侣空间'],['browse','浏览记录'],['notes','备忘录'],['diary','日记']];
-    var bar=document.getElementById('cp-ta-bar'); if(bar) bar.innerHTML=tabs.map(function(t){ var on=t[0]===tab; return '<span onclick="coupleTaTab(\''+t[0]+'\')" style="padding:5px 10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;'+(on?'background:#1a1a1a;color:#fff;':'background:#eee;color:#1a1a1a;')+'">'+t[1]+'</span>'; }).join('');
-    var box=document.getElementById('cp-ta-content'); if(!box) return;
-    box.innerHTML=window.coupleTaHTML(tab);
-  };
-  window.coupleAddBrowse = function(){
-    var i=document.getElementById('cp-browse-add'); if(!i) return; var v=i.value.trim(); if(!v) return;
-    var d=window.coupleData(); if(!d.browseUser) d.browseUser=[]; d.browseUser.push({text:v, date:ymdKey(new Date())}); window.saveCoupleState(); window.coupleTaTab('browse');
-  };
-  window.genDailyBrowse = function(date){
-    var rnd=dailySeed('browse-'+date); var pool=hisBrowsePool.slice(); var out=[];
-    for(var k=0;k<5&&pool.length;k++){ out.push({text:pool.splice(Math.floor(rnd()*pool.length),1)[0], date:date}); }
-    return out;
+  window.coupleCheckin=function(){ window.coupleRenderCheckinDashboard(); };
+
+  window.coupleTaCheckYou=function(){ var c=partner(); var html='<div class="couple-check-wrap"><div class="couple-line-card" style="padding:14px;"><div class="couple-evidence-label">TA '+CN.checkin+'</div><div style="font-size:13px;line-height:1.7;color:#153528;white-space:pre-wrap;margin-top:8px;">'+htmlEsc(window.coupleTaReport())+'</div><div class="couple-action-row" style="grid-template-columns:1fr;margin-bottom:0;"><div class="big-btn" onclick="coupleTaSendReport()">'+CN.sentReport+'</div></div></div>'+evidenceHTML(buildEvidence(collectSignals(),'deep'))+'</div>'; coupleShowSub((c?c.name:CN.ta)+' '+CN.checkin,html); };
+  window.coupleTaReport=function(){ var s=collectSignals(); var scored=scoreReport(s,'deep'); var lines=[]; lines.push(CN.reportTitle); lines.push(CN.target+contactName(coupleState.partner)); lines.push(CN.risk+riskLabel(scored.risk)); lines.push(CN.result+scored.summary); lines.push('WeChat\uff1a\u5171 '+s.textCount+' \u6761\uff0cTA \u56de\u590d '+s.partnerCount+' \u6761\u3002'); lines.push(CN.phoneActivity+'\u4eca\u65e5\u7ea6 '+s.screenMin+' \u5206\u949f\uff0c\u6d4f\u89c8 '+s.browseCount+' \u6761\u3002'); lines.push(CN.wallet+s.walletText+'\uff0c\u6d41\u6c34 '+s.walletCount+' \u7b14\u3002'); if(s.rivals.length) lines.push(CN.historyBind+s.rivals.join('\u3001')); return lines.join('\n'); };
+  window.coupleTaSendReport=function(){ var c=partner(); if(!c){ if(typeof showToast==='function') showToast(CN.bindContact,1500); return; } if(!Array.isArray(c.seed)) c.seed=[]; c.seed.push({mine:false,kind:'text',text:'['+CN.reportTitle+']\n'+window.coupleTaReport(),from:coupleState.partner,ts:typeof nowStamp==='function'?nowStamp():Date.now()}); if(typeof saveChatThread==='function') saveChatThread(coupleState.partner); if(typeof renderThread==='function'&&currentContact===coupleState.partner) renderThread(); if(typeof notifyIncoming==='function') notifyIncoming(c,'['+CN.reportTitle+']'); if(typeof showToast==='function') showToast(CN.sentReport,1300); if(typeof openThread==='function') openThread(coupleState.partner); };
+  window.coupleTaHTML=function(tab){ var s=collectSignals(); if(tab==='wechat') return evidenceHTML(buildEvidence(s,'daily')); if(tab==='browse') return '<div class="couple-line-card" style="padding:12px;"><div class="couple-evidence-label">'+CN.browse+'</div><input id="cp-browse-add" placeholder="'+CN.addBrowse+'" style="width:100%;box-sizing:border-box;border:1px solid rgba(57,126,89,.14);border-radius:14px;padding:10px;margin:8px 0;font-size:12px;outline:none;"><div class="couple-green-btn" onclick="coupleAddBrowse()" style="text-align:center;cursor:pointer;">'+CN.add+'</div></div>'; if(tab==='notes') return '<div class="couple-line-card" style="padding:12px;">'+CN.notes+' '+s.notes+' \u6761</div>'; if(tab==='diary') return '<div class="couple-line-card" style="padding:12px;">'+CN.diary+' '+s.diary+' \u7bc7</div>'; return '<div class="couple-line-card" style="padding:12px;">'+htmlEsc(tab)+' '+CN.signalIncluded+'</div>'; };
+  window.coupleTaTab=function(tab){ var bar=document.getElementById('cp-ta-bar'); var tabs=[['wechat',CN.comprehensive],['browse',CN.browse],['notes',CN.notes],['diary',CN.diary]]; if(bar) bar.innerHTML=tabs.map(function(t){return '<span class="couple-soft-tab '+(t[0]===tab?'active':'')+'" onclick="coupleTaTab(\''+t[0]+'\')">'+t[1]+'</span>';}).join(''); var box=document.getElementById('cp-ta-content'); if(box) box.innerHTML=window.coupleTaHTML(tab); };
+  window.coupleAddBrowse=function(){ var i=document.getElementById('cp-browse-add'); if(!i) return; var v=i.value.trim(); if(!v) return; var d=data(); if(!d.browseUser) d.browseUser=[]; d.browseUser.push({text:v,date:todayKey()}); persist(); window.coupleTaTab('browse'); };
+  window.genDailyBrowse=window.genDailyBrowse||function(date){ var pool=['\u60c5\u4fa3\u7ea6\u4f1a\u8def\u7ebf','\u600e\u4e48\u54c4\u604b\u4eba\u751f\u6c14','\u7eaa\u5ff5\u65e5\u793c\u7269\u63a8\u8350','\u9644\u8fd1\u9002\u5408\u804a\u5929\u7684\u5496\u5561\u5e97','\u665a\u5b89\u8bed\u97f3\u600e\u4e48\u8bf4\u81ea\u7136','\u60c5\u4fa3\u7a7a\u95f4\u9690\u79c1\u8bbe\u7f6e']; return pool.slice(0,5).map(function(text){return {text:text,date:date};}); };
+
+  window.coupleRenderMainShell=function(){
+    var root=document.getElementById('couple-main'); if(!root) return; root.classList.add('couple-shell-green');
+    var c=partner(); var st=window.coupleEnsureCheckinState(); var days=Math.floor((Date.now()-new Date('2026-04-12').getTime())/86400000);
+    root.innerHTML='<div class="couple-main-wrap"><div class="couple-hero-card"><div class="couple-pair"><div class="pair-av" id="couple-av-me">'+(typeof userAvatar!=='undefined'&&userAvatar?'<img src="'+userAvatar+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:13px;font-weight:800;color:#3d9d68;">ME</span>')+'</div><div class="pair-link"></div><div class="pair-av" id="couple-av-partner">'+avatar(c)+'</div></div><div class="couple-hero-title" id="couple-names">'+htmlEsc((typeof userName!=='undefined'?userName:'You')+' & '+(c?c.name:'Partner'))+'</div><div class="couple-hero-sub" id="couple-days">'+CN.together+days+CN.days+' ? '+CN.trust+' '+(st.trust||82)+'</div><div class="couple-mini-stats"><div class="couple-mini-stat"><b>'+(st.reports||[]).length+'</b><span>'+CN.reports+'</span></div><div class="couple-mini-stat"><b>'+(data().diary||[]).length+'</b><span>'+CN.diary+'</span></div><div class="couple-mini-stat"><b>'+(data().shop||[]).length+'</b><span>'+CN.wish+'</span></div></div><div style="margin-top:12px;text-align:center;font-size:11px;color:#3d9d68;font-weight:760;cursor:pointer;" onclick="coupleSwitchPartner()">'+CN.switchPartner+'</div></div><div class="couple-grid-modern"><div class="couple-line-card" onclick="coupleCheckin()"><div class="couple-line-kicker">CHECK</div><div><div class="couple-line-title">'+CN.checkBoard+'</div><div class="couple-line-sub">'+CN.checkBoardSub+'</div></div></div><div class="couple-line-card" onclick="coupleLocation()"><div class="couple-line-kicker">LIVE</div><div><div class="couple-line-title">'+CN.liveLoc+'</div><div class="couple-line-sub">'+CN.liveLocSub+'</div></div></div><div class="couple-line-card" onclick="coupleViewDiary()"><div class="couple-line-kicker">DIARY</div><div><div class="couple-line-title">'+CN.myDiary+'</div><div class="couple-line-sub">'+CN.myDiarySub+'</div></div></div><div class="couple-line-card" onclick="coupleViewNotes()"><div class="couple-line-kicker">MEMO</div><div><div class="couple-line-title">'+CN.memo+'</div><div class="couple-line-sub">'+CN.memoSub+'</div></div></div><div class="couple-line-card" onclick="coupleShop()"><div class="couple-line-kicker">WISH</div><div><div class="couple-line-title">'+CN.wishCart+'</div><div class="couple-line-sub">'+CN.wishCartSub+'</div></div></div><div class="couple-line-card" onclick="coupleFood()"><div class="couple-line-kicker">FOOD</div><div><div class="couple-line-title">'+CN.orderFood+'</div><div class="couple-line-sub">'+CN.orderFoodSub+'</div></div></div><div class="couple-line-card" onclick="coupleScreenTime()"><div class="couple-line-kicker">SCREEN</div><div><div class="couple-line-title">'+CN.screenTime+'</div><div class="couple-line-sub">'+CN.screenTimeSub+'</div></div></div><div class="couple-line-card" onclick="coupleManageContacts()"><div class="couple-line-kicker">CONTACT</div><div><div class="couple-line-title">'+CN.contactManage+'</div><div class="couple-line-sub">'+CN.contactManageSub+'</div></div></div><div class="couple-line-card couple-wide-card" onclick="coupleIcons()"><div class="couple-line-kicker">STYLE</div><div><div class="couple-line-title">'+CN.customIcon+'</div><div class="couple-line-sub">'+CN.customIconSub+'</div></div></div></div></div>';
   };
 })();

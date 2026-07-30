@@ -20,7 +20,24 @@
     if(!coupleState.byPartner) coupleState.byPartner = {};
     var pid = coupleState.partner || '_';
     if(!coupleState.byPartner[pid]) coupleState.byPartner[pid] = { notes:[], diary:[], shop:[], foodOrders:[], location:null, browseUser:[] };
-    return coupleState.byPartner[pid];
+    var d = coupleState.byPartner[pid];
+    if(!d.checkin){
+      d.checkin = {
+        mode:'soft',
+        trust:82,
+        reports:[],
+        lastScan:0,
+        pendingProof:false,
+        proofRequests:[],
+        moodMessages:[]
+      };
+    }
+    if(!Array.isArray(d.checkin.reports)) d.checkin.reports = [];
+    if(!Array.isArray(d.checkin.proofRequests)) d.checkin.proofRequests = [];
+    if(!Array.isArray(d.checkin.moodMessages)) d.checkin.moodMessages = [];
+    if(typeof d.checkin.trust !== 'number') d.checkin.trust = 82;
+    if(!d.checkin.mode) d.checkin.mode = 'soft';
+    return d;
   };
   window.saveCoupleState = function(){
     try{ localStorage.setItem('couple_state_v1', JSON.stringify({partner:coupleState.partner, lockedApps:coupleState.lockedApps, byPartner:coupleState.byPartner, foodOrders:coupleState.foodOrders, icons:coupleState.icons, hisPasscode:coupleState.hisPasscode, hisPassAttempts:coupleState.hisPassAttempts, hisLocked:coupleState.hisLocked, partnerHistory:coupleState.partnerHistory||[], lastCheckin:coupleState.lastCheckin||0, jealousHistory:coupleState.jealousHistory||[]})); }catch(e){}
