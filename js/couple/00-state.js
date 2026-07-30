@@ -23,20 +23,15 @@
     var d = coupleState.byPartner[pid];
     if(!d.checkin){
       d.checkin = {
-        mode:'soft',
         trust:82,
         reports:[],
         lastScan:0,
-        pendingProof:false,
-        proofRequests:[],
         moodMessages:[]
       };
     }
     if(!Array.isArray(d.checkin.reports)) d.checkin.reports = [];
-    if(!Array.isArray(d.checkin.proofRequests)) d.checkin.proofRequests = [];
     if(!Array.isArray(d.checkin.moodMessages)) d.checkin.moodMessages = [];
     if(typeof d.checkin.trust !== 'number') d.checkin.trust = 82;
-    if(!d.checkin.mode) d.checkin.mode = 'soft';
     return d;
   };
   window.saveCoupleState = function(){

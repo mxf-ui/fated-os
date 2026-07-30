@@ -13,20 +13,16 @@ const requiredCss = [
   '.couple-trust-ring',
   '.couple-timeline',
   '.couple-evidence-card',
-  '.couple-action-row',
-  '.couple-soft-tab',
-  '.couple-feature-ideas'
+  '.couple-action-row'
 ];
 
 const requiredFns = [
   'coupleEnsureCheckinState',
   'coupleRenderCheckinDashboard',
   'coupleStartCheckinScan',
-  'coupleCheckinAskForProof',
   'coupleCheckinSendMoodMessage',
   'coupleCheckinSaveReport',
-  'coupleCheckinTimelineHTML',
-  'coupleCheckinMode'
+  'coupleCheckinTimelineHTML'
 ];
 
 function assertIncludes(source, needle, label){
@@ -40,5 +36,37 @@ assertIncludes(checkin, 'saveCoupleState', 'check-in module');
 assertIncludes(checkin, 'checkin', 'check-in module');
 assertIncludes(state, 'checkin', 'couple persistence');
 assertIncludes(index, 'id="sheet-couple"', 'couple sheet');
+
+const forbiddenCheckin = [
+  'coupleCheckinAskForProof',
+  'coupleCheckinMode',
+  'featureIdeasHTML',
+  'askLoc',
+  'askPhoto',
+  'askVoice',
+  'couple-soft-tabs',
+  'couple-soft-tab',
+  'couple-feature-ideas',
+  'modeLabel('
+];
+const forbiddenCss = [
+  '.couple-soft-tabs',
+  '.couple-soft-tab',
+  '.couple-feature-ideas',
+  '.couple-feature-idea'
+];
+const forbiddenState = [
+  "mode:'soft'",
+  'proofRequests',
+  'pendingProof'
+];
+
+function assertMissing(source, needle, label){
+  if(source.includes(needle)) throw new Error(label + ' still contains deleted item ' + needle);
+}
+
+for(const needle of forbiddenCheckin) assertMissing(checkin, needle, 'check-in module');
+for(const needle of forbiddenCss) assertMissing(css, needle, 'couple CSS');
+for(const needle of forbiddenState) assertMissing(state, needle, 'couple persistence');
 
 console.log('Couple space redesign verification passed.');
