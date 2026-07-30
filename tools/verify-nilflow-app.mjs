@@ -56,7 +56,11 @@ if (!persistence.includes('nilflowState=Object.assign(nilflowDefault(), s.nilflo
   'function nilflowDeletePosts',
   'function nilflowDeactivateAccount',
   'function nilflowBlockUser',
-  'function nilflowReportUser'
+  'function nilflowReportUser',
+  'function nilflowActiveApiProfile',
+  'function nilflowApiReady',
+  'function nilflowCallAI',
+  "fetch('/api/chat'"
 ].forEach((needle) => {
   if (!nilflow.includes(needle)) fail('nilflow js missing ' + needle);
 });
@@ -68,7 +72,9 @@ if (!persistence.includes('nilflowState=Object.assign(nilflowDefault(), s.nilflo
   '.nilflow-match-strip',
   '.nilflow-chat-panel',
   '.nilflow-voice-panel',
-  '.nilflow-privacy-row'
+  '.nilflow-privacy-row',
+  '#nilflow-root{ height:100%; min-height:0; flex:1 1 auto; overflow:hidden;',
+  '#sheet-nilflow .sheet-body{ height:100%; min-height:0; display:flex; flex-direction:column;'
 ].forEach((needle) => {
   if (!css.includes(needle)) fail('nilflow css missing ' + needle);
 });

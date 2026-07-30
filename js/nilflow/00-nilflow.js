@@ -66,7 +66,56 @@ function nilflowToast(text){
   clearTimeout(n._timer);
   n._timer=setTimeout(function(){ n.classList.remove('show'); },1800);
 }
-function nilflowSave(){ if(typeof saveState==='function') saveState(); }
+function nilflowSave(){ if(typeof saveState==='function') saveState(); }function nilflowActiveApiProfile(){
+  if(typeof getActiveApiProfile === 'function') return getActiveApiProfile();
+  if(typeof apiConfig === 'undefined') return null;
+  if(apiConfig.profiles && apiConfig.profiles.length){
+    return apiConfig.profiles.find(function(p){ return p.id === apiConfig.activeProfileId; }) || apiConfig.profiles[0];
+  }
+  return apiConfig.models && (apiConfig.models.custom || apiConfig.models[apiConfig.activeModel]);
+}
+function nilflowApiReady(){
+  var p=nilflowActiveApiProfile();
+  return !!(p && p.key && p.endpoint && p.model);
+}
+function nilflowParseAIText(data){
+  if(!data) return '';
+  if(typeof data.content === 'string') return data.content;
+  if(typeof data.reply === 'string') return data.reply;
+  if(data.choices && data.choices[0] && data.choices[0].message) return data.choices[0].message.content || '';
+  if(data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts){
+    return data.candidates[0].content.parts.map(function(p){ return p.text || ''; }).join('');
+  }
+  return '';
+}
+function nilflowCleanReply(text){
+  return String(text||'').replace(/[\u{1F300}-\u{1FAFF}]/gu,'').replace(/^\s*(NIL|NilFlow|匿流|匿名ID)[:：]\s*/i,'').trim();
+}
+function nilflowCallAI(user, text, cb){
+  var p=nilflowActiveApiProfile();
+  if(!p || !p.key || !p.endpoint || !p.model){ cb(null); return; }
+  var history=(nilflowState.chats[user.id]||[]).slice(-10).filter(function(m){ return m.from==='me' || m.from==='them'; }).map(function(m){ return {role:m.from==='me'?'user':'assistant', content:m.text}; });
+  var profile=nilflowState.profile || {};
+  var system='你是匿流平台里的匿名用户，平台规则是完全匿名、不得索要或推断现实身份。你的匿名ID是 '+user.id+'。你的简介：'+(user.bio||'')+'。你的标签：'+(user.tags||[]).join('、')+'。请用中文自然私聊，1到3句，符合对方慢社交和边界感，不要使用emoji，不要自称AI，不要提到现实通讯录。';
+  var prompt='我的平台匿名ID：'+(profile.id||'未设置')+'。我的简介：'+(profile.bio||'')+'。我刚刚说：'+text;
+  var msgs=[{role:'system', content:system}].concat(history).concat([{role:'user', content:prompt}]);
+  fetch('/api/chat', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      messages:msgs,
+      provider:'custom',
+      key:p.key,
+      endpoint:p.endpoint,
+      dataModel:p.model,
+      model:p.model,
+      apiFormat:p.apiFormat || 'openai',
+      max_tokens:260,
+      temperature:typeof p.temperature === 'number' ? p.temperature : 0.78,
+      stream:false
+    })
+  }).then(function(r){ return r.json(); }).then(function(d){ cb(nilflowCleanReply(nilflowParseAIText(d)) || null); }).catch(function(){ cb(null); });
+}
 function initNilflow(){
   nilflowEnsureStateShape();
   if(!nilflowInited){
@@ -208,13 +257,18 @@ function nilflowSendMessage(){
   nilflowSave();
   nilflowRender();
   var id=nilflowActiveChat;
-  setTimeout(function(){
+  var user=nilflowFindUser(id)||{id:id};
+  nilflowState.chats[id].push({from:'system', text:nilflowApiReady()?'正在调用全局 API 生成回复。':'全局 API 未配置，已使用本地匿名回复。', ts:Date.now()});
+  nilflowSave();
+  nilflowRender();
+  nilflowCallAI(user, text, function(reply){
     if(!nilflowState || !nilflowState.chats[id]) return;
-    var user=nilflowFindUser(id)||{id:id};
-    nilflowState.chats[id].push({from:'them', text:nilflowAutoReply(user, text), ts:Date.now()});
+    var list=nilflowState.chats[id];
+    for(var i=list.length-1;i>=0;i--){ if(list[i].from==='system' && (list[i].text.indexOf('全局 API')>=0 || list[i].text.indexOf('正在调用')>=0)){ list.splice(i,1); break; } }
+    list.push({from:'them', text:reply || nilflowAutoReply(user, text), ts:Date.now()});
     nilflowSave();
     if(nilflowState.tab==='messages' && nilflowActiveChat===id) nilflowRender();
-  },700);
+  });
 }
 function nilflowAutoReply(user, text){
   var samples=['我会只留在这个匿名窗口里回应你。','这个说法我能理解，你想继续说细一点吗？','先不用解释现实身份，我们只处理当下这句话。','我在，慢慢发也可以。'];

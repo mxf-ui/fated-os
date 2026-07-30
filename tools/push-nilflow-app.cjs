@@ -65,7 +65,7 @@ function gh(method, path, body) {
     tree: blobs
   });
   const commit = await gh('POST', '/repos/' + owner + '/' + repo + '/git/commits', {
-    message: 'Add NilFlow anonymous social app',
+    message: 'Fix NilFlow scroll and global API replies',
     tree: tree.sha,
     parents: [baseSha]
   });
