@@ -1,0 +1,77 @@
+/* ============ NILFLOW ANONYMOUS SOCIAL APP ============ */
+#sheet-nilflow{ z-index:420; }
+#sheet-nilflow .sheet-body{ padding:0; overflow:hidden; background:#f7faf9; }
+.nilflow-shell{ height:100%; min-height:0; display:flex; flex-direction:column; color:#111816; background:linear-gradient(180deg,#fbfefd 0%,#f4faf7 45%,#eef6f3 100%); font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+.nilflow-top{ height:58px; flex:0 0 58px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 14px; border-bottom:1px solid rgba(25,55,48,.1); background:rgba(255,255,255,.78); backdrop-filter:blur(18px); }
+.nilflow-top b{ display:block; font-size:17px; line-height:1.1; letter-spacing:0; }
+.nilflow-top small{ display:block; margin-top:3px; color:#6b7773; font-size:10px; }
+.nilflow-top span{ padding:5px 9px; border-radius:999px; background:#e5f4ee; color:#1f6b5c; font-size:10px; font-weight:700; }
+.nilflow-back{ width:32px; height:32px; border:0; border-radius:16px; background:#edf6f1; color:#10221d; font-size:25px; line-height:28px; }
+.nilflow-main{ flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:12px; }
+.nilflow-page{ min-height:100%; display:flex; flex-direction:column; gap:12px; }
+.nilflow-search input,.nilflow-field input,.nilflow-field textarea,.nilflow-compose textarea,.nilflow-filter-row input,.nilflow-filter-row select,.nilflow-chat-input input{ width:100%; border:1px solid rgba(31,107,92,.14); border-radius:14px; background:rgba(255,255,255,.88); color:#111816; outline:none; padding:11px 12px; font-size:13px; box-sizing:border-box; }
+.nilflow-search input{ height:42px; border-radius:21px; }
+.nilflow-panel,.nilflow-feed-card,.nilflow-chat-panel,.nilflow-session-list{ border:1px solid rgba(20,45,39,.1); border-radius:18px; background:rgba(255,255,255,.84); box-shadow:0 16px 38px rgba(31,107,92,.08); }
+.nilflow-panel{ padding:14px; }
+.nilflow-panel-title{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.nilflow-panel-title b{ font-size:15px; }
+.nilflow-panel-title small,.nilflow-hint{ color:#76817d; font-size:11px; line-height:1.5; }
+.nilflow-feed{ display:flex; flex-direction:column; gap:10px; }
+.nilflow-feed-card{ padding:13px; }
+.nilflow-feed-card p{ margin:11px 0; font-size:14px; line-height:1.7; color:#18231f; white-space:pre-wrap; }
+.nilflow-feed-card.card{ background:linear-gradient(180deg,#ffffff,#f1faf6); }
+.nilflow-feed-card.literary{ background:#fbfdfc; border-color:rgba(31,107,92,.22); }
+.nilflow-post-head,.nilflow-profile-row,.nilflow-chat-head{ display:flex; align-items:center; gap:10px; }
+.nilflow-post-head b,.nilflow-chat-head b{ display:block; font-size:13px; }
+.nilflow-post-head small,.nilflow-chat-head small,.nilflow-session small,.nilflow-match-card small{ display:block; color:#73807b; font-size:10px; line-height:1.45; }
+.nilflow-avatar{ width:42px; height:42px; flex:0 0 42px; border-radius:50%; background:linear-gradient(135deg,#1e6b5b,#d9f4e9); background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:12px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.36); }
+.nilflow-avatar.small{ width:34px; height:34px; flex-basis:34px; font-size:10px; }
+.nilflow-avatar.large{ width:74px; height:74px; flex-basis:74px; font-size:18px; }
+.nilflow-post-actions,.nilflow-card-actions,.nilflow-filter-row,.nilflow-chat-input{ display:flex; gap:8px; align-items:center; }
+.nilflow-post-actions{ flex-wrap:wrap; border-top:1px solid rgba(20,45,39,.08); padding-top:9px; }
+.nilflow-post-actions button,.nilflow-card-actions button,.nilflow-filter-row button,.nilflow-chat-head button,.nilflow-chat-input button,.nilflow-profile-row button,.nilflow-panel.danger button,.nilflow-voice-panel button{ border:1px solid rgba(31,107,92,.14); border-radius:999px; background:#f3faf7; color:#214a42; padding:8px 10px; font-size:11px; font-weight:700; }
+.nilflow-primary{ width:100%; border:0; border-radius:16px; background:#1f6b5c; color:#fff; padding:12px 14px; font-size:13px; font-weight:800; box-shadow:0 12px 24px rgba(31,107,92,.18); }
+.nilflow-filter-row{ align-items:center; margin:8px 0 10px; }
+.nilflow-filter-row label{ white-space:nowrap; font-size:11px; color:#4d5c57; }
+.nilflow-match-strip{ display:flex; gap:12px; overflow-x:auto; padding:2px 2px 12px; scroll-snap-type:x mandatory; }
+.nilflow-match-card{ min-width:226px; scroll-snap-align:start; border:1px solid rgba(20,45,39,.1); border-radius:20px; background:#fff; box-shadow:0 18px 34px rgba(31,107,92,.09); padding:16px; display:flex; flex-direction:column; gap:10px; }
+.nilflow-match-card b{ font-size:16px; }
+.nilflow-match-card p{ min-height:42px; margin:0; color:#4a5753; font-size:12px; line-height:1.55; }
+.nilflow-tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.nilflow-tags span{ padding:5px 8px; border-radius:999px; background:#e8f6f1; color:#1f6b5c; font-size:10px; }
+.nilflow-card-actions button{ flex:1; }
+.nilflow-card-actions .ok{ background:#1f6b5c; color:#fff; border-color:#1f6b5c; }
+.nilflow-history{ display:flex; flex-direction:column; gap:8px; }
+.nilflow-history div{ display:flex; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid rgba(20,45,39,.08); }
+.nilflow-message-layout{ gap:10px; }
+.nilflow-session-list{ padding:8px; display:flex; gap:8px; overflow-x:auto; min-height:72px; }
+.nilflow-session{ min-width:174px; border:0; border-radius:15px; background:#f3faf7; display:flex; align-items:center; gap:9px; padding:8px; text-align:left; color:#17231f; }
+.nilflow-session.active{ background:#dff2eb; }
+.nilflow-session span{ min-width:0; }
+.nilflow-session small{ max-width:112px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nilflow-chat-panel{ min-height:430px; display:flex; flex-direction:column; overflow:hidden; }
+.nilflow-chat-head{ flex:0 0 auto; padding:10px; border-bottom:1px solid rgba(20,45,39,.08); }
+.nilflow-chat-head div{ flex:1; }
+.nilflow-chat-log{ flex:1 1 auto; min-height:0; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; background:linear-gradient(180deg,#f8fcfa,#edf6f2); }
+.nilflow-bubble{ max-width:82%; padding:9px 11px; border-radius:15px; font-size:13px; line-height:1.55; background:#fff; color:#18231f; box-shadow:0 8px 18px rgba(31,107,92,.07); }
+.nilflow-bubble.me{ align-self:flex-end; background:#1f6b5c; color:#fff; }
+.nilflow-bubble.system{ align-self:center; max-width:92%; background:transparent; color:#73807b; box-shadow:none; font-size:11px; }
+.nilflow-chat-input{ flex:0 0 auto; padding:10px; border-top:1px solid rgba(20,45,39,.08); background:#fff; }
+.nilflow-chat-input button{ min-width:62px; background:#1f6b5c; color:#fff; }
+.nilflow-voice-panel{ margin:10px; padding:11px; border-radius:16px; border:1px solid rgba(31,107,92,.16); background:#eaf8f2; display:flex; flex-direction:column; gap:8px; }
+.nilflow-voice-panel b{ font-size:13px; }
+.nilflow-voice-panel small{ color:#60736d; font-size:10px; line-height:1.45; }
+.nilflow-compose textarea,.nilflow-field textarea{ min-height:118px; resize:vertical; line-height:1.6; }
+.nilflow-field{ display:flex; flex-direction:column; gap:6px; margin:10px 0; color:#50605a; font-size:11px; font-weight:700; }
+.nilflow-profile-row{ justify-content:space-between; margin-bottom:10px; }
+.nilflow-privacy-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid rgba(20,45,39,.08); font-size:13px; color:#18231f; }
+.nilflow-panel.danger button{ width:100%; margin-top:8px; border-color:rgba(167,54,54,.16); background:#fff6f5; color:#8a2d2d; }
+.nilflow-media{ overflow:hidden; border-radius:14px; margin:9px 0; background:#eaf2ef; }
+.nilflow-media img,.nilflow-media video{ display:block; width:100%; max-height:260px; object-fit:cover; }
+.nilflow-empty{ padding:22px; color:#74817c; font-size:12px; text-align:center; }
+.nilflow-tabs{ flex:0 0 58px; height:58px; display:grid; grid-template-columns:repeat(5,1fr); gap:4px; padding:7px 10px 9px; border-top:1px solid rgba(20,45,39,.1); background:rgba(255,255,255,.86); backdrop-filter:blur(18px); }
+.nilflow-tabs button{ border:0; border-radius:14px; background:transparent; color:#73807b; font-size:11px; }
+.nilflow-tabs button.active{ background:#e2f4ed; color:#1f6b5c; }
+.nilflow-toast{ position:fixed; left:50%; bottom:86px; z-index:9999; transform:translateX(-50%) translateY(18px); opacity:0; pointer-events:none; background:rgba(18,35,30,.92); color:#fff; border-radius:999px; padding:10px 14px; font-size:12px; transition:.2s ease; }
+.nilflow-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+@media (min-width:520px){ .nilflow-message-layout{ display:grid; grid-template-columns:188px 1fr; } .nilflow-session-list{ min-height:0; overflow-y:auto; overflow-x:hidden; flex-direction:column; } .nilflow-session{ min-width:0; width:100%; } }

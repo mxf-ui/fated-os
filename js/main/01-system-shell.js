@@ -40,6 +40,7 @@ var svgGear = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" strok
 var svgSuoha = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5" fill="#fff"/><circle cx="16" cy="16" r="1.5" fill="#fff"/><circle cx="16" cy="8" r="1.5" fill="#fff"/><circle cx="8" cy="16" r="1.5" fill="#fff"/><circle cx="12" cy="12" r="1.5" fill="#fff"/></svg>';
 var svgGo = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7l3.5 5L12 17l-3.5-5L12 7z" fill="#fff" stroke="none"/></svg>';
 var svgDream = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 109 9"/><path d="M12 6a6 6 0 106 6"/><path d="M12 9a3 3 0 103 3"/><path d="M12 12l5-8"/></svg>';
+var svgNilflow = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16"/><path d="M4 12h10"/><path d="M4 17.5h16"/><circle cx="17" cy="12" r="3"/><path d="M17 9v6"/></svg>';
 var appIcons = [
   {id:'wechat', name:'Messages', ico:svgChat, img:null, action:"goToScreen('wechatapp')"},
   {id:'novel', name:'Books', ico:svgBook, img:null, action:"openSheet('novel');renderNovelPick();"},
@@ -50,6 +51,7 @@ var appIcons = [
   {id:'suoha', name:'Suoha', ico:svgSuoha, img:null, action:"openSheet('suoha');initSuoha();"},
   {id:'go', name:'GO', ico:svgGo, img:null, action:"openSheet('go');initGo();"},
   {id:'dream', name:'\u96fe\u7ec7\u68a6\u6838', ico:svgDream, img:null, action:"openSheet('dream');initDreamCore();"},
+  {id:'nilflow', name:'\u533f\u6d41', ico:svgNilflow, img:null, action:"openSheet('nilflow');initNilflow();"},
   {id:'settings', name:'Settings', ico:svgGear, img:null, action:"goToScreen('settings')"}
 ];
 let activeIconId = null;

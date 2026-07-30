@@ -88,7 +88,8 @@ function buildLightState(){
     coupleState: typeof coupleState!=='undefined' ? coupleState : null,
     screenTime: typeof screenTimeData!=='undefined' ? screenTimeData : null,
     go: typeof goState!=='undefined' && goState ? goState : null,
-    dream: typeof dreamState!=='undefined' && dreamState ? dreamState : null
+    dream: typeof dreamState!=='undefined' && dreamState ? dreamState : null,
+    nilflow: typeof nilflowState!=='undefined' && nilflowState ? nilflowState : null
   };
 }
 function buildProfileAssets(){
@@ -222,6 +223,7 @@ function applyStateSnapshot(s){
   if(s.screenTime && typeof s.screenTime==='object') screenTimeData=Object.assign(screenTimeData, s.screenTime);
   if(s.go && typeof s.go==='object') goState=Object.assign(goDefault(), s.go);
   if(s.dream && typeof s.dream==='object'){ dreamState=Object.assign(dreamDefault(), s.dream); if(typeof dreamEnsureStateShape==='function') dreamEnsureStateShape(); }
+  if(s.nilflow && typeof s.nilflow==='object'){ nilflowState=Object.assign(nilflowDefault(), s.nilflow); if(typeof nilflowEnsureStateShape==='function') nilflowEnsureStateShape(); }
 
   if(s.userCover!==undefined) userCover=s.userCover;
   if(s.userAvatar!==undefined) userAvatar=s.userAvatar;
