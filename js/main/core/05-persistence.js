@@ -51,6 +51,10 @@ function buildContactsSnapshot(){
       members:c.members||null,
       avatarColor:c.avatarColor||null,
       blocked:!!c.blocked,
+      taDeletedByPartner:!!c.taDeletedByPartner,
+      taDeletedBy:c.taDeletedBy||'',
+      taDeletedAt:c.taDeletedAt||0,
+      taDeletedPrevBlocked:!!c.taDeletedPrevBlocked,
       worldBooks:c.worldBooks||[],
       memory:c.memory||{enabled:true, threshold:20, summary:'', lastMsgCount:0},
       groupUserPrompt:c.groupUserPrompt||'',
@@ -180,6 +184,10 @@ function applyContactsSnapshot(list){
     if(contacts[id].memory.enabled===undefined) contacts[id].memory.enabled=true;
     if(!contacts[id].memory.threshold) contacts[id].memory.threshold=20;
     if(contacts[id].blocked===undefined) contacts[id].blocked=false;
+    if(contacts[id].taDeletedByPartner===undefined) contacts[id].taDeletedByPartner=false;
+    if(contacts[id].taDeletedBy===undefined) contacts[id].taDeletedBy='';
+    if(contacts[id].taDeletedAt===undefined) contacts[id].taDeletedAt=0;
+    if(contacts[id].taDeletedPrevBlocked===undefined) contacts[id].taDeletedPrevBlocked=false;
     if(contacts[id].persona===undefined) contacts[id].persona=contacts[id].tone||'';
     if(contacts[id].userPrompt===undefined) contacts[id].userPrompt='';
     if(contacts[id].proactive===undefined) contacts[id].proactive=true;

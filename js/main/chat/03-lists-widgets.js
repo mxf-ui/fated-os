@@ -24,7 +24,7 @@ function lastMsgInfo(c){
 function renderChatList(){
   var list = document.querySelector('#view-chats .chatlist');
   if(!list) return;
-  var ids = Object.keys(contacts).filter(function(k){ return k!=='me' && !contacts[k].blocked; });
+  var ids = Object.keys(contacts).filter(function(k){ return k!=='me' && !contacts[k].blocked && !contacts[k].taDeletedByPartner; });
   list.innerHTML = ids.map(function(k){
     var c=contacts[k]; var info=lastMsgInfo(c);
     var av = c.isGroup ? '<div class="chibi" style="--avbg:#9bb37a;width:100%;height:100%;"></div>' : contactAvatar(c);

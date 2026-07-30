@@ -14,12 +14,14 @@
     coupleState.partnerHistory = o.partnerHistory||[];
     coupleState.lastCheckin = o.lastCheckin||0;
     coupleState.jealousHistory = o.jealousHistory||[];
+    coupleState.taDeletedContacts = o.taDeletedContacts||[];
+    coupleState.taTakeoverHistory = o.taTakeoverHistory||[];
   } }catch(e){}
 
   window.coupleData = function(){
     if(!coupleState.byPartner) coupleState.byPartner = {};
     var pid = coupleState.partner || '_';
-    if(!coupleState.byPartner[pid]) coupleState.byPartner[pid] = { notes:[], diary:[], shop:[], foodOrders:[], location:null, browseUser:[] };
+    if(!coupleState.byPartner[pid]) coupleState.byPartner[pid] = { notes:[], diary:[], shop:[], foodOrders:[], location:null, browseUser:[], taDeletedContacts:[], taTakeoverHistory:[] };
     var d = coupleState.byPartner[pid];
     if(!d.checkin){
       d.checkin = {
@@ -31,10 +33,12 @@
     }
     if(!Array.isArray(d.checkin.reports)) d.checkin.reports = [];
     if(!Array.isArray(d.checkin.moodMessages)) d.checkin.moodMessages = [];
+    if(!Array.isArray(d.taDeletedContacts)) d.taDeletedContacts = [];
+    if(!Array.isArray(d.taTakeoverHistory)) d.taTakeoverHistory = [];
     if(typeof d.checkin.trust !== 'number') d.checkin.trust = 82;
     return d;
   };
   window.saveCoupleState = function(){
-    try{ localStorage.setItem('couple_state_v1', JSON.stringify({partner:coupleState.partner, lockedApps:coupleState.lockedApps, byPartner:coupleState.byPartner, foodOrders:coupleState.foodOrders, icons:coupleState.icons, hisPasscode:coupleState.hisPasscode, hisPassAttempts:coupleState.hisPassAttempts, hisLocked:coupleState.hisLocked, partnerHistory:coupleState.partnerHistory||[], lastCheckin:coupleState.lastCheckin||0, jealousHistory:coupleState.jealousHistory||[]})); }catch(e){}
+    try{ localStorage.setItem('couple_state_v1', JSON.stringify({partner:coupleState.partner, lockedApps:coupleState.lockedApps, byPartner:coupleState.byPartner, foodOrders:coupleState.foodOrders, icons:coupleState.icons, hisPasscode:coupleState.hisPasscode, hisPassAttempts:coupleState.hisPassAttempts, hisLocked:coupleState.hisLocked, partnerHistory:coupleState.partnerHistory||[], lastCheckin:coupleState.lastCheckin||0, jealousHistory:coupleState.jealousHistory||[], taDeletedContacts:coupleState.taDeletedContacts||[], taTakeoverHistory:coupleState.taTakeoverHistory||[]})); }catch(e){}
   };
 })();

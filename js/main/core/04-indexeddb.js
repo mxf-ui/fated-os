@@ -27,6 +27,10 @@ function fatedDBSaveChat(contactId, cb){
         seed: c.seed,
         pendingCount: c.pendingCount||0,
         blocked: !!c.blocked,
+        taDeletedByPartner: !!c.taDeletedByPartner,
+        taDeletedBy: c.taDeletedBy||'',
+        taDeletedAt: c.taDeletedAt||0,
+        taDeletedPrevBlocked: !!c.taDeletedPrevBlocked,
         unread: c.unread||0,
         memory: c.memory||{enabled:true, threshold:20, summary:'', lastMsgCount:0},
         worldBooks: c.worldBooks||[],
@@ -62,6 +66,10 @@ function fatedDBLoadAllChats(cb){
             }
             if(typeof row.pendingCount==='number') contacts[row.id].pendingCount = row.pendingCount;
             contacts[row.id].blocked = !!row.blocked;
+            contacts[row.id].taDeletedByPartner = !!row.taDeletedByPartner;
+            contacts[row.id].taDeletedBy = row.taDeletedBy||'';
+            contacts[row.id].taDeletedAt = row.taDeletedAt||0;
+            contacts[row.id].taDeletedPrevBlocked = !!row.taDeletedPrevBlocked;
             if(typeof row.unread==='number') contacts[row.id].unread = row.unread;
             if(row.memory) contacts[row.id].memory = row.memory;
             if(Array.isArray(row.worldBooks)) contacts[row.id].worldBooks = row.worldBooks;
