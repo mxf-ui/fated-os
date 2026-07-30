@@ -74,6 +74,15 @@ if (!persistence.includes('dreamEnsureStateShape')) fail('Persistence restore mu
 if (!dream.includes('dreamContactFirstMessage(function')) fail('Dungeon must force WeChat contact to speak before scene choices.');
 if (!dream.includes('function dreamTimeout')) fail('Dream AI calls need timeout fallback so the portal cannot spin forever.');
 if (!dream.includes('dreamEnterRunView')) fail('Dream start must enter chat/run view immediately after starting.');
+if (!dream.includes('function dreamApplyDocToWorld')) fail('Dream docs must auto-fill world config after txt/word import.');
+if (!dream.includes('function dreamNewSlot')) fail('Dream save slots must support creating/resetting a slot.');
+if (!dream.includes('function dreamDeleteSlot')) fail('Dream save slots must support deleting a slot.');
+if (!dream.includes('function dreamBuildIdentityBrief')) fail('Dream run must brief user/contact identities before the main task.');
+if (!dream.includes('function dreamTemplateCards')) fail('Dream card tasks must be derived from dungeon template settings.');
+if (!dream.includes('function dreamShouldGenerateCards')) fail('Dream card tasks must wait for enough roleplay/chat progression.');
+if (!dream.includes('dreamState.run.awaitingCards')) fail('Dream run state must track whether cards are currently unlocked.');
+if (!index.includes('dreamNewSlot()')) fail('Dream setup UI must expose create/reset save slot.');
+if (!index.includes('dreamDeleteSlot()')) fail('Dream setup UI must expose delete save slot.');
 if (!dream.includes('function dreamPickSlotWallpaper')) fail('Dream save slots must support custom wallpaper upload.');
 if (!dream.includes('function dreamPickSceneImage')) fail('Dream dungeon scenes must support custom image upload.');
 if (!dream.includes('function dreamSendPlayerMessage')) fail('Dream run chat must allow user messages after contacts enter.');

@@ -53,6 +53,11 @@ function dreamEnsureStateShape(){
     if(!Array.isArray(dreamState.run.contacts)) dreamState.run.contacts = [];
     dreamState.run.worldConfig = Object.assign(dreamDefaultWorldConfig(), dreamState.run.worldConfig || {});
     if(!Array.isArray(dreamState.run.inventory)) dreamState.run.inventory = [];
+    if(typeof dreamState.run.turns !== 'number') dreamState.run.turns = 0;
+    if(typeof dreamState.run.maxStages !== 'number') dreamState.run.maxStages = 4;
+    if(typeof dreamState.run.awaitingCards !== 'boolean') dreamState.run.awaitingCards = false;
+    if(typeof dreamState.run.mainTask !== 'string') dreamState.run.mainTask = dreamState.run.objective || '';
+    if(typeof dreamState.run.briefed !== 'boolean') dreamState.run.briefed = false;
   }
   return dreamState;
 }
@@ -135,6 +140,7 @@ function dreamBindDocInput(){
       if(!text && /\.docx?$/i.test(file.name || '')) text = '\u5df2\u5bfc\u5165 Word \u6587\u4ef6\uff1a'+file.name+'\u3002\u6d4f\u89c8\u5668\u7aef\u65e0\u6cd5\u89e3\u6790\u590d\u6742\u683c\u5f0f\uff0c\u8bf7\u5c06\u5173\u952e\u5185\u5bb9\u586b\u5165\u4e16\u754c\u89c2\u3002';
       slot.docs.push({name:file.name || '\u4e16\u754c\u4e66', size:file.size || 0, text:text.slice(0, 12000), at:Date.now()});
       slot.worldConfig.docText = slot.docs.map(function(d){ return d.name+'\n'+d.text; }).join('\n\n').slice(0, 20000);
+      dreamApplyDocToWorld(slot, text, file.name || '\u4e16\u754c\u4e66');
       slot.updatedAt = Date.now();
       dreamRenderSaveBurst('\u4e16\u754c\u4e66\u5df2\u5199\u5165');
       dreamRenderSetup();
@@ -147,20 +153,48 @@ function dreamBindDocInput(){
 function dreamPickSlotWallpaper(){ dreamBindFileInput(); dreamUploadTarget = 'slot'; var input = document.getElementById('dream-file-input'); if(input) input.click(); }
 function dreamPickSceneImage(){ dreamBindFileInput(); dreamUploadTarget = 'scene'; var input = document.getElementById('dream-file-input'); if(input) input.click(); }
 function dreamPickWorldDoc(){ dreamBindDocInput(); var input = document.getElementById('dream-doc-input'); if(input) input.click(); }
+
+function dreamPlainLines(text){
+  return String(text || '').replace(/\r/g, '\n').split(/\n+/).map(function(x){ return dreamCleanText(x); }).filter(Boolean);
+}
+function dreamFirstWords(text, max){
+  return dreamCleanText(text).slice(0, max || 900);
+}
+function dreamApplyDocToWorld(slot, text, name){
+  slot = slot || dreamSlot();
+  var cfg = Object.assign(dreamDefaultWorldConfig(), slot.worldConfig || {});
+  var lines = dreamPlainLines(text);
+  var baseName = String(name || '').replace(/\.(txt|md|doc|docx)$/i, '').trim();
+  var first = lines[0] || baseName || '\u672a\u547d\u540d\u4e16\u754c';
+  if(!cfg.name) cfg.name = first.slice(0, 18);
+  if(!cfg.background) cfg.background = dreamFirstWords(text, 1200) || ('\u6839\u636e\u6587\u6863\u300c'+baseName+'\u300d\u751f\u6210\u7684\u81ea\u5b9a\u4e49\u526f\u672c\u4e16\u754c\u3002');
+  if(!cfg.era) cfg.era = '\u6587\u6863\u81ea\u5b9a\u4e49';
+  if(!cfg.rules) cfg.rules = '\u5fc5\u987b\u9075\u5faa\u5bfc\u5165\u4e16\u754c\u4e66\uff0cWeChat \u8054\u7cfb\u4eba\u4fdd\u6301\u539f\u672c\u4eba\u8bbe\uff0c\u4e3b\u8981\u901a\u8fc7\u4f60\u4e0e\u8054\u7cfb\u4eba\u7684\u804a\u5929\u63a8\u8fdb\u5267\u60c5';
+  if(!slot.templateLibrary){
+    var taskLines = lines.filter(function(line){ return /\u4efb\u52a1|\u76ee\u6807|\u5361\u724c|\u9009\u62e9|\u63a2\u7d22|\u6218\u6597|\u4ea4\u6d89|\u7ebf\u7d22|task|card|choice/i.test(line); }).slice(0, 6);
+    slot.templateLibrary = (taskLines.length ? taskLines : lines.slice(1, 5)).join('\n');
+    if(!slot.templateLibrary) slot.templateLibrary = '\u63a2\u7d22\u6838\u5fc3\u573a\u666f|\u83b7\u5f97\u7b2c\u4e00\u6761\u4e3b\u7ebf\u7ebf\u7d22|\u53ef\u80fd\u66b4\u9732\u961f\u4f0d\u7acb\u573a\n\u4e0e\u5173\u952e\u5bf9\u8c61\u4ea4\u6d89|\u63a8\u8fdb\u8eab\u4efd\u548c\u4efb\u52a1\u771f\u76f8|\u53ef\u80fd\u89e6\u53d1\u9690\u85cf\u4ee3\u4ef7\n\u5206\u6790\u5f02\u5e38\u7ebf\u7d22|\u89e3\u9501\u4e0b\u4e00\u4e2a\u526f\u672c\u8282\u70b9|\u9519\u8bef\u63a8\u7406\u4f1a\u964d\u4f4e\u8bc4\u7ea7';
+  }
+  if(!slot.rewardPool) slot.rewardPool = 'S+\uff1a\u89e3\u9501\u9ad8\u96be\u5ea6\u526f\u672c\u4e0e\u81ea\u5b9a\u4e49\u5361\u724c\u6743\u9650\nS\uff1a\u89e3\u9501\u4e16\u754c\u9650\u5b9a\u5267\u60c5\nA\uff1a\u7a00\u6709\u9053\u5177\u4e0e\u652f\u7ebf\u7ebf\u7d22\nB\uff1a\u57fa\u7840\u8d44\u6e90\u5956\u52b1\nC\uff1a\u526f\u672c\u91cd\u7f6e\u8d44\u683c';
+  slot.worldConfig = cfg;
+  slot.world = cfg.background;
+  return cfg;
+}
 function dreamReadWorldForm(){
   dreamEnsureStateShape();
   var slot = dreamSlot();
   var cfg = Object.assign(dreamDefaultWorldConfig(), slot.worldConfig || {});
-  cfg.name = dreamInputValue('dream-world-name');
-  cfg.background = dreamInputValue('dream-world-input');
-  cfg.era = dreamInputValue('dream-era-input');
-  cfg.rules = dreamInputValue('dream-rules-input');
-  cfg.npc = dreamInputValue('dream-npc-input');
-  cfg.factions = dreamInputValue('dream-factions-input');
-  cfg.resources = dreamInputValue('dream-resources-input');
-  slot.rewardPool = dreamInputValue('dream-rewards-input');
-  slot.templateLibrary = dreamInputValue('dream-templates-input');
+  cfg.name = dreamInputValue('dream-world-name') || cfg.name;
+  cfg.background = dreamInputValue('dream-world-input') || cfg.background;
+  cfg.era = dreamInputValue('dream-era-input') || cfg.era;
+  cfg.rules = dreamInputValue('dream-rules-input') || cfg.rules;
+  cfg.npc = dreamInputValue('dream-npc-input') || cfg.npc;
+  cfg.factions = dreamInputValue('dream-factions-input') || cfg.factions;
+  cfg.resources = dreamInputValue('dream-resources-input') || cfg.resources;
+  slot.rewardPool = dreamInputValue('dream-rewards-input') || slot.rewardPool;
+  slot.templateLibrary = dreamInputValue('dream-templates-input') || slot.templateLibrary;
   cfg.docText = (slot.docs || []).map(function(d){ return d.name+'\n'+d.text; }).join('\n\n').slice(0, 20000);
+  if(!cfg.background && cfg.docText) cfg.background = dreamFirstWords(cfg.docText, 1200);
   slot.worldConfig = cfg;
   slot.world = cfg.background;
   slot.updatedAt = Date.now();
@@ -290,6 +324,64 @@ function dreamSelectSlot(i){
   dreamRenderView();
   saveState();
 }
+
+function dreamSlotIsEmpty(slot){
+  slot = slot || dreamSlot();
+  return !(slot.updatedAt || slot.world || slot.wallpaper || slot.sceneImage || (slot.docs && slot.docs.length) || (slot.runs && slot.runs.length) || (slot.inventory && slot.inventory.length));
+}
+function dreamNewSlot(){
+  dreamEnsureStateShape();
+  var target = dreamState.slots.findIndex(function(s){ return dreamSlotIsEmpty(s); });
+  if(target < 0) target = dreamState.activeSlot;
+  if(!dreamSlotIsEmpty(dreamState.slots[target]) && typeof confirm === 'function' && !confirm('\u5f53\u524d\u6ca1\u6709\u7a7a\u5b58\u6863\uff0c\u662f\u5426\u8986\u76d6\u5f53\u524d\u5b58\u6863\uff1f')) return;
+  dreamState.activeSlot = target;
+  dreamState.slots[target] = dreamDefaultSlot(target);
+  dreamState.view = 'setup';
+  dreamState.phase = 'setup';
+  dreamState.run = null;
+  dreamState.selectedContacts = [];
+  dreamRenderSaveBurst('\u65b0\u5b58\u6863\u5df2\u5efa\u7acb');
+  dreamRenderSetup();
+  dreamRenderRun();
+  dreamRenderView();
+  saveState();
+}
+function dreamDeleteSlot(){
+  dreamEnsureStateShape();
+  var i = dreamState.activeSlot;
+  if(!dreamSlotIsEmpty(dreamState.slots[i]) && typeof confirm === 'function' && !confirm('\u5220\u9664\u5f53\u524d\u5b58\u6863\uff1f\u5df2\u5bfc\u5165\u6587\u6863\u3001\u80cc\u5305\u548c\u526f\u672c\u8bb0\u5f55\u90fd\u4f1a\u6e05\u7a7a\u3002')) return;
+  dreamState.slots[i] = dreamDefaultSlot(i);
+  dreamState.selectedContacts = [];
+  dreamState.view = 'setup';
+  dreamState.phase = 'setup';
+  dreamState.run = null;
+  dreamRenderSaveBurst('\u5b58\u6863\u5df2\u5220\u9664');
+  dreamRenderSetup();
+  dreamRenderRun();
+  dreamRenderView();
+  saveState();
+}
+function dreamPlayerName(){
+  return (typeof userName === 'string' && userName) || (contacts && contacts.me && (contacts.me.displayName || contacts.me.name)) || 'User';
+}
+function dreamDeriveMainTask(cfg, slot){
+  var lines = dreamPlainLines((slot && slot.templateLibrary) || '');
+  var explicit = lines.find(function(line){ return /\u4e3b\u7ebf|\u4efb\u52a1|\u76ee\u6807|main|task|objective/i.test(line); });
+  if(explicit) return explicit.replace(/^[-*\d.\s]+/, '').slice(0, 90);
+  var docLines = dreamPlainLines((cfg && cfg.docText) || (cfg && cfg.background) || '');
+  if(docLines.length) return '\u6839\u636e\u300c'+((cfg && cfg.name) || '\u5bfc\u5165\u4e16\u754c')+'\u300d\u7684\u89c4\u5219\uff0c\u5728\u526f\u672c\u4e2d\u627e\u5230\u6838\u5fc3\u51b2\u7a81\u7684\u89e3\u6cd5';
+  return '\u63a2\u7d22\u5f53\u524d\u4e16\u754c\uff0c\u786e\u8ba4\u4f60\u4e0e WeChat \u8054\u7cfb\u4eba\u7684\u8eab\u4efd\uff0c\u5b8c\u6210\u65c1\u767d\u53d1\u5e03\u7684\u4e3b\u7ebf\u4efb\u52a1';
+}
+function dreamBuildIdentityBrief(run){
+  var cfg = Object.assign(dreamDefaultWorldConfig(), (run && run.worldConfig) || {});
+  var task = run.mainTask || dreamDeriveMainTask(cfg, dreamSlot());
+  var contactLines = (run.contacts || []).map(function(id){
+    var setting = run.contactSettings && run.contactSettings[id] ? run.contactSettings[id] : dreamContactSetting(id);
+    var role = setting.role || '\u672a\u6307\u5b9a\u8eab\u4efd';
+    return dreamContactName(id)+'\uff1a'+role;
+  }).join('\n');
+  return '\u65c1\u767d\uff1a\u526f\u672c\u5df2\u7a33\u5b9a\u3002\n\u4f60\u7684\u8eab\u4efd\uff1a'+dreamPlayerName()+'\uff0c\u623f\u4e3b\u4e0e\u5267\u60c5\u53c2\u4e0e\u8005\uff0c\u53ef\u4ee5\u901a\u8fc7\u804a\u5929\u63a8\u8fdb\u526f\u672c\u3002\nWeChat \u8054\u7cfb\u4eba\u8eab\u4efd\uff1a\n'+contactLines+'\n\u4e3b\u7ebf\u4efb\u52a1\uff1a'+task+'\n\u89c4\u5219\uff1a\u5148\u7531\u8054\u7cfb\u4eba\u5f00\u53e3\uff0c\u4f60\u4eec\u901a\u8fc7\u5bf9\u8bdd\u81ea\u884c\u63a2\u7d22\uff0c\u65c1\u767d\u4f1a\u5728\u5173\u952e\u8282\u70b9\u653e\u51fa\u5361\u724c\u4efb\u52a1\u3002';
+}
 function dreamSaveWorld(){
   dreamEnsureStateShape();
   var cfg = dreamReadWorldForm();
@@ -342,14 +434,19 @@ function dreamStartRun(){
   dreamEnsureStateShape();
   var slot = dreamSlot();
   var cfg = dreamReadWorldForm();
-  if(!cfg.name) cfg.name = '\u672a\u547d\u540d\u4e16\u754c';
-  if(!cfg.background){ dreamToast('\u8bf7\u5148\u5199\u5165\u4e16\u754c\u89c2\u80cc\u666f'); return; }
+  if(!cfg.docText && slot.docs && slot.docs.length) cfg.docText = slot.docs.map(function(d){ return d.name+'\n'+d.text; }).join('\n\n').slice(0, 20000);
+  if(!cfg.background && cfg.docText) cfg.background = dreamFirstWords(cfg.docText, 1200);
+  if(!cfg.name) cfg.name = cfg.background ? cfg.background.slice(0, 12) : '\u672a\u547d\u540d\u4e16\u754c';
+  if(!cfg.background){ dreamToast('\u8bf7\u5148\u5bfc\u5165\u4e16\u754c\u6587\u6863\u6216\u5199\u5165\u4e16\u754c\u89c2'); return; }
+  slot.worldConfig = cfg;
+  slot.world = cfg.background;
   var enabled = dreamContactIds().filter(dreamContactEnabled);
   dreamState.selectedContacts = enabled.slice();
   if(!enabled.length){ dreamToast('\u8bf7\u9009\u62e9\u81f3\u5c11\u4e00\u4f4d WeChat \u8054\u7cfb\u4eba'); return; }
+  var mainTask = dreamDeriveMainTask(cfg, slot);
   dreamState.view = 'run';
   dreamState.phase = 'vortex';
-  dreamState.run = {id:'dream-'+Date.now().toString(36), startedAt:Date.now(), world:cfg.background, worldConfig:Object.assign({}, cfg), rewardPool:slot.rewardPool || '', templateLibrary:slot.templateLibrary || '', sceneImage:slot.sceneImage || '', contacts:enabled, contactSettings:JSON.parse(JSON.stringify(slot.contactSettings || {})), inventory:(slot.inventory || []).slice(), progress:0, score:0, rank:'', rewards:[], messages:[], choices:[], usedCards:[], objective:'\u7b49\u5f85\u65c1\u767d\u53d1\u5e03\u4efb\u52a1'};
+  dreamState.run = {id:'dream-'+Date.now().toString(36), startedAt:Date.now(), world:cfg.background, worldConfig:Object.assign({}, cfg), rewardPool:slot.rewardPool || '', templateLibrary:slot.templateLibrary || '', sceneImage:slot.sceneImage || '', contacts:enabled, contactSettings:JSON.parse(JSON.stringify(slot.contactSettings || {})), inventory:(slot.inventory || []).slice(), progress:0, maxStages:4, turns:0, score:0, rank:'', rewards:[], messages:[], choices:[], usedCards:[], awaitingCards:false, briefed:false, mainTask:mainTask, objective:mainTask};
   dreamOpenRunView();
   dreamRenderSetup();
   saveState();
@@ -357,7 +454,7 @@ function dreamStartRun(){
     dreamState.phase = 'run';
     dreamRenderRun();
     saveState();
-    dreamContactFirstMessage(function(){ dreamGenerateScene(); });
+    dreamContactFirstMessage(function(){ dreamGenerateOpeningBrief(); });
   });
 }
 function dreamEnterRunView(){ dreamOpenRunView(); }
@@ -397,6 +494,17 @@ function dreamContactFirstMessage(done){
     if(done) done();
   });
 }
+function dreamGenerateOpeningBrief(){
+  dreamEnsureStateShape();
+  var run = dreamState.run;
+  if(!run || run.briefed) return;
+  run.briefed = true;
+  run.messages.push({role:'narrator', text:dreamBuildIdentityBrief(run), at:Date.now()});
+  run.choices = [];
+  run.awaitingCards = false;
+  dreamRenderRun();
+  saveState();
+}
 function dreamFallbackContact(id){
   var pool = ['\u6211\u5148\u8bf4\uff0c\u8fd9\u91cc\u7684\u89c4\u5219\u548c\u5e73\u65f6\u4e0d\u4e00\u6837\u3002','\u5148\u522b\u5f80\u524d\u8d70\uff0c\u6211\u770b\u89c1\u4e00\u9053\u95e8\u5728\u7b49\u6211\u4eec\u3002','\u6211\u6765\u5f00\u5934\uff0c\u5148\u627e\u5230\u8fd9\u4e2a\u4e16\u754c\u8981\u6211\u4eec\u5b8c\u6210\u7684\u4efb\u52a1\u3002'];
   return pool[Math.floor(Math.random()*pool.length)];
@@ -405,61 +513,80 @@ function dreamGenerateScene(){
   dreamEnsureStateShape();
   var run = dreamState.run;
   if(!run) return;
+  var cardReady = dreamShouldGenerateCards(run);
   dreamBusy = true;
   dreamRenderRun();
-  var immediate = dreamParseScene('');
+  var immediate = dreamParseScene('', cardReady, run);
   var fallbackTimer = setTimeout(function(){
     if(!dreamBusy || !dreamState.run || dreamState.run.id !== run.id) return;
     dreamBusy = false;
     run.messages.push({role:'narrator', text:immediate.scene, at:Date.now()});
     run.objective = immediate.objective || run.objective;
-    run.choices = immediate.cards;
+    run.choices = cardReady ? immediate.cards : [];
+    run.awaitingCards = cardReady;
     dreamRenderRun();
     saveState();
   }, 900);
-  var log = run.messages.slice(-8).map(function(m){ return (m.role === 'contact' ? dreamContactName(m.contactId) : m.role)+'\uff1a'+m.text; }).join('\n');
+  var log = run.messages.slice(-10).map(function(m){ return (m.role === 'contact' ? dreamContactName(m.contactId) : m.role)+'\uff1a'+m.text; }).join('\n');
   var profiles = run.contacts.map(dreamContactProfile).join('\n\n');
-  var prompt = dreamBuildWorldPrompt(run)+'\n\n\u53c2\u4e0e\u8005:\n'+profiles+'\n\n\u5df2\u53d1\u751f:\n'+log+'\n\n\u8bf7\u751f\u6210\u4e00\u6bb5\u9ad8\u7ea7\u795e\u79d8\u98ce\u683c\u65c1\u767d\uff0c\u53d1\u5e03\u6216\u63a8\u8fdb\u526f\u672c\u4efb\u52a1\uff0c\u5e76\u7ed9\u51fa2-4\u5f20\u9009\u62e9\u5361\u3002\u53c2\u4e0e\u8005\u53ea\u80fd\u56de\u590d\u5361\u724c\u7f16\u53f7\u3002\u683c\u5f0f:\nOBJECTIVE|\u4efb\u52a1\u76ee\u6807\nSCENE|\u65c1\u767d\nCARD|\u6807\u9898|\u6548\u679c|\u98ce\u9669\nCARD|\u6807\u9898|\u6548\u679c|\u98ce\u9669\nCARD|\u6807\u9898|\u6548\u679c|\u98ce\u9669\n\u4e0d\u8981\u8868\u60c5\u7b26\u53f7\u3002';
-  dreamCallAI(prompt, '\u4f60\u662f\u65e0\u9650\u526f\u672c\u65c1\u767d\u548c\u9009\u62e9\u5361\u7b56\u5212\u3002\u53ea\u8f93\u51fa\u6307\u5b9a\u683c\u5f0f\u3002', function(text){
+  var cardFormat = cardReady ? '\nCARD|\u6807\u9898|\u6548\u679c|\u98ce\u9669\nCARD|\u6807\u9898|\u6548\u679c|\u98ce\u9669\nCARD|\u6807\u9898|\u6548\u679c|\u98ce\u9669' : '';
+  var cardRule = cardReady ? '\u73b0\u5728\u662f\u5173\u952e\u8282\u70b9\uff0c\u5fc5\u987b\u6839\u636e\u526f\u672c\u6a21\u677f\u751f\u62102-4\u5f20\u5361\u724c\u4efb\u52a1\u3002' : '\u73b0\u5728\u53ea\u63a8\u8fdb\u65c1\u767d\uff0c\u4e0d\u8981\u7ed9\u5361\u724c\uff0c\u7ed9\u73a9\u5bb6\u548c WeChat \u8054\u7cfb\u4eba\u5145\u8db3\u65f6\u95f4\u901a\u8fc7\u804a\u5929\u6f14\u7ece\u3002';
+  var prompt = dreamBuildWorldPrompt(run)+'\n\n\u53c2\u4e0e\u8005:\n'+profiles+'\n\n\u4e3b\u7ebf\u4efb\u52a1:\n'+(run.mainTask || run.objective)+'\n\n\u5df2\u53d1\u751f:\n'+log+'\n\n'+cardRule+'\n\u683c\u5f0f:\nOBJECTIVE|\u5f53\u524d\u4e3b\u7ebf\u76ee\u6807\nSCENE|\u65c1\u767d'+cardFormat+'\n\u4e0d\u8981\u8868\u60c5\u7b26\u53f7\u3002';
+  dreamCallAI(prompt, '\u4f60\u662f\u65e0\u9650\u526f\u672c\u65c1\u767d\u3002\u5267\u60c5\u4e3b\u8981\u7531 user \u548c WeChat \u8054\u7cfb\u4eba\u901a\u8fc7\u804a\u5929\u6f14\u7ece\u63a8\u8fdb\uff0c\u4f60\u53ea\u5728\u5173\u952e\u8282\u70b9\u7ed9\u5361\u724c\u4efb\u52a1\u3002', function(text){
     if(!dreamState.run || dreamState.run.id !== run.id) return;
     if(!dreamBusy && run.choices && run.choices.length) return;
     clearTimeout(fallbackTimer);
     dreamBusy = false;
-    var parsed = dreamParseScene(text);
+    var parsed = dreamParseScene(text, cardReady, run);
     run.messages.push({role:'narrator', text:parsed.scene, at:Date.now()});
     run.objective = parsed.objective || run.objective;
-    run.choices = parsed.cards;
+    run.choices = cardReady ? parsed.cards : [];
+    run.awaitingCards = cardReady;
     dreamRenderRun();
     saveState();
   });
 }
-function dreamParseScene(text){
+function dreamParseScene(text, includeCards, run){
   var out = {scene:'', objective:'', cards:[]};
   var lines = String(text || '').split(/\n+/).map(dreamCleanText).filter(Boolean);
   lines.forEach(function(line){
     if(line.indexOf('OBJECTIVE|') === 0) out.objective = line.split('|').slice(1).join('|').trim();
     if(line.indexOf('SCENE|') === 0) out.scene = line.split('|').slice(1).join('|').trim();
-    if(line.indexOf('CARD|') === 0){ var p = line.split('|'); out.cards.push({id:'card-'+Date.now().toString(36)+'-'+out.cards.length, title:p[1] || '\u672a\u77e5\u9009\u9879', effect:p[2] || '\u6539\u53d8\u526f\u672c\u8d70\u5411', risk:p[3] || '\u98ce\u9669\u672a\u660e'}); }
+    if(includeCards && line.indexOf('CARD|') === 0){ var p = line.split('|'); out.cards.push({id:'card-'+Date.now().toString(36)+'-'+out.cards.length, title:p[1] || '\u672a\u77e5\u9009\u9879', effect:p[2] || '\u6539\u53d8\u526f\u672c\u8d70\u5411', risk:p[3] || '\u98ce\u9669\u672a\u660e'}); }
   });
-  if(!out.objective) out.objective = '\u5b8c\u6210\u65c1\u767d\u53d1\u5e03\u7684\u6838\u5fc3\u4efb\u52a1';
-  if(!out.scene) out.scene = dreamFallbackScene();
-  if(out.cards.length < 2) out.cards = dreamFallbackCards(out.cards);
+  if(!out.objective) out.objective = (run && (run.mainTask || run.objective)) || '\u5b8c\u6210\u65c1\u767d\u53d1\u5e03\u7684\u6838\u5fc3\u4efb\u52a1';
+  if(!out.scene) out.scene = dreamFallbackScene(run);
+  if(includeCards && out.cards.length < 2) out.cards = dreamFallbackCards(out.cards, run);
   return out;
 }
 function dreamFallbackScene(){
   var list = ['\u6f29\u6da1\u7684\u8fb9\u754c\u5728\u8eab\u540e\u95ed\u5408\uff0c\u4e00\u6761\u6ca1\u6709\u706f\u7684\u957f\u5eca\u5411\u524d\u5ef6\u4f38\u3002\u65c1\u767d\u5ba3\u544a\uff1a\u627e\u5230\u7b2c\u4e00\u4e2a\u80fd\u8bc1\u660e\u4f60\u4eec\u5b58\u5728\u7684\u7269\u4ef6\u3002','\u4e16\u754c\u4e66\u5728\u7a7a\u6c14\u91cc\u7ffb\u9875\uff0c\u6240\u6709\u540d\u5b57\u88ab\u8584\u96fe\u91cd\u5199\u3002\u4efb\u52a1\u662f\u5728\u9519\u8bef\u7684\u8bb0\u5fc6\u4e2d\u627e\u51fa\u771f\u6b63\u7684\u51fa\u53e3\u3002','\u5b58\u6863\u53e3\u7684\u5149\u6c89\u5165\u5730\u9762\uff0c\u4e09\u5f20\u672a\u7b7e\u540d\u7684\u5361\u724c\u9646\u7eed\u9192\u6765\u3002\u4f60\u4eec\u9700\u8981\u5148\u786e\u8ba4\u8c01\u5728\u8bf4\u8c0e\u3002'];
   return list[Math.floor(Math.random()*list.length)];
 }
-function dreamFallbackCards(existing){
-  var cards = existing || [];
+function dreamFallbackCards(existing, run){
+  var cards = dreamTemplateCards(run).concat(existing || []);
   var pool = [
-    {title:'\u70b9\u4eae\u96fe\u706f', effect:'\u770b\u6e05\u4e0b\u4e00\u5c42\u901a\u9053', risk:'\u5438\u5f15\u5de1\u6e38\u8005'},
-    {title:'\u4ea4\u51fa\u4e00\u6bb5\u8bb0\u5fc6', effect:'\u6362\u53d6\u4efb\u52a1\u7ebf\u7d22', risk:'\u8054\u7cfb\u4eba\u4f1a\u77ed\u6682\u5931\u795e'},
-    {title:'\u8ffd\u968f\u56de\u58f0', effect:'\u8ba9\u526f\u672c\u81ea\u52a8\u5c55\u5f00', risk:'\u65c1\u767d\u4f1a\u63d0\u5347\u96be\u5ea6'},
-    {title:'\u5c01\u5b58\u88c2\u7f1d', effect:'\u7a33\u5b9a\u5f53\u524d\u573a\u666f', risk:'\u5956\u52b1\u7b49\u7ea7\u53ef\u80fd\u4e0b\u964d'}
+    {title:'\u63a2\u67e5\u4e3b\u7ebf\u7ebf\u7d22', effect:'\u901a\u8fc7\u73b0\u573a\u7ec6\u8282\u63a8\u8fdb\u4efb\u52a1', risk:'\u53ef\u80fd\u66b4\u9732\u961f\u4f0d\u610f\u56fe'},
+    {title:'\u4e0e\u5173\u952e\u5bf9\u8c61\u4ea4\u6d89', effect:'\u83b7\u53d6\u9690\u85cf\u60c5\u62a5\u6216\u652f\u7ebf\u5165\u53e3', risk:'\u5bf9\u65b9\u4f1a\u7d22\u8981\u4ee3\u4ef7'},
+    {title:'\u8bd5\u63a2\u4e16\u754c\u89c4\u5219', effect:'\u786e\u8ba4\u5f53\u524d\u526f\u672c\u7684\u9690\u6027\u9650\u5236', risk:'\u89c4\u5219\u53ef\u80fd\u88ab\u53cd\u5411\u6fc0\u6d3b'},
+    {title:'\u4fdd\u7559\u5bf9\u8bdd\u65f6\u95f4', effect:'\u8ba9\u8054\u7cfb\u4eba\u7ee7\u7eed\u6f14\u7ece\u5e76\u81ea\u884c\u53d1\u73b0\u7ebf\u7d22', risk:'\u8fdb\u5ea6\u53d8\u6162\u4f46\u53ef\u80fd\u63d0\u5347\u8bc4\u7ea7'}
   ];
   while(cards.length < 3) cards.push(pool[cards.length % pool.length]);
   return cards.slice(0,4).map(function(c, i){ c.id = c.id || 'fallback-'+i; return c; });
+}
+function dreamTemplateCards(run){
+  var raw = (run && run.templateLibrary) || dreamSlot().templateLibrary || '';
+  return dreamPlainLines(raw).slice(0, 4).map(function(line, i){
+    var parts = line.split('|').map(function(x){ return dreamCleanText(x); }).filter(Boolean);
+    if(parts.length >= 2) return {id:'template-'+i, title:parts[0].slice(0, 28), effect:(parts[1] || '\u63a8\u8fdb\u526f\u672c\u4efb\u52a1').slice(0, 80), risk:(parts[2] || '\u4ee3\u4ef7\u7531\u5267\u60c5\u5224\u5b9a').slice(0, 80)};
+    return {id:'template-'+i, title:line.slice(0, 28), effect:'\u6267\u884c\u526f\u672c\u8bbe\u7f6e\u4e2d\u7684\u81ea\u5b9a\u4e49\u4efb\u52a1', risk:'\u7ed3\u679c\u4f9d\u636e\u4f60\u4e0e\u8054\u7cfb\u4eba\u7684\u6f14\u7ece\u5224\u5b9a'};
+  });
+}
+function dreamShouldGenerateCards(run){
+  if(!run || run.rank) return false;
+  if(run.awaitingCards && run.choices && run.choices.length) return true;
+  var neededTurns = Math.min(4, 2 + Math.max(0, run.progress));
+  return !!run.briefed && !dreamBusy && (!run.choices || !run.choices.length) && run.turns >= neededTurns;
 }
 function dreamParseCardNumber(text){
   var n = parseInt(String(text || '').replace(/[^0-9]/g, ''), 10);
@@ -473,11 +600,13 @@ function dreamChooseCard(i){
   run.usedCards.push(card.title);
   run.messages.push({role:'user', text:'\u5361\u724c '+(i+1)+'\uff1a'+card.title+'\u3002'+card.effect+'\u3002\u98ce\u9669\uff1a'+card.risk, at:Date.now()});
   run.progress += 1;
+  run.turns = 0;
+  run.awaitingCards = false;
   run.score += dreamCardScore(card, run.progress);
   run.choices = [];
   saveState();
   dreamRenderRun();
-  if(run.progress >= 4){ dreamCompleteRun(); return; }
+  if(run.progress >= (run.maxStages || 4)){ dreamCompleteRun(); return; }
   dreamRenderVortex(function(){ dreamContactReact(card, function(){ dreamGenerateScene(); }); });
 }
 function dreamCardScore(card, step){
@@ -495,11 +624,17 @@ function dreamSendPlayerMessage(){
   if(!run || !text || dreamBusy) return;
   input.value = '';
   var cardIndex = dreamParseCardNumber(text);
-  if(run.choices && run.choices.length && cardIndex >= 0 && cardIndex < run.choices.length){ dreamChooseCard(cardIndex); return; }
+  if(run.choices && run.choices.length){
+    if(cardIndex >= 0 && cardIndex < run.choices.length){ dreamChooseCard(cardIndex); return; }
+    dreamToast('\u5f53\u524d\u662f\u5361\u724c\u8282\u70b9\uff0c\u8bf7\u8f93\u5165\u5bf9\u5e94\u5361\u724c\u7f16\u53f7');
+    return;
+  }
   run.messages.push({role:'user', text:text, at:Date.now()});
+  run.turns = (run.turns || 0) + 1;
+  run.score += Math.min(4, Math.max(1, Math.round(text.length / 28)));
   saveState();
   dreamRenderRun();
-  dreamContactReact({title:'\u81ea\u7531\u804a\u5929', effect:text, risk:'\u526f\u672c\u4f1a\u6839\u636e\u5bf9\u8bdd\u504f\u79fb'}, null);
+  dreamContactReact({title:'\u81ea\u7531\u804a\u5929', effect:text, risk:'\u526f\u672c\u4f1a\u6839\u636e\u5bf9\u8bdd\u504f\u79fb'}, function(){ dreamGenerateScene(); });
 }
 function dreamContactReact(card, done){
   var run = dreamState.run;
@@ -579,8 +714,9 @@ function dreamRenderRun(){
   }
   var names = run.contacts.map(dreamContactName).join(' / ');
   var title = (run.worldConfig && run.worldConfig.name) || '\u68a6\u6838\u526f\u672c';
+  var maxStages = run.maxStages || 4;
   var vortexHTML = dreamState.phase === 'vortex' ? '<div id="dream-vortex" class="dream-vortex dream-transition"><span></span></div>' : '<div id="dream-vortex" class="dream-vortex" style="display:none"><span></span></div>';
-  wrap.innerHTML = '<div class="dream-run-page">'+vortexHTML+'<div class="dream-run-bar"><button type="button" class="dream-run-back" onclick="dreamBackToSetup()">&#8249;</button><div><b>'+esc(title)+'</b><small>'+esc(names)+'</small></div><span>'+esc(run.rank || (run.progress+'/4'))+'</span></div>'+dreamSceneImageHTML(run)+'<div class="dream-stage-head"><div><b>'+esc(run.objective || '\u7b49\u5f85\u4efb\u52a1')+'</b><small>\u8054\u7cfb\u4eba\u5148\u53d1\u8d77\u804a\u5929\uff0c\u65c1\u767d\u518d\u63a8\u8fdb\u5267\u60c5</small></div><span>'+esc(run.progress+'/4')+'</span></div><div class="dream-progress-track"><i style="width:'+Math.min(100, run.progress*25)+'%"></i></div><div id="dream-chat" class="dream-chat">'+run.messages.map(dreamMessageHTML).join('')+(dreamBusy?'<div class="dream-thinking">\u68a6\u6838\u6b63\u5728\u6f14\u7b97...</div>':'')+'</div><div id="dream-choice-card" class="dream-choice-card">'+dreamChoicesHTML(run)+'</div><div class="dream-chat-composer"><input id="dream-chat-input" maxlength="160" placeholder="\u8f93\u5165\u5361\u724c\u7f16\u53f7\u6216\u5bf9\u8054\u7cfb\u4eba\u8bf4\u7684\u8bdd"><button type="button" onclick="dreamSendPlayerMessage()">\u53d1\u9001</button></div><div id="dream-result" class="dream-result">'+dreamResultHTML(run)+'</div></div>';
+  wrap.innerHTML = '<div class="dream-run-page">'+vortexHTML+'<div class="dream-run-bar"><button type="button" class="dream-run-back" onclick="dreamBackToSetup()">&#8249;</button><div><b>'+esc(title)+'</b><small>'+esc(names)+'</small></div><span>'+esc(run.rank || (run.progress+'/'+maxStages))+'</span></div>'+dreamSceneImageHTML(run)+'<div class="dream-stage-head"><div><b>'+esc(run.objective || '\u7b49\u5f85\u4efb\u52a1')+'</b><small>\u5148\u770b\u8eab\u4efd\u4e0e\u4e3b\u7ebf\u4efb\u52a1\uff0c\u518d\u901a\u8fc7\u804a\u5929\u63a2\u7d22\u5230\u5361\u724c\u8282\u70b9</small></div><span>'+esc(run.progress+'/'+maxStages)+'</span></div><div class="dream-progress-track"><i style="width:'+Math.min(100, run.progress*(100/maxStages))+'%"></i></div><div id="dream-chat" class="dream-chat">'+run.messages.map(dreamMessageHTML).join('')+(dreamBusy?'<div class="dream-thinking">\u68a6\u6838\u6b63\u5728\u6f14\u7b97...</div>':'')+'</div><div id="dream-choice-card" class="dream-choice-card">'+dreamChoicesHTML(run)+'</div><div class="dream-chat-composer"><input id="dream-chat-input" maxlength="160" placeholder="\u5148\u548c WeChat \u8054\u7cfb\u4eba\u6f14\u7ece\uff0c\u5361\u724c\u51fa\u73b0\u540e\u8f93\u5165\u7f16\u53f7"><button type="button" onclick="dreamSendPlayerMessage()">\u53d1\u9001</button></div><div id="dream-result" class="dream-result">'+dreamResultHTML(run)+'</div></div>';
   var chat = document.getElementById('dream-chat');
   if(chat) chat.scrollTop = chat.scrollHeight;
   var input = document.getElementById('dream-chat-input');
@@ -594,7 +730,7 @@ function dreamMessageHTML(m){
 }
 function dreamChoicesHTML(run){
   if(dreamState.phase === 'result' || run.rank) return '';
-  if(!run.choices || !run.choices.length) return '<div class="dream-choice-wait">\u7b49\u5f85\u9009\u62e9\u5361\u751f\u6210</div>';
+  if(!run.choices || !run.choices.length) return '<div class="dream-choice-wait">\u7ee7\u7eed\u548c WeChat \u8054\u7cfb\u4eba\u804a\u5929\u6f14\u7ece\uff0c\u65c1\u767d\u4f1a\u5728\u5173\u952e\u8282\u70b9\u653e\u51fa\u5361\u724c\u4efb\u52a1</div>';
   return run.choices.map(function(c, i){ return '<button type="button" onclick="dreamChooseCard('+i+')"><b>'+esc((i+1)+'. '+c.title)+'</b><small>'+esc(c.effect)+'</small><em>'+esc(c.risk)+'</em></button>'; }).join('');
 }
 function dreamResultHTML(run){
