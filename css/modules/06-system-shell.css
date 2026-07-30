@@ -159,19 +159,19 @@ body.widget-bg-frosted .glass-liquid{
 .sb-actions{ flex:none; display:flex; gap:10px; padding:10px 0 calc(env(safe-area-inset-bottom) + 16px); }
 
 /* ---------- desktop icons w/ custom image support ---------- */
-.d-board{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding:6px 24px; }
-.d-tile{ aspect-ratio:1; border-radius:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; background-size:cover; background-position:center; background:#1a1a1a; transition:all .15s; }
+.d-board{ display:grid; grid-template-columns:repeat(3,72px); justify-content:center; gap:13px; padding:6px 18px; }
+.d-tile{ width:72px; height:72px; aspect-ratio:1; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; background-size:cover; background-position:center; background:#1a1a1a; transition:all .15s; }
 .d-tile:active{ transform:scale(.92); opacity:.8; }
 .d-tile .lbl{ font-size:10px; font-weight:500; color:#555; letter-spacing:.1px; }
-.d-dock{ position:absolute; bottom:calc(env(safe-area-inset-bottom,0px) + 14px); left:16px; right:16px; height:64px; border-radius:22px; display:flex; align-items:center; justify-content:space-around; background:rgba(255,255,255,0.7); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); border:1px solid rgba(0,0,0,0.04); z-index:6; }
-.d-dock .tile{ width:44px; height:44px; border-radius:16px; background-size:cover; background-position:center; cursor:pointer; transition:all .15s; background:#1a1a1a; display:flex; align-items:center; justify-content:center; }
+.d-dock{ position:absolute; bottom:calc(env(safe-area-inset-bottom,0px) + 14px); left:22px; right:22px; height:58px; border-radius:22px; display:flex; align-items:center; justify-content:space-around; background:rgba(255,255,255,0.7); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); border:1px solid rgba(0,0,0,0.04); z-index:6; }
+.d-dock .tile{ width:40px; height:40px; border-radius:14px; background-size:cover; background-position:center; cursor:pointer; transition:all .15s; background:#1a1a1a; display:flex; align-items:center; justify-content:center; }
 .d-dock .tile:active{ transform:scale(.86); }
 /* ---- 主屏左右分页 (Springboard-style horizontal pager) ---- */
 .home-pager{ display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
 .home-pager::-webkit-scrollbar{ display:none; }
 .home-page{ flex:none; width:100%; height:100%; scroll-snap-align:center; scroll-snap-stop:always; display:flex; flex-direction:column; align-items:center; gap:12px; padding:calc(env(safe-area-inset-top,0px) + 52px) 18px calc(env(safe-area-inset-bottom,0px) + 100px); overflow:hidden; }
 .home-page-title{ font-size:13px; font-weight:800; color:rgba(255,255,255,0.85); text-shadow:0 1px 6px rgba(0,0,0,0.25); letter-spacing:1px; }
-.home-page .d-board{ flex:1; align-content:center; padding:6px 18px; }
+.home-page .d-board{ flex:1; align-content:center; padding:6px 10px; }
 .home-page .sb-grid{ flex:1; overflow:hidden; min-height:0; align-content:center; }
 .home-page .sb-actions{ flex:none; display:flex; gap:10px; padding:6px 0 0; width:100%; max-width:320px; }
 .page-dots{ position:absolute; bottom:calc(env(safe-area-inset-bottom,0px) + 88px); left:0; right:0; z-index:5; display:flex; justify-content:center; gap:7px; pointer-events:none; }
