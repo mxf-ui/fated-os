@@ -72,6 +72,17 @@ if (!systemCss.includes('.d-board{ display:grid; grid-template-columns:repeat(3,
 if (!persistence.includes('dream: typeof dreamState')) fail('Persistence snapshot must include dream state.');
 if (!persistence.includes('dreamEnsureStateShape')) fail('Persistence restore must normalize dream state.');
 if (!dream.includes('dreamContactFirstMessage(function')) fail('Dungeon must force WeChat contact to speak before scene choices.');
+if (!dream.includes('function dreamTimeout')) fail('Dream AI calls need timeout fallback so the portal cannot spin forever.');
+if (!dream.includes('dreamEnterRunView')) fail('Dream start must enter chat/run view immediately after starting.');
+if (!dream.includes('function dreamPickSlotWallpaper')) fail('Dream save slots must support custom wallpaper upload.');
+if (!dream.includes('function dreamPickSceneImage')) fail('Dream dungeon scenes must support custom image upload.');
+if (!dream.includes('function dreamSendPlayerMessage')) fail('Dream run chat must allow user messages after contacts enter.');
+if (!dream.includes('slot.wallpaper')) fail('Dream slot wallpaper must be persisted inside dream state.');
+if (!dream.includes('slot.sceneImage')) fail('Dream scene image must be persisted inside dream state.');
+if (!index.includes('id="dream-file-input"')) fail('Dream sheet needs a hidden file input for wallpapers and scene images.');
+if (!css.includes('.dream-slot-preview')) fail('Dream CSS must render save slot wallpaper previews.');
+if (!css.includes('.dream-scene-image')) fail('Dream CSS must render uploaded dungeon scene images.');
+if (!css.includes('@keyframes dreamSlotWake')) fail('Dream CSS must include a save-slot wake animation.');
 if (!dream.includes("['S+','S','A','B','C']")) fail('Dream scoring must use the required ranks.');
 if (/[\u{1F300}-\u{1FAFF}]/u.test(dream + css)) fail('Dream feature must not contain emoji glyphs.');
 

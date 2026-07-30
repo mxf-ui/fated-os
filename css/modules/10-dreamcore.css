@@ -83,6 +83,27 @@
 .dream-save-text{ margin-top:14px; color:#dffaf0; font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
 .dream-toast{ position:fixed; bottom:96px; left:50%; transform:translateX(-50%) translateY(8px); z-index:620; max-width:280px; padding:10px 18px; border-radius:8px; background:#d8ffed; color:#082017; font-size:12px; font-weight:800; opacity:0; pointer-events:none; transition:all .22s ease; }
 .dream-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+.dream-slot{ position:relative; overflow:hidden; min-height:96px; display:flex; flex-direction:column; justify-content:flex-end; isolation:isolate; }
+.dream-slot::before{ content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,rgba(8,28,22,.12),rgba(2,9,7,.76)); pointer-events:none; }
+.dream-slot.active{ animation:dreamSlotWake .58s ease both; }
+.dream-slot-preview{ position:absolute; inset:0; z-index:-2; border-radius:8px; background:radial-gradient(circle at 50% 18%,rgba(188,255,227,.2),rgba(8,28,22,.76)); background-size:cover; background-position:center; transform:scale(1.02); filter:saturate(1.08) contrast(1.04); }
+.dream-slot-preview::after{ content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(207,255,236,.06),rgba(3,8,7,.76)); }
+.dream-slot b,.dream-slot small{ position:relative; z-index:1; text-shadow:0 1px 8px rgba(0,0,0,.48); }
+.dream-scene-image{ min-height:148px; display:flex; align-items:flex-end; justify-content:flex-end; padding:10px; background:radial-gradient(circle at 50% 16%,rgba(197,255,230,.2),rgba(6,20,16,.92)); background-size:cover; background-position:center; border-bottom:1px solid rgba(191,255,229,.12); position:relative; overflow:hidden; }
+.dream-scene-image::before{ content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(5,16,13,.08),rgba(5,16,13,.58)); pointer-events:none; }
+.dream-scene-image.filled{ min-height:172px; }
+.dream-scene-image button{ position:relative; z-index:1; border:1px solid rgba(215,255,238,.3); background:rgba(5,18,14,.58); color:#eafff7; border-radius:8px; padding:8px 10px; font-size:11px; font-weight:800; backdrop-filter:blur(12px); cursor:pointer; }
+.dream-chat-composer{ display:flex; gap:8px; padding:10px 12px 12px; border-top:1px solid rgba(191,255,229,.1); background:rgba(5,16,13,.54); }
+.dream-chat-composer input{ flex:1; min-width:0; border:1px solid rgba(191,255,229,.14); border-radius:8px; background:rgba(0,0,0,.24); color:#f5fffb; outline:none; padding:10px 11px; font-size:12px; }
+.dream-chat-composer input::placeholder{ color:rgba(238,249,244,.38); }
+.dream-chat-composer button{ flex:none; min-width:58px; border:0; border-radius:8px; background:linear-gradient(135deg,#d7ffed,#6be0ae); color:#082017; font-size:12px; font-weight:900; cursor:pointer; }
+.dream-save-card{ width:176px; min-height:166px; border:1px solid rgba(206,255,235,.26); border-radius:8px; background:linear-gradient(160deg,rgba(221,255,241,.18),rgba(5,17,14,.86)); display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 26px 80px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.18); animation:dreamSlotWake .72s ease both; }
+.dream-save-lines{ display:grid; gap:5px; width:86px; margin-top:-18px; }
+.dream-save-lines i{ display:block; height:1px; background:linear-gradient(90deg,transparent,#dffaf0,transparent); animation:dreamSaveLine .82s ease-in-out infinite; }
+.dream-save-lines i:nth-child(2){ animation-delay:.12s; opacity:.7; }
+.dream-save-lines i:nth-child(3){ animation-delay:.24s; opacity:.45; }
+@keyframes dreamSlotWake{ 0%{ opacity:.62; transform:translateY(8px) scale(.97); filter:blur(2px); } 62%{ opacity:1; transform:translateY(-1px) scale(1.01); filter:blur(0); } 100%{ opacity:1; transform:translateY(0) scale(1); filter:blur(0); } }
+@keyframes dreamSaveLine{ 0%,100%{ transform:scaleX(.32); opacity:.24; } 48%{ transform:scaleX(1); opacity:1; } }
 @keyframes dreamVortexSpin{ to{ transform:rotate(360deg); } }
 @keyframes dreamPortalOpen{ 0%{ opacity:.3; filter:blur(6px); } 44%{ opacity:1; filter:blur(0); } 100%{ opacity:0; filter:blur(16px); } }
 @keyframes dreamSavePulse{ 0%{ transform:scale(.45); opacity:0; } 55%{ transform:scale(1.05); opacity:1; } 100%{ transform:scale(1.42); opacity:0; } }
