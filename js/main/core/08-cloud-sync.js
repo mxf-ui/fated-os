@@ -14,6 +14,31 @@ var cloudSyncState = {
   autoRestoreDone:false
 };
 
+var CLOUD_MSG = {
+  SIGN_IN_UNLOCK:'Sign in to unlock cloud save. / \u8bf7\u767b\u5f55\u540e\u540c\u6b65\u5b58\u6863\u3002',
+  CHECKING:'Checking account... / \u6b63\u5728\u68c0\u67e5\u8d26\u53f7\u3002',
+  ENTER_UNLOCK:'Enter password and invite code to unlock encrypted cloud save. / \u8bf7\u8f93\u5165\u5bc6\u7801\u548c\u9080\u8bf7\u7801\u89e3\u9501\u4e91\u5b58\u6863\u3002',
+  SIGN_IN_CREATE_ENTER:'Sign in or create an account to enter Fated OS. / \u767b\u5f55\u6216\u6ce8\u518c\u540e\u8fdb\u5165 Fated OS\u3002',
+  SIGN_IN_ENTER:'Sign in to enter. / \u8bf7\u767b\u5f55\u540e\u8fdb\u5165\u3002',
+  SYNC_UNLOCKED:'Cloud sync is unlocked. / \u4e91\u7aef\u540c\u6b65\u5df2\u89e3\u9501\u3002',
+  SIGNED_IN_UNLOCK:'Signed in. Enter password and invite code once to unlock encrypted sync. / \u5df2\u767b\u5f55\uff0c\u8bf7\u8f93\u5165\u5bc6\u7801\u548c\u9080\u8bf7\u7801\u89e3\u9501\u52a0\u5bc6\u540c\u6b65\u3002',
+  D1_MISSING:'Cloud database is not configured yet. / \u4e91\u7aef\u6570\u636e\u5e93\u8fd8\u672a\u914d\u7f6e\u3002',
+  SIGN_IN_CREATE_SYNC:'Sign in or create an account to enable cloud save. / \u767b\u5f55\u6216\u6ce8\u518c\u540e\u542f\u7528\u4e91\u5b58\u6863\u3002',
+  EMAIL_PASSWORD_REQUIRED:'Email and password are required. / \u8bf7\u586b\u5199\u90ae\u7bb1\u548c\u5bc6\u7801\u3002',
+  INVITE_REQUIRED:'Invite code is required. / \u8bf7\u586b\u5199\u9080\u8bf7\u7801\u3002',
+  SIGNING_IN:'Signing in... / \u6b63\u5728\u767b\u5f55\u3002',
+  SIGNED_SYNCING:'Signed in. Syncing save... / \u5df2\u767b\u5f55\uff0c\u6b63\u5728\u540c\u6b65\u5b58\u6863\u3002',
+  SYNCING_SAVE:'Syncing cloud save... / \u6b63\u5728\u540c\u6b65\u4e91\u5b58\u6863\u3002',
+  SIGN_IN_FAILED:'Sign in failed. / \u767b\u5f55\u5931\u8d25\u3002',
+  PASSWORD_LENGTH:'Password needs at least 8 characters. / \u5bc6\u7801\u81f3\u5c11\u9700\u8981 8 \u4f4d\u3002',
+  CREATING_ACCOUNT:'Creating account... / \u6b63\u5728\u521b\u5efa\u8d26\u53f7\u3002',
+  ACCOUNT_CREATED:'Account created. Uploading current save... / \u8d26\u53f7\u5df2\u521b\u5efa\uff0c\u6b63\u5728\u4e0a\u4f20\u5f53\u524d\u5b58\u6863\u3002',
+  UPLOADING_SAVE:'Uploading current save... / \u6b63\u5728\u4e0a\u4f20\u5f53\u524d\u5b58\u6863\u3002',
+  CREATE_FAILED:'Create account failed. / \u6ce8\u518c\u5931\u8d25\u3002',
+  SIGNED_OUT_ENTER:'Signed out. Sign in again to enter. / \u5df2\u9000\u51fa\uff0c\u8bf7\u91cd\u65b0\u767b\u5f55\u540e\u8fdb\u5165\u3002',
+  SIGNED_OUT_LOCAL:'Signed out. Local data is still on this device. / \u5df2\u9000\u51fa\uff0c\u672c\u673a\u6570\u636e\u4ecd\u4fdd\u7559\u3002'
+};
+
 function cloudSetStatus(text, tone){
   var el=document.getElementById('cloud-sync-status');
   if(!el) return;
@@ -93,7 +118,7 @@ function cloudShowEntryGate(message, tone){
   var gate=document.getElementById('invite-screen');
   if(gate) gate.style.display='flex';
   var msg=document.getElementById('invite-msg');
-  if(msg){ msg.textContent=message||'Sign in to unlock cloud save. / ???????????'; msg.className='cloud-entry-msg '+(tone||''); }
+  if(msg){ msg.textContent=message||CLOUD_MSG.SIGN_IN_UNLOCK; msg.className='cloud-entry-msg '+(tone||''); }
   cloudFillEntryFromAuth();
 }
 function cloudHideEntryGate(){
@@ -113,13 +138,13 @@ async function cloudEntryRegister(){
   return cloudRegister({fromEntry:true});
 }
 async function cloudBootAuthGate(){
-  cloudShowEntryGate('Checking account... / ???????');
+  cloudShowEntryGate(CLOUD_MSG.CHECKING);
   try{
     await cloudSyncInit();
     if(cloudHasSession()) cloudHideEntryGate();
-    else cloudShowEntryGate(cloudSyncState.user ? 'Enter password and invite code to unlock encrypted cloud save. / ???????????????' : 'Sign in or create an account to enter Fated OS. / ?????????');
+    else cloudShowEntryGate(cloudSyncState.user ? CLOUD_MSG.ENTER_UNLOCK : CLOUD_MSG.SIGN_IN_CREATE_ENTER);
   }catch(e){
-    cloudShowEntryGate((e && e.message) || 'Sign in to enter. / ???????', 'warn');
+    cloudShowEntryGate((e && e.message) || CLOUD_MSG.SIGN_IN_ENTER, 'warn');
   }
 }
 
@@ -150,47 +175,47 @@ async function cloudSyncInit(){
   try{
     var me=await cloudApi('/api/auth/me');
     cloudApplyUser(me.user, null);
-    cloudSetStatus(cloudSyncState.key ? 'Cloud sync is unlocked. / ????????' : 'Signed in. Enter password and invite code once to unlock encrypted sync. / ???????????????????', '');
-    if(!cloudHasSession()) cloudShowEntryGate('Enter password and invite code to unlock encrypted cloud save. / ???????????????');
+    cloudSetStatus(cloudSyncState.key ? CLOUD_MSG.SYNC_UNLOCKED : CLOUD_MSG.SIGNED_IN_UNLOCK, '');
+    if(!cloudHasSession()) cloudShowEntryGate(CLOUD_MSG.ENTER_UNLOCK);
   }catch(e){
     cloudSyncState.user=null; cloudSyncState.key=null; cloudRenderAuthState();
-    cloudSetStatus(e.data && e.data.setupRequired ? 'Cloud database is not configured yet. / ??????????' : 'Sign in or create an account to enable cloud save. / ???????????????', e.data && e.data.setupRequired ? 'warn' : '');
-    cloudShowEntryGate(e.data && e.data.setupRequired ? 'Cloud database is not configured yet. / ??????????' : 'Sign in or create an account to enter Fated OS. / ?????????', e.data && e.data.setupRequired ? 'warn' : '');
+    cloudSetStatus(e.data && e.data.setupRequired ? CLOUD_MSG.D1_MISSING : CLOUD_MSG.SIGN_IN_CREATE_SYNC, e.data && e.data.setupRequired ? 'warn' : '');
+    cloudShowEntryGate(e.data && e.data.setupRequired ? CLOUD_MSG.D1_MISSING : CLOUD_MSG.SIGN_IN_CREATE_ENTER, e.data && e.data.setupRequired ? 'warn' : '');
   }
 }
 async function cloudLogin(opts){
   opts=opts||{};
   var input=cloudReadInputs();
-  if(!input.email || !input.password){ cloudShowEntryGate('Email and password are required. / ??????????', 'warn'); return cloudSetStatus('Email and password are required. / ??????????', 'warn'); }
-  if(!input.inviteCode){ cloudShowEntryGate('Invite code is required. / ????????', 'warn'); return cloudSetStatus('Invite code is required. / ????????', 'warn'); }
-  cloudSetBusy(true); cloudSetStatus('Signing in...', ''); cloudShowEntryGate('Signing in... / ?????');
+  if(!input.email || !input.password){ cloudShowEntryGate(CLOUD_MSG.EMAIL_PASSWORD_REQUIRED, 'warn'); return cloudSetStatus(CLOUD_MSG.EMAIL_PASSWORD_REQUIRED, 'warn'); }
+  if(!input.inviteCode){ cloudShowEntryGate(CLOUD_MSG.INVITE_REQUIRED, 'warn'); return cloudSetStatus(CLOUD_MSG.INVITE_REQUIRED, 'warn'); }
+  cloudSetBusy(true); cloudSetStatus('Signing in...', ''); cloudShowEntryGate(CLOUD_MSG.SIGNING_IN);
   try{
     var data=await cloudApi('/api/auth/login', {method:'POST', body:JSON.stringify(input)});
     var key=await cloudDeriveKey(input.password, data.user.encryptionSalt);
     cloudApplyUser(data.user, key);
-    cloudSetStatus('Signed in. Syncing save... / ???????????', '');
-    cloudShowEntryGate('Syncing cloud save... / ?????????');
+    cloudSetStatus(CLOUD_MSG.SIGNED_SYNCING, '');
+    cloudShowEntryGate(CLOUD_MSG.SYNCING_SAVE);
     await cloudAutoSyncAfterUnlock('login');
     cloudHideEntryGate();
-  }catch(e){ cloudSetStatus(e.message, 'warn'); cloudShowEntryGate(e.message || 'Sign in failed. / ?????', 'warn'); }
+  }catch(e){ cloudSetStatus(e.message, 'warn'); cloudShowEntryGate(e.message || CLOUD_MSG.SIGN_IN_FAILED, 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 async function cloudRegister(opts){
   opts=opts||{};
   var input=cloudReadInputs();
-  if(!input.email || !input.password){ cloudShowEntryGate('Email and password are required. / ??????????', 'warn'); return cloudSetStatus('Email and password are required. / ??????????', 'warn'); }
-  if(!input.inviteCode){ cloudShowEntryGate('Invite code is required. / ????????', 'warn'); return cloudSetStatus('Invite code is required. / ????????', 'warn'); }
-  if(input.password.length<8){ cloudShowEntryGate('Password needs at least 8 characters. / ???? 8 ????', 'warn'); return cloudSetStatus('Password needs at least 8 characters. / ???? 8 ????', 'warn'); }
-  cloudSetBusy(true); cloudSetStatus('Creating account...', ''); cloudShowEntryGate('Creating account... / ???????');
+  if(!input.email || !input.password){ cloudShowEntryGate(CLOUD_MSG.EMAIL_PASSWORD_REQUIRED, 'warn'); return cloudSetStatus(CLOUD_MSG.EMAIL_PASSWORD_REQUIRED, 'warn'); }
+  if(!input.inviteCode){ cloudShowEntryGate(CLOUD_MSG.INVITE_REQUIRED, 'warn'); return cloudSetStatus(CLOUD_MSG.INVITE_REQUIRED, 'warn'); }
+  if(input.password.length<8){ cloudShowEntryGate(CLOUD_MSG.PASSWORD_LENGTH, 'warn'); return cloudSetStatus(CLOUD_MSG.PASSWORD_LENGTH, 'warn'); }
+  cloudSetBusy(true); cloudSetStatus('Creating account...', ''); cloudShowEntryGate(CLOUD_MSG.CREATING_ACCOUNT);
   try{
     var data=await cloudApi('/api/auth/register', {method:'POST', body:JSON.stringify(input)});
     var key=await cloudDeriveKey(input.password, data.user.encryptionSalt);
     cloudApplyUser(data.user, key);
-    cloudSetStatus('Account created. Uploading current save... / ???????????????', '');
-    cloudShowEntryGate('Uploading current save... / ?????????');
+    cloudSetStatus(CLOUD_MSG.ACCOUNT_CREATED, '');
+    cloudShowEntryGate(CLOUD_MSG.UPLOADING_SAVE);
     await cloudUploadSnapshot({manual:false, reason:'register'});
     cloudHideEntryGate();
-  }catch(e){ cloudSetStatus(e.message, 'warn'); cloudShowEntryGate(e.message || 'Create account failed. / ?????', 'warn'); }
+  }catch(e){ cloudSetStatus(e.message, 'warn'); cloudShowEntryGate(e.message || CLOUD_MSG.CREATE_FAILED, 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 async function cloudLogout(){
@@ -199,8 +224,8 @@ async function cloudLogout(){
   if(cloudSyncState.autosaveTimer) clearTimeout(cloudSyncState.autosaveTimer);
   cloudSyncState.user=null; cloudSyncState.key=null; cloudSyncState.autosaveTimer=null; cloudSyncState.autosaveInFlight=false; cloudSyncState.autosavePending=false;
   cloudRenderAuthState();
-  cloudShowEntryGate('Signed out. Sign in again to enter. / ????????????');
-  cloudSetStatus('Signed out. Local data is still on this device. / ????????????????', '');
+  cloudShowEntryGate(CLOUD_MSG.SIGNED_OUT_ENTER);
+  cloudSetStatus(CLOUD_MSG.SIGNED_OUT_LOCAL, '');
   cloudSetBusy(false);
 }
 function cloudCollectChats(){

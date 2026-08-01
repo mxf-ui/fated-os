@@ -2,31 +2,38 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>Fated OS — 完整原型（锁屏·桌面·屏保·WeChat·设置）</title>
+<title>Fated OS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=20260802-entry-clean">
 </head>
 <body class="widget-bg-frosted">
-<!-- 邀请码验证 -->
+<!-- Cloud account entry -->
+
 <div id="invite-screen" class="cloud-entry-gate">
 
   <div class="cloud-entry-panel">
 
     <div class="cloud-entry-brand">Fated OS</div>
 
-    <div class="cloud-entry-sub">Account save / ??????</div>
+    <div class="cloud-entry-sub">Account Login / &#36134;&#21495;&#30331;&#24405;</div>
 
-    <input id="cloud-entry-email" class="cloud-entry-input" type="email" placeholder="Email / ??" autocomplete="email">
+    <label class="cloud-entry-label" for="cloud-entry-email">Email <small>&#37038;&#31665;</small></label>
 
-    <input id="cloud-entry-password" class="cloud-entry-input" type="password" placeholder="Password / ??" autocomplete="current-password">
+    <input id="cloud-entry-email" class="cloud-entry-input" type="email" placeholder="name@example.com" autocomplete="email" inputmode="email">
 
-    <input id="cloud-entry-invite" class="cloud-entry-input" placeholder="Invite code / ???" maxlength="20" autocomplete="off">
+    <label class="cloud-entry-label" for="cloud-entry-password">Password <small>&#23494;&#30721;</small></label>
+
+    <input id="cloud-entry-password" class="cloud-entry-input" type="password" placeholder="At least 8 characters" autocomplete="current-password">
+
+    <label class="cloud-entry-label" for="cloud-entry-invite">Invite Code <small>&#36992;&#35831;&#30721;</small></label>
+
+    <input id="cloud-entry-invite" class="cloud-entry-input" placeholder="123456" maxlength="20" autocomplete="off">
 
     <div id="invite-msg" class="cloud-entry-msg"></div>
 
-    <button id="cloud-entry-login-btn" class="cloud-entry-btn primary" onclick="cloudEntryLogin()">Sign In / ??</button>
+    <button id="cloud-entry-login-btn" class="cloud-entry-btn primary" onclick="cloudEntryLogin()">Login / &#30331;&#24405;</button>
 
-    <button id="cloud-entry-register-btn" class="cloud-entry-btn" onclick="cloudEntryRegister()">Create Account / ??</button>
+    <button id="cloud-entry-register-btn" class="cloud-entry-btn" onclick="cloudEntryRegister()">Register / &#27880;&#20876;</button>
 
   </div>
 
@@ -1908,7 +1915,7 @@
 <script src="js/main/core/05-persistence.js"></script>
 <script src="js/main/core/06-export-history.js"></script>
 <script src="js/main/core/07-wallet.js"></script>
-<script src="js/main/core/08-cloud-sync.js"></script>
+<script src="js/main/core/08-cloud-sync.js?v=20260802-entry-clean"></script>
 
 <script src="js/main/core/10-event-memory.js"></script>
 
