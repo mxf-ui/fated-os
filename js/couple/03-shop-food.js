@@ -22,6 +22,7 @@
     var d = window.coupleData();
     var html = '<div style="font-size:13px;font-weight:700;margin-bottom:4px;">\u6211\u7684\u8d2d\u7269\u8f66</div><div style="font-size:11px;color:#7b8f89;margin-bottom:10px;">\u8fd9\u91cc\u7684\u7269\u54c1\u7531\u4f60\u81ea\u5df1\u4e0a\u4f20\uff0c\u4e0d\u4f1a\u6bcf\u5929\u88ab AI \u6539\u5199\u3002</div>';
     html += '<div style="display:flex;gap:8px;margin-bottom:10px;"><div class="big-btn" style="flex:1;background:#4fb895;" onclick="coupleMyShop()">\u6211\u7684</div><div class="big-btn" style="flex:1;background:#d8efe7;color:#285044;" onclick="couplePartnerWishlist()">TA \u7684\u6bcf\u65e5\u613f\u671b</div></div>';
+    html += '<div class="big-btn" style="margin-bottom:10px;background:#eef8f5;color:#285044;" onclick="coupleRefreshPartnerWishlist(true);couplePartnerWishlist();">\u624b\u52a8\u5237\u65b0 TA \u6e05\u5355</div>';
     html += d.myShop.length ? d.myShop.map(function(item,i){ return shopCard(item,i,'mine'); }).join('') : '<div style="text-align:center;color:#9aa9a5;font-size:12px;padding:14px;">\u8fd8\u6ca1\u6709\u4e0a\u4f20\u5546\u54c1\u3002</div>';
     html += shopForm();
     coupleShowSub('\u6211\u7684\u8d2d\u7269\u8f66', html);
@@ -46,8 +47,13 @@
       c.seed.push({mine:true, kind:'text', text:'[\u613f\u671b\u6e05\u5355] \u6211\u7ed9\u4f60\u4e70\u4e86 '+item.name+' '+item.price, from:'me', ts:nowStamp()});
       saveChatThread(coupleState.partner);
       if(currentContact === coupleState.partner) renderThread();
+      if(typeof renderChatList === 'function') renderChatList();
     }
+    d.partnerWishlist.splice(i,1);
+    d.shop = d.partnerWishlist;
+    window.saveCoupleState();
     showToast('\u5df2\u4e0b\u5355\uff1a' + item.name, 1600);
+    window.couplePartnerWishlist();
   };
 
   window.coupleDelMyShop = function(i){ var d = window.coupleData(); d.myShop.splice(i,1); window.saveCoupleState(); window.coupleMyShop(); };

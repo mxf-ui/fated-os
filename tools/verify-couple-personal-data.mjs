@@ -77,4 +77,19 @@ assertMissing(diary, '\u0041\u0049\u751f\u6210\u65e5\u8bb0', 'diary UI must not 
   "\u4eba\u7269\u4fa7\u5199"
 ].forEach((needle) => assertIncludes(chatActions + '\n' + aiReply + '\n' + profile + '\n' + indexHtml, needle, 'user profiling'));
 
+
+[
+  "typeof isPersistenceBooting !== 'function'",
+  "var booting = typeof isPersistenceBooting === 'function' && isPersistenceBooting();",
+  "var savedCore = true",
+  "return savedLocal && savedCore"
+].forEach((needle) => assertIncludes(state, needle, 'couple persistence regression fixes'));
+
+[
+  "d.partnerWishlist.splice(i,1)",
+  "window.saveCoupleState();",
+  "window.couplePartnerWishlist();",
+  "coupleRefreshPartnerWishlist(true);couplePartnerWishlist();",
+  "\\u624b\\u52a8\\u5237\\u65b0 TA \\u6e05\\u5355"
+].forEach((needle) => assertIncludes(shop, needle, 'wishlist purchase and manual refresh'));
 console.log('Couple personal data verification passed.');

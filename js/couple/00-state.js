@@ -72,6 +72,8 @@
   };
 
   window.saveCoupleState = function(){
+    var savedLocal = true;
+    var savedCore = true;
     try{
       localStorage.setItem('couple_state_v1', JSON.stringify({
         partner:coupleState.partner,
@@ -88,7 +90,13 @@
         taDeletedContacts:coupleState.taDeletedContacts || [],
         taTakeoverHistory:coupleState.taTakeoverHistory || []
       }));
-      if(typeof saveState === 'function' && !isPersistenceBooting()) saveState();
-    }catch(e){}
+    }catch(e){ savedLocal = false; }
+    try{
+      var booting = typeof isPersistenceBooting === 'function' && isPersistenceBooting();
+      if(typeof isPersistenceBooting !== 'function' || !booting){
+        if(typeof saveState === 'function') savedCore = saveState() !== false;
+      }
+    }catch(e){ savedCore = false; }
+    return savedLocal && savedCore;
   };
 })();
