@@ -103,8 +103,21 @@ assertMissing(systemShell, 'onclick="'+"a.action", 'desktop direct inline action
   '15分钟',
   '暧昧',
   'bypassLock',
-  'coupleTaOpenRealApp'
-].forEach((needle) => assertIncludes(takeover, needle, 'TA real takeover'));
+  'coupleTaOpenRealApp',
+  'TA_TAKEOVER_MIN_MS',
+  'TA_TAKEOVER_MAX_MS',
+  'coupleTaStepDelay',
+  '120*1000',
+  '240*1000',
+  'inspect_nilflow_post',
+  'inspect_nilflow_chat',
+  'inspect_moment',
+  'from_home',
+  "goToScreen('home')",
+  "setTimeout(function(){ window.coupleTaOpenRealApp"
+].forEach((needle) => assertIncludes(takeover, needle, 'TA slow takeover'));
+assertMissing(takeover, 'setTimeout(runNext, 1200)', 'TA takeover fast fixed delay');
+assertMissing(takeover, 'PLACEHOLDER_FINISH', 'TA takeover placeholder text');
 
 assertMissing(takeover, 'delete contacts[', 'TA takeover hard delete');
 assertMissing(takeover, 'fatedDBDeleteChat', 'TA takeover hard delete');
