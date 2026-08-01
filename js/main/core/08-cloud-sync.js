@@ -120,7 +120,7 @@ async function cloudLogout(){
 function cloudCollectChats(){
   return Object.keys(contacts||{}).filter(function(id){ return id!=='me'; }).map(function(id){
     var c=contacts[id]||{};
-    return { id:id, seed:c.seed||[], pendingCount:c.pendingCount||0, blocked:!!c.blocked, unread:c.unread||0, memory:c.memory||null, worldBooks:c.worldBooks||[], groupUserPrompt:c.groupUserPrompt||'', taDeletedByPartner:!!c.taDeletedByPartner, taDeletedBy:c.taDeletedBy||'', taDeletedAt:c.taDeletedAt||0, taDeletedPrevBlocked:!!c.taDeletedPrevBlocked };
+    return { id:id, seed:c.seed||[], pendingCount:c.pendingCount||0, blocked:!!c.blocked, unread:c.unread||0, memory:c.memory||null, worldBooks:c.worldBooks||[], groupUserPrompt:c.groupUserPrompt||'', userProfile:c.userProfile||'', userProfileUpdatedAt:c.userProfileUpdatedAt||0, userProfileLastMsgCount:c.userProfileLastMsgCount||0, taDeletedByPartner:!!c.taDeletedByPartner, taDeletedBy:c.taDeletedBy||'', taDeletedAt:c.taDeletedAt||0, taDeletedPrevBlocked:!!c.taDeletedPrevBlocked };
   });
 }
 function cloudApplyChats(rows){
@@ -134,6 +134,9 @@ function cloudApplyChats(rows){
     if(row.memory) contacts[row.id].memory=row.memory;
     if(Array.isArray(row.worldBooks)) contacts[row.id].worldBooks=row.worldBooks;
     if(typeof row.groupUserPrompt==='string') contacts[row.id].groupUserPrompt=row.groupUserPrompt;
+    if(typeof row.userProfile==='string') contacts[row.id].userProfile=row.userProfile;
+    if(typeof row.userProfileUpdatedAt==='number') contacts[row.id].userProfileUpdatedAt=row.userProfileUpdatedAt;
+    if(typeof row.userProfileLastMsgCount==='number') contacts[row.id].userProfileLastMsgCount=row.userProfileLastMsgCount;
     contacts[row.id].taDeletedByPartner=!!row.taDeletedByPartner;
     contacts[row.id].taDeletedBy=row.taDeletedBy||'';
     contacts[row.id].taDeletedAt=row.taDeletedAt||0;
@@ -222,4 +225,4 @@ async function cloudRestoreNow(){
     cloudSetStatus('Cloud save restored. Local data has been refreshed. / \u4e91\u7aef\u5b58\u6863\u5df2\u6062\u590d\uff0c\u672c\u673a\u6570\u636e\u5df2\u5237\u65b0\u3002', 'ok');
   }catch(e){ cloudSetStatus(e.message || 'Restore failed / \u6062\u590d\u5931\u8d25', 'warn'); }
   finally{ cloudSetBusy(false); }
-}
+}

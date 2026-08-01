@@ -57,6 +57,9 @@ function buildContactsSnapshot(){
       taDeletedPrevBlocked:!!c.taDeletedPrevBlocked,
       worldBooks:c.worldBooks||[],
       memory:c.memory||{enabled:true, threshold:20, summary:'', lastMsgCount:0},
+      userProfile:c.userProfile||'',
+      userProfileUpdatedAt:c.userProfileUpdatedAt||0,
+      userProfileLastMsgCount:c.userProfileLastMsgCount||0,
       groupUserPrompt:c.groupUserPrompt||'',
       proactive:c.proactive!==false,
       imageGenEnabled:c.imageGenEnabled===true,
@@ -93,7 +96,7 @@ function buildLightState(){
     coupleState: typeof coupleState!=='undefined' ? coupleState : null,
     screenTime: typeof screenTimeData!=='undefined' ? screenTimeData : null,
     go: typeof goState!=='undefined' && goState ? goState : null,
-    dream: typeof dreamState!=='undefined' && dreamState ? dreamState : null,
+    dream: typeof dreamState!=='undefined' && dreamState ? dreamState : null,
     nilflow: typeof nilflowState!=='undefined' && nilflowState ? nilflowState : null
   };
 }
@@ -196,6 +199,9 @@ function applyContactsSnapshot(list){
     if(contacts[id].cover===undefined) contacts[id].cover='';
     if(contacts[id].wxid===undefined) contacts[id].wxid=id;
     if(contacts[id].relations===undefined) contacts[id].relations=[];
+    if(contacts[id].userProfile===undefined) contacts[id].userProfile='';
+    if(contacts[id].userProfileUpdatedAt===undefined) contacts[id].userProfileUpdatedAt=0;
+    if(contacts[id].userProfileLastMsgCount===undefined) contacts[id].userProfileLastMsgCount=0;
   });
   syncPersonaSeqFromContacts();
 }
@@ -234,7 +240,7 @@ function applyStateSnapshot(s){
   if(s.coupleState && typeof s.coupleState==='object') coupleState=Object.assign(coupleState, s.coupleState);
   if(s.screenTime && typeof s.screenTime==='object') screenTimeData=Object.assign(screenTimeData, s.screenTime);
   if(s.go && typeof s.go==='object') goState=Object.assign(goDefault(), s.go);
-  if(s.dream && typeof s.dream==='object'){ dreamState=Object.assign(dreamDefault(), s.dream); if(typeof dreamEnsureStateShape==='function') dreamEnsureStateShape(); }
+  if(s.dream && typeof s.dream==='object'){ dreamState=Object.assign(dreamDefault(), s.dream); if(typeof dreamEnsureStateShape==='function') dreamEnsureStateShape(); }
   if(s.nilflow && typeof s.nilflow==='object'){ nilflowState=Object.assign(nilflowDefault(), s.nilflow); if(typeof nilflowEnsureStateShape==='function') nilflowEnsureStateShape(); }
 
   if(s.userCover!==undefined) userCover=s.userCover;
@@ -355,4 +361,4 @@ function saveChatThread(contactId){
   if(!id || !contacts[id]) return;
   fatedDBSaveChat(id);
 }
-function saveStickersDB(){ fatedDBSaveStickers(); }
+function saveStickersDB(){ fatedDBSaveStickers(); }

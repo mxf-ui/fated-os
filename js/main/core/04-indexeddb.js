@@ -33,6 +33,9 @@ function fatedDBSaveChat(contactId, cb){
         taDeletedPrevBlocked: !!c.taDeletedPrevBlocked,
         unread: c.unread||0,
         memory: c.memory||{enabled:true, threshold:20, summary:'', lastMsgCount:0},
+        userProfile: c.userProfile||'',
+        userProfileUpdatedAt: c.userProfileUpdatedAt||0,
+        userProfileLastMsgCount: c.userProfileLastMsgCount||0,
         worldBooks: c.worldBooks||[],
         groupUserPrompt: c.groupUserPrompt||''
       });
@@ -72,6 +75,9 @@ function fatedDBLoadAllChats(cb){
             contacts[row.id].taDeletedPrevBlocked = !!row.taDeletedPrevBlocked;
             if(typeof row.unread==='number') contacts[row.id].unread = row.unread;
             if(row.memory) contacts[row.id].memory = row.memory;
+            if(typeof row.userProfile==='string') contacts[row.id].userProfile = row.userProfile;
+            if(typeof row.userProfileUpdatedAt==='number') contacts[row.id].userProfileUpdatedAt = row.userProfileUpdatedAt;
+            if(typeof row.userProfileLastMsgCount==='number') contacts[row.id].userProfileLastMsgCount = row.userProfileLastMsgCount;
             if(Array.isArray(row.worldBooks)) contacts[row.id].worldBooks = row.worldBooks;
             if(typeof row.groupUserPrompt==='string') contacts[row.id].groupUserPrompt = row.groupUserPrompt;
           }

@@ -45,6 +45,7 @@ function realAISpeak(contact, fromId, customPrompt, groupContext){
         saveChatThread(chatId);
         if(typeof imageGenMaybeAttachChatIllustration==='function') imageGenMaybeAttachChatIllustration(contact, chatTarget, chatId, id, reply);
         maybeSummarizeAfter(currentContact);
+        if(typeof maybeUpdateUserProfileAfter==='function') maybeUpdateUserProfileAfter(currentContact);
         if(typeof notifyIncoming==='function') notifyIncoming(groupContext || contact, reply);
       });
     });
