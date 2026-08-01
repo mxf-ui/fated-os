@@ -203,10 +203,24 @@ function switchTab(name){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
   if(name==='me'){ /* 同步"我"页 post 数字 */ var meCnt=document.getElementById('me-post-count'); if(meCnt){ var n=(moments||[]).filter(function(m){return m.authorId==='me' || !m.authorId;}).length; meCnt.textContent=n; } }
 }
-function openSheet(id){
+function fatedHoistSheetToScreen(el){
+  try{
+    var screen=document.getElementById('screen');
+    if(!screen || !el) return;
+    var parent=el.parentElement;
+    while(parent && parent!==screen){
+      if(parent.classList && parent.classList.contains('sheet')){
+        screen.appendChild(el);
+        return;
+      }
+      parent=parent.parentElement;
+    }
+  }catch(e){}
+}function openSheet(id){
   if(typeof fatedCloseDesktopAppSurfaces==='function') fatedCloseDesktopAppSurfaces(id);
   var el=document.getElementById('sheet-'+id);
   if(!el){ console.log('Sheet not found: '+id); return; }
+  fatedHoistSheetToScreen(el);
   el.classList.add('open');
   el.style.zIndex='300';
   if(id==='stickerlib') renderStickerLib();
