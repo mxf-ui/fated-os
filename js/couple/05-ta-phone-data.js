@@ -114,7 +114,7 @@
   };
   window.coupleTaLockApp=function(app, signal){
     var target=lockTargetApp(app || (signal&&signal.app));
-    if(!coupleState.lockedApps) coupleState.lockedApps={};
+    coupleState.lockedApps = {};
     var lockUntil=Date.now()+TA_APP_LOCK_MS;
     coupleState.lockedApps[target]=lockUntil;
     persist();
@@ -432,14 +432,17 @@
   window.coupleTaTakeover=function(){
     if(!partnerId() || !partner()){ if(typeof showToast==='function') showToast('\u8bf7\u5148\u7ed1\u5b9a\u4e00\u4e2a WeChat \u8054\u7cfb\u4eba',1500); return; }
     var ov=document.getElementById('screen-tatake');
-    if(ov) ov.classList.remove('active');
+    if(!ov){ ov=document.createElement('div'); ov.id='screen-tatake'; ov.className='topview'; var host=document.getElementById('screen')||document.body; host.appendChild(ov); }
+    ov.classList.remove('active');
     taTimers.forEach(function(t){clearTimeout(t);}); taTimers=[];
     taTake={open:true, app:'wechat', running:true, step:0, queue:[], speech:[], selectedContact:null, selectedHidden:null, voice:true, report:null, snapshot:window.coupleTaBuildPhoneSnapshot(), startedAt:Date.now(), acting:{type:'open_app',app:'wechat'}};
     taTake.queue=window.coupleTaActionQueue(taTake.snapshot);
     addSpeech('system','\u5df2\u6388\u6743 TA \u67e5\u770b\u4f60\u5728 Fated OS \u91cc\u7684\u5c0f\u624b\u673a\u6570\u636e\u3002');
     window.coupleTaSetTopLine('\u6211\u5f00\u59cb\u63a5\u7ba1\u4f60\u7684\u5c0f\u624b\u673a\u4e86\uff0c\u4e00\u4e2a app \u4e00\u4e2a app \u770b\uff0c\u522b\u60f3\u7740\u8d81\u6211\u67e5\u5c97\u7684\u65f6\u5019\u8eb2\u3002', {app:'wechat'});
     if(typeof goToScreen==='function') goToScreen('home');
-    renderTaTakeover(); taTimers.push(setTimeout(runNext, 80));
+    renderTaTakeover();
+    ov.classList.add('active');
+    taTimers.push(setTimeout(runNext, 80));
   };
   window.closeTaTakeover=function(){ taTimers.forEach(function(t){clearTimeout(t);}); taTimers=[]; taTake.open=false; taTake.running=false; var ov=document.getElementById('screen-tatake'); if(ov) ov.classList.remove('active'); var bar=document.getElementById('couple-ta-top-banner'); if(bar) bar.style.display='none'; };
   window.taOpenApp=function(k){ taTake.running=false; taTake.app=k; taTake.acting={type:'manual_open_app',app:k}; window.coupleTaOpenRealApp(taTake.acting); taTake.snapshot=window.coupleTaBuildPhoneSnapshot(); renderTaTakeover(); window.coupleTaSpeak(taTake.acting, taTake.snapshot); };

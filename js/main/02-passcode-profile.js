@@ -204,6 +204,7 @@ function switchTab(name){
   if(name==='me'){ /* 同步"我"页 post 数字 */ var meCnt=document.getElementById('me-post-count'); if(meCnt){ var n=(moments||[]).filter(function(m){return m.authorId==='me' || !m.authorId;}).length; meCnt.textContent=n; } }
 }
 function openSheet(id){
+  if(typeof fatedCloseDesktopAppSurfaces==='function') fatedCloseDesktopAppSurfaces(id);
   var el=document.getElementById('sheet-'+id);
   if(!el){ console.log('Sheet not found: '+id); return; }
   el.classList.add('open');

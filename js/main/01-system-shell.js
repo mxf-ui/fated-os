@@ -85,6 +85,14 @@ function couplePruneAppLocks(){
         changed=true;
       }
     });
+    var activeLocks = Object.keys(coupleState.lockedApps).filter(function(k){
+      return Number(coupleState.lockedApps[k]||0)>now && k!=='settings';
+    });
+    if(activeLocks.length>2){
+      coupleState.lockedApps = {};
+      changed = true;
+      if(typeof showToast==='function') showToast('???????', 1400, 'ok');
+    }
     if(changed) couplePersistAppLocks();
   }catch(e){}
 }
@@ -108,6 +116,24 @@ function coupleUnlockAllApps(reason){
   }catch(e){ return false; }
 }
 window.fatedUnlockApps = coupleUnlockAllApps;
+var FATED_DESKTOP_SHEET_IDS = ['novel','music','forum','couple','game','suoha','go','dream','nilflow'];
+function fatedIsDesktopSheet(id){ return FATED_DESKTOP_SHEET_IDS.indexOf(id)>=0; }
+function fatedCloseDesktopAppSurfaces(exceptId){
+  try{
+    var shouldCloseRootSheets = !exceptId || fatedIsDesktopSheet(exceptId);
+    if(shouldCloseRootSheets){
+      FATED_DESKTOP_SHEET_IDS.forEach(function(sid){
+        if(sid===exceptId) return;
+        var el=document.getElementById('sheet-'+sid);
+        if(el){ el.classList.remove('open'); el.style.pointerEvents=''; }
+      });
+    }
+    document.querySelectorAll('.drawer-backdrop.open,.music-menu.show,.music-menu-back.show').forEach(function(el){ el.classList.remove('open','show'); });
+    document.querySelectorAll('.go-modal.open,.suoha-modal.open').forEach(function(el){ el.classList.remove('open'); });
+    var cp=document.getElementById('cp-modal'); if(cp){ cp.classList.remove('active'); cp.style.display='none'; }
+  }catch(e){}
+}
+window.fatedCloseDesktopAppSurfaces = fatedCloseDesktopAppSurfaces;
 function coupleCheckAppLocked(id, opts){
   opts = opts || {};
   if(opts.bypassLock || id==='settings') return false;
@@ -136,6 +162,7 @@ function openDesktopApp(id, opts){
   var a = appIcons.find(function(x){ return x.id===id; });
   if(!a){ if(typeof showToast==='function') showToast('App not found: '+id, 1600, 'err'); return false; }
   if(coupleCheckAppLocked(id, opts)) return false;
+  fatedCloseDesktopAppSurfaces(id);
   return runDesktopAction(a.action) !== false;
 }
 function renderDesktopIcons(){
