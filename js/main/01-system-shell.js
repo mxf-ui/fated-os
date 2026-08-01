@@ -1,4 +1,4 @@
-/* ============ TOP-LEVEL SCREEN NAVIGATION ============ */
+﻿/* ============ TOP-LEVEL SCREEN NAVIGATION ============ */
 function goToScreen(id){
   document.querySelectorAll('.topview').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+id).classList.add('active');
@@ -70,17 +70,47 @@ iconInput.addEventListener('change', e=>{
 function pickIcon(id){ activeIconId=id; iconInput.click(); }
 function resetIcon(e, id){ e.stopPropagation(); const def=appIcons.find(a=>a.id===id); def.img=null; renderDesktopIcons(); renderIconGrid(); }
 var TA_APP_LOCK_MS = window.TA_APP_LOCK_MS || 15*60*1000;
+function couplePersistAppLocks(){
+  if(typeof saveCoupleState==='function') saveCoupleState();
+  if(typeof saveState==='function') saveState();
+}
+function couplePruneAppLocks(){
+  try{
+    if(typeof coupleState==='undefined' || !coupleState || !coupleState.lockedApps) return;
+    var changed=false, now=Date.now();
+    Object.keys(coupleState.lockedApps).forEach(function(k){
+      var until=Number(coupleState.lockedApps[k]||0);
+      if(!until || until<=now || k==='settings'){
+        delete coupleState.lockedApps[k];
+        changed=true;
+      }
+    });
+    if(changed) couplePersistAppLocks();
+  }catch(e){}
+}
 function coupleAppLockRemaining(id){
   try{
+    couplePruneAppLocks();
     var until = coupleState && coupleState.lockedApps ? Number(coupleState.lockedApps[id]||0) : 0;
     var left = Math.max(0, until-Date.now());
-    if(until && left<=0 && coupleState && coupleState.lockedApps){ delete coupleState.lockedApps[id]; if(typeof saveCoupleState==='function') saveCoupleState(); if(typeof saveState==='function') saveState(); }
+    if(until && left<=0 && coupleState && coupleState.lockedApps){ delete coupleState.lockedApps[id]; couplePersistAppLocks(); }
     return left;
   }catch(e){ return 0; }
 }
+function coupleUnlockAllApps(reason){
+  try{
+    if(typeof coupleState==='undefined' || !coupleState) return false;
+    coupleState.lockedApps = {};
+    couplePersistAppLocks();
+    if(typeof renderDesktopIcons==='function') renderDesktopIcons();
+    if(typeof showToast==='function') showToast(reason || 'App locks cleared', 1400, 'ok');
+    return true;
+  }catch(e){ return false; }
+}
+window.fatedUnlockApps = coupleUnlockAllApps;
 function coupleCheckAppLocked(id, opts){
   opts = opts || {};
-  if(opts.bypassLock) return false;
+  if(opts.bypassLock || id==='settings') return false;
   var left = coupleAppLockRemaining(id);
   if(left<=0) return false;
   var min = Math.max(1, Math.ceil(left/60000));
@@ -90,16 +120,23 @@ function coupleCheckAppLocked(id, opts){
   return true;
 }
 function runDesktopAction(action){
-  if(typeof action==='function') return action();
-  if(typeof action==='string') return (new Function(action))();
+  try{
+    if(typeof action==='function') return action();
+    if(typeof action==='string') return (new Function(action))();
+    throw new Error('empty action');
+  }catch(e){
+    console.error('Desktop app failed:', e);
+    if(typeof showToast==='function') showToast('打开失败：'+(e && e.message ? e.message : 'unknown'), 2200, 'err');
+    return false;
+  }
 }
 function openDesktopApp(id, opts){
   opts = opts || {};
+  couplePruneAppLocks();
   var a = appIcons.find(function(x){ return x.id===id; });
-  if(!a) return false;
+  if(!a){ if(typeof showToast==='function') showToast('App not found: '+id, 1600, 'err'); return false; }
   if(coupleCheckAppLocked(id, opts)) return false;
-  runDesktopAction(a.action);
-  return true;
+  return runDesktopAction(a.action) !== false;
 }
 function renderDesktopIcons(){
   var board=document.getElementById('desktop-board');
