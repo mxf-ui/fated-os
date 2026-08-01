@@ -2,6 +2,11 @@
 
 export async function onRequestOptions() { return optionsResponse(); }
 
+function validateInviteCode(context, code) {
+  const expected = String((context.env && context.env.INVITE_CODE) || '123456').trim();
+  return String(code || '').trim() === expected;
+}
+
 export async function onRequestPost(context) {
   const db = context.env && context.env.DB;
   if (!db) return dbMissingResponse();
@@ -11,6 +16,7 @@ export async function onRequestPost(context) {
 
   const email = normalizeEmail(body.email);
   const password = String(body.password || '');
+  if (!validateInviteCode(context, body.inviteCode)) return jsonResponse({ error: 'Invalid invite code' }, 403);
   if (!isValidEmail(email)) return jsonResponse({ error: 'Invalid email' }, 400);
   if (!validatePassword(password)) return jsonResponse({ error: 'Password must be 8-128 characters' }, 400);
 

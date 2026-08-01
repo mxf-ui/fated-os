@@ -408,6 +408,7 @@ function dreamBuildContactActionPrompt(id, trigger){
     dreamBuildContactMemoryPrompt(id),
     dreamBuildRelationshipMemoryPrompt(run),
     dreamBuildRunLogPrompt(run),
+    (typeof fatedGlobalContextPrompt==='function' ? fatedGlobalContextPrompt(id, {limit:18}) : ''),
     '[Trigger]',
     trigger || 'continue',
     'Write only what '+dreamContactName(id)+' says or does now, 1-3 natural lines. Keep the original persona, relationship memory, tone, and current dungeon fear/desire. The contact may question, hide information, accuse, cooperate, hesitate, or reveal clues according to memory. No narrator voice. No emoji.'
@@ -424,6 +425,7 @@ function dreamBuildNarratorPrompt(includeCards){
     profiles,
     dreamBuildRelationshipMemoryPrompt(run),
     dreamBuildRunLogPrompt(run),
+    (typeof fatedGlobalContextPrompt==='function' ? fatedGlobalContextPrompt(null, {limit:18}) : ''),
     '[Narrator rules]',
     cardRule,
     'The story is mainly advanced by user and WeChat contacts talking and investigating. NPCs are allowed. The narrator should create scene, clue, danger, motive, and task pressure, but should not speak as selected contacts.',
@@ -449,6 +451,9 @@ function dreamAppendDreamMemory(run, speakerId, text){
 function dreamPushMessage(run, msg){
   if(!run || !msg) return;
   run.messages.push(msg);
+  if(typeof fatedLogEvent==='function'){
+    fatedLogEvent('dream.message.'+(msg.role || 'unknown'), {app:'dream', contactId:msg.contactId || '', actor:msg.role || '', title:(run.worldConfig && run.worldConfig.name) || run.id || 'dream run', text:msg.text || '', meta:{runId:run.id || '', objective:run.objective || run.mainTask || ''}});
+  }
   dreamAppendDreamMemory(run, msg.role === 'contact' ? msg.contactId : msg.role, msg.text || '');
 }
 function dreamMarkApiFailure(text){
@@ -604,6 +609,7 @@ function dreamStartRun(){
   dreamState.view = 'run';
   dreamState.phase = 'vortex';
   dreamState.run = {id:'dream-'+Date.now().toString(36), startedAt:Date.now(), world:cfg.background, worldConfig:Object.assign({}, cfg), rewardPool:slot.rewardPool || '', templateLibrary:slot.templateLibrary || '', sceneImage:slot.sceneImage || '', contacts:enabled, contactSettings:JSON.parse(JSON.stringify(slot.contactSettings || {})), inventory:(slot.inventory || []).slice(), progress:0, maxStages:4, turns:0, score:0, rank:'', rewards:[], messages:[], choices:[], usedCards:[], dreamMemories:[], contactDreamMemory:{}, awaitingCards:false, briefed:false, mainTask:mainTask, objective:mainTask};
+  if(typeof fatedLogEvent==='function') fatedLogEvent('dream.run.start', {app:'dream', actor:'user', title:cfg.name || mainTask, text:mainTask, meta:{runId:dreamState.run.id, contacts:enabled.slice()}});
   dreamOpenRunView();
   dreamRenderSetup();
   saveState();
@@ -747,6 +753,7 @@ function dreamChooseCard(i){
   var run = dreamState.run;
   if(!run || !run.choices || !run.choices[i] || dreamBusy) return;
   var card = run.choices[i];
+  if(typeof fatedLogEvent==='function') fatedLogEvent('dream.card.choose', {app:'dream', actor:'user', title:card.title, text:(card.effect || '')+' '+(card.risk || ''), meta:{runId:run.id, step:run.progress + 1}});
   run.usedCards.push(card.title);
   dreamPushMessage(run, {role:'user', text:'\u5361\u724c '+(i+1)+'\uff1a'+card.title+'\u3002'+card.effect+'\u3002\u98ce\u9669\uff1a'+card.risk, at:Date.now()});
   run.progress += 1;
@@ -815,6 +822,7 @@ function dreamCompleteRun(){
   run.score = score;
   run.rewards = [reward];
   run.completedAt = Date.now();
+  if(typeof fatedLogEvent==='function') fatedLogEvent('dream.run.complete', {app:'dream', actor:'system', title:rank, text:reward.name, meta:{runId:run.id, score:score, contacts:run.contacts.slice()}});
   dreamPushMessage(run, {role:'system', text:'\u526f\u672c\u7ed3\u7b97\uff1a'+rank+' / '+reward.name, at:Date.now()});
   var slot = dreamSlot();
   slot.runs.push({id:run.id, at:run.completedAt, rank:rank, score:score, reward:reward.name, contacts:run.contacts.slice(), world:(run.worldConfig && run.worldConfig.name) || run.world});

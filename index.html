@@ -8,14 +8,31 @@
 </head>
 <body class="widget-bg-frosted">
 <!-- 邀请码验证 -->
-<div id="invite-screen" style="position:fixed;inset:0;z-index:9999;background:#0d0d0d;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;font-family:Inter,sans-serif;">
-  <div style="font-size:40px;font-weight:800;letter-spacing:-1px;color:#fff;">Fated OS</div>
-  <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:8px;">virtual companion</div>
-  <input id="invite-input" placeholder="Enter invite code" style="width:240px;padding:12px 16px;border-radius:10px;border:none;outline:none;font-size:15px;text-align:center;letter-spacing:2px;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.12);" maxlength="20" autocomplete="off">
-  <div id="invite-msg" style="font-size:11px;color:#666;min-height:18px;"></div>
-  <button onclick="verifyInvite()" style="padding:10px 36px;border-radius:10px;border:none;background:#fff;color:#000;font-size:13px;font-weight:700;cursor:pointer;">Enter</button>
-</div>
-
+<div id="invite-screen" class="cloud-entry-gate">
+
+  <div class="cloud-entry-panel">
+
+    <div class="cloud-entry-brand">Fated OS</div>
+
+    <div class="cloud-entry-sub">Account save / ??????</div>
+
+    <input id="cloud-entry-email" class="cloud-entry-input" type="email" placeholder="Email / ??" autocomplete="email">
+
+    <input id="cloud-entry-password" class="cloud-entry-input" type="password" placeholder="Password / ??" autocomplete="current-password">
+
+    <input id="cloud-entry-invite" class="cloud-entry-input" placeholder="Invite code / ???" maxlength="20" autocomplete="off">
+
+    <div id="invite-msg" class="cloud-entry-msg"></div>
+
+    <button id="cloud-entry-login-btn" class="cloud-entry-btn primary" onclick="cloudEntryLogin()">Sign In / ??</button>
+
+    <button id="cloud-entry-register-btn" class="cloud-entry-btn" onclick="cloudEntryRegister()">Create Account / ??</button>
+
+  </div>
+
+</div>
+
+
 <div class="stage-note">Fated OS — WeChat 模块原型</div>
 
 <div class="phone"><div class="screen" id="screen">
@@ -807,7 +824,11 @@
       <label class="cloud-sync-label">Email / 邮箱</label>
       <input id="cloud-email" class="cloud-sync-input" type="email" placeholder="you@example.com" autocomplete="email">
       <label class="cloud-sync-label">Password / 密码</label>
-      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="至少 8 位字符" autocomplete="current-password">
+      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="至少 8 位字符" autocomplete="current-password">
+
+      <label class="cloud-sync-label">Invite Code / ???</label>
+
+      <input id="cloud-invite" class="cloud-sync-input" placeholder="123456" maxlength="20" autocomplete="off">
       <button id="cloud-login-btn" class="cloud-sync-btn primary" onclick="cloudLogin()">Sign In / 登录</button>
       <button id="cloud-register-btn" class="cloud-sync-btn" onclick="cloudRegister()">Create Account / 创建账号</button>
     </div>
@@ -1887,7 +1908,10 @@
 <script src="js/main/core/05-persistence.js"></script>
 <script src="js/main/core/06-export-history.js"></script>
 <script src="js/main/core/07-wallet.js"></script>
-<script src="js/main/core/08-cloud-sync.js"></script>
+<script src="js/main/core/08-cloud-sync.js"></script>
+
+<script src="js/main/core/10-event-memory.js"></script>
+
 <script src="js/main/04-moments-social.js"></script>
 <script src="js/main/chat/00-group-voice-api.js"></script>
 <script src="js/main/chat/01-thread-render.js"></script>

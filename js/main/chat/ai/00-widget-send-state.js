@@ -13,9 +13,17 @@ function saveWidgetField(type, field, el){
 function wcPickImg(btn){
   var w = btn.closest('[data-wc-type]'); if(!w) return;
   var type = w.getAttribute('data-wc-type');
-  var slot = w.querySelector('.ph-slot'); if(!slot){ slot=document.createElement('div'); slot.className='ph-slot'; slot.style.cssText='width:54px;height:54px;border-radius:14px;margin:6px auto;'; w.insertBefore(slot, w.firstChild); }
-  slot.setAttribute('data-wc-img', type);
-  activeSlot = slot;
+  var slots = Array.prototype.slice.call(w.querySelectorAll('.ph-slot'));
+  if(!slots.length){
+    var slot=document.createElement('div');
+    slot.className='ph-slot';
+    slot.style.cssText='width:54px;height:54px;border-radius:14px;margin:6px auto;';
+    w.insertBefore(slot, w.firstChild);
+    slots=[slot];
+  }
+  slots.forEach(function(slot, i){ if(!slot.getAttribute('data-wc-img')) slot.setAttribute('data-wc-img', type+':'+i); });
+  var target=slots.find(function(slot){ return !slot.classList.contains('filled') && !slot.style.backgroundImage; }) || slots[0];
+  activeSlot = target;
   slotInput.click();
 }
 

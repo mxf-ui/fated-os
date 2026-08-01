@@ -40,6 +40,7 @@ function realAISpeak(contact, fromId, customPrompt, groupContext){
         hideTyping(contact);
         if(!reply) reply = '...';
         chatTarget.seed.push({mine:false, kind:'text', text:reply, from:id, ts:nowStamp()});
+        if(typeof fatedLogEvent==='function') fatedLogEvent('wechat.message.contact', {app:'wechat', contactId:id, actor:(typeof fatedEventContactName==='function' ? fatedEventContactName(id) : id), text:reply});
         chatTarget.pendingCount = 0;
         renderThread();
         saveChatThread(chatId);

@@ -49,6 +49,7 @@
       if(currentContact === coupleState.partner) renderThread();
       if(typeof renderChatList === 'function') renderChatList();
     }
+    if(typeof fatedLogEvent==='function') fatedLogEvent('couple.shop.buy_partner', {app:'couple', contactId:coupleState.partner, actor:'user', title:item.name, text:(item.price||'')+' '+(item.reason||'')});
     d.partnerWishlist.splice(i,1);
     d.shop = d.partnerWishlist;
     window.saveCoupleState();
@@ -63,6 +64,7 @@
     if(!name) return;
     var d = window.coupleData();
     d.myShop.push({id:'my-shop-' + Date.now(), name:name, price:price, img:coupleState._shopImg || '', owner:'self', ts:Date.now()});
+    if(typeof fatedLogEvent==='function') fatedLogEvent('couple.shop.add_self', {app:'couple', contactId:coupleState.partner, actor:'user', title:name, text:price});
     coupleState._shopImg = null;
     window.saveCoupleState();
     window.coupleMyShop();
@@ -109,6 +111,7 @@
       : {id:'food-' + Date.now(), name:name, price:price, note:note, img:coupleState._foodImg||'', target:'partner', ts:Date.now()};
     if(target === 'self') d.selfFoodOrders.push(order); else d.partnerFoodOrders.push(order);
     d.foodOrders.push(order);
+    if(typeof fatedLogEvent==='function') fatedLogEvent('couple.food.order', {app:'couple', contactId:coupleState.partner, actor:'user', target:target, title:name, text:price+(note?(' / '+note):'')});
     if(target === 'partner'){
       var c=contacts[coupleState.partner];
       if(c&&c.seed){

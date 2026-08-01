@@ -162,6 +162,7 @@ function openDesktopApp(id, opts){
   var a = appIcons.find(function(x){ return x.id===id; });
   if(!a){ if(typeof showToast==='function') showToast('App not found: '+id, 1600, 'err'); return false; }
   if(coupleCheckAppLocked(id, opts)) return false;
+  if(typeof fatedLogEvent==='function') fatedLogEvent('app.open', {app:id, title:a.name || id, actor:'user'}, {app:id});
   fatedCloseDesktopAppSurfaces(id);
   return runDesktopAction(a.action) !== false;
 }
@@ -207,9 +208,37 @@ slotInput.addEventListener('change', e=>{
     if(!res) return;
     if(activeSlot.querySelector('.chibi')) activeSlot.innerHTML='';
     activeSlot.style.backgroundImage='url('+res+')'; activeSlot.style.backgroundSize='cover'; activeSlot.style.backgroundPosition='center'; activeSlot.classList.add('filled');
-    var t=activeSlot.getAttribute('data-wc-img'); if(t){ widgetCustom[t]=widgetCustom[t]||{}; widgetCustom[t].img=res; saveState(); }
+    var t=activeSlot.getAttribute('data-wc-img');
+    if(t){
+      var parts=String(t).split(':'), wt=parts[0], idx=parts.length>1 ? parseInt(parts[1],10) : null;
+      widgetCustom[wt]=widgetCustom[wt]||{};
+      if(idx!==null && isFinite(idx)){
+        widgetCustom[wt].imgs=Array.isArray(widgetCustom[wt].imgs) ? widgetCustom[wt].imgs : [];
+        widgetCustom[wt].imgs[idx]=res;
+        if(idx===0) widgetCustom[wt].img=res;
+      } else {
+        widgetCustom[wt].img=res;
+      }
+      saveState();
+    }
   });
 });
+function restoreWidgetSlotImages(container, type){
+  if(!container) return;
+  var cfg=widgetCustom[type]||{};
+  var slots=container.querySelectorAll('.ph-slot');
+  slots.forEach(function(slot, i){
+    slot.setAttribute('data-wc-img', type+':'+i);
+    var img=(Array.isArray(cfg.imgs) && cfg.imgs[i]) ? cfg.imgs[i] : (i===0 ? cfg.img : '');
+    if(img){
+      if(slot.querySelector('.chibi')) slot.innerHTML='';
+      slot.style.backgroundImage='url('+img+')';
+      slot.style.backgroundSize='cover';
+      slot.style.backgroundPosition='center';
+      slot.classList.add('filled');
+    }
+  });
+}
 function bindSlots(container){ container.querySelectorAll('.ph-slot').forEach(el=>{ el.addEventListener('click', ()=>{ activeSlot=el; slotInput.click(); }); }); }
 
 /* ============ IMAGE COMPRESS (keep localStorage small & persistent) ============ */
@@ -346,7 +375,7 @@ function pluginPreviewHTML(type){
 function addPlugin(type, opts){
   opts = opts || {};
   const def = pluginDefs.find(p=>p.type===type);
-  // 删除已存在的同类型实例（避免重复添加），并从“已移除”列表移除
+  // ???????????????????????????????
   document.querySelectorAll('[data-wc-type="'+type+'"]').forEach(function(n){ n.remove(); });
   var ri = removedPlugins.indexOf(type); if(ri>-1) removedPlugins.splice(ri,1);
   let el;
@@ -363,26 +392,36 @@ function addPlugin(type, opts){
     el.innerHTML = pluginPreviewHTML(type);
     grid.appendChild(el);
     if(type==='countdown') startTogetherTimer();
-    /* 添加主屏插件后自动滑到第2页 */
     var _pgr = document.getElementById('home-pager');
     if(_pgr) setTimeout(function(){ _pgr.scrollTo({ left: _pgr.offsetWidth, behavior: 'smooth' }); }, 300);
   }
   el.setAttribute('data-wc-type', type);
   if(type!=='breathe'){
-    // customization: editable caption + image slot (generic widgets)
     const cap = (widgetCustom[type] && widgetCustom[type].caption) || '';
     const bar = document.createElement('div');
     bar.className='wc-bar';
-    bar.innerHTML = '<div class="wc-img-btn" onclick="wcPickImg(this)">📷 图</div><div class="wc-cap" contenteditable="true" onblur="saveWidgetText(this,\''+type+'\')" placeholder="点此自定义文字">'+esc(cap)+'</div>';
+    var imgBtn=document.createElement('div');
+    imgBtn.className='wc-img-btn';
+    imgBtn.textContent='Image';
+    imgBtn.onclick=function(){ wcPickImg(imgBtn); };
+    var capEl=document.createElement('div');
+    capEl.className='wc-cap';
+    capEl.contentEditable='true';
+    capEl.setAttribute('placeholder','Custom text');
+    capEl.textContent=cap;
+    capEl.onblur=function(){ saveWidgetText(capEl, type); };
+    bar.appendChild(imgBtn);
+    bar.appendChild(capEl);
     el.appendChild(bar);
-    // ensure a visible image slot we can import into
-    let slot = el.querySelector('.ph-slot');
-    if(!slot){ slot=document.createElement('div'); slot.className='ph-slot'; slot.style.cssText='width:54px;height:54px;border-radius:14px;margin:6px auto;'; el.insertBefore(slot, el.firstChild); }
-    slot.setAttribute('data-wc-img', type);
-    if(widgetCustom[type] && widgetCustom[type].img){ slot.style.backgroundImage='url('+widgetCustom[type].img+')'; slot.classList.add('filled'); }
+    if(!el.querySelector('.ph-slot')){
+      let slot=document.createElement('div'); slot.className='ph-slot'; slot.style.cssText='width:54px;height:54px;border-radius:14px;margin:6px auto;'; el.insertBefore(slot, el.firstChild);
+    }
+    restoreWidgetSlotImages(el, type);
+  } else {
+    restoreWidgetSlotImages(el, type);
   }
   el.style.position='relative';
-  var del=document.createElement('div'); del.className='wc-del'; del.textContent='×'; del.setAttribute('onclick',"removePlugin('"+type+"')"); el.appendChild(del);
+  var del=document.createElement('div'); del.className='wc-del'; del.textContent='?'; del.setAttribute('onclick',"removePlugin('"+type+"')"); el.appendChild(del);
   bindSlots(el);
   closeSheet('pluginlib');
   if(!opts.skipSave && (typeof isPersistenceBooting!=='function' || !isPersistenceBooting())) saveState();

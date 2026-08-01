@@ -24,6 +24,21 @@ function fatedDBSaveChat(contactId, cb){
       var tx = db.transaction('chats','readwrite');
       tx.objectStore('chats').put({
         id: contactId,
+        name: c.name||contactId,
+        displayName: c.displayName||'',
+        tone: c.tone||'',
+        persona: c.persona||'',
+        userPrompt: c.userPrompt||'',
+        isGroup: !!c.isGroup,
+        members: c.members||null,
+        avatarColor: c.avatarColor||null,
+        avatar: c.avatar||null,
+        cover: c.cover||'',
+        wxid: c.wxid||contactId,
+        bio: c.bio||'',
+        relations: c.relations||[],
+        proactive: c.proactive!==false,
+        imageGenEnabled: c.imageGenEnabled===true,
         seed: c.seed,
         pendingCount: c.pendingCount||0,
         blocked: !!c.blocked,
@@ -46,7 +61,7 @@ function fatedDBSaveChat(contactId, cb){
 }
 /* 批量保存所有联系人聊天记录 */
 function fatedDBSaveAllChats(cb){
-  var ids = Object.keys(contacts).filter(function(k){ return k!=='me'; });
+  var ids = Object.keys(contacts).filter(function(k){ return typeof isPersistableContactId==='function' ? isPersistableContactId(k) : k!=='me'; });
   var done = 0, total = ids.length;
   if(total===0) return cb&&cb();
   ids.forEach(function(id){
@@ -63,25 +78,30 @@ function fatedDBLoadAllChats(cb){
       req.onsuccess = function(e){
         var rows = e.target.result||[];
         rows.forEach(function(row){
-          if(contacts[row.id]){
-            if(row.seed && Array.isArray(row.seed) && row.seed.length>0){
-              contacts[row.id].seed = row.seed;
-            }
-            if(typeof row.pendingCount==='number') contacts[row.id].pendingCount = row.pendingCount;
-            contacts[row.id].blocked = !!row.blocked;
-            contacts[row.id].taDeletedByPartner = !!row.taDeletedByPartner;
-            contacts[row.id].taDeletedBy = row.taDeletedBy||'';
-            contacts[row.id].taDeletedAt = row.taDeletedAt||0;
-            contacts[row.id].taDeletedPrevBlocked = !!row.taDeletedPrevBlocked;
-            if(typeof row.unread==='number') contacts[row.id].unread = row.unread;
-            if(row.memory) contacts[row.id].memory = row.memory;
-            if(typeof row.userProfile==='string') contacts[row.id].userProfile = row.userProfile;
-            if(typeof row.userProfileUpdatedAt==='number') contacts[row.id].userProfileUpdatedAt = row.userProfileUpdatedAt;
-            if(typeof row.userProfileLastMsgCount==='number') contacts[row.id].userProfileLastMsgCount = row.userProfileLastMsgCount;
-            if(Array.isArray(row.worldBooks)) contacts[row.id].worldBooks = row.worldBooks;
-            if(typeof row.groupUserPrompt==='string') contacts[row.id].groupUserPrompt = row.groupUserPrompt;
-          }
+          if(!row || !row.id) return;
+          var c = (typeof ensureRestoredContact==='function') ? ensureRestoredContact(row.id, row) : contacts[row.id];
+          if(!c) return;
+          ['name','displayName','tone','persona','userPrompt','wxid','bio','cover','groupUserPrompt','userProfile','taDeletedBy'].forEach(function(k){ if(typeof row[k]==='string') c[k]=row[k]; });
+          if(row.avatar!==undefined) c.avatar=row.avatar;
+          if(row.avatarColor!==undefined) c.avatarColor=row.avatarColor;
+          if(typeof row.isGroup==='boolean') c.isGroup=row.isGroup;
+          if(Array.isArray(row.members)) c.members=row.members;
+          if(Array.isArray(row.relations)) c.relations=row.relations;
+          if(typeof row.proactive==='boolean') c.proactive=row.proactive;
+          if(typeof row.imageGenEnabled==='boolean') c.imageGenEnabled=row.imageGenEnabled;
+          if(row.seed && Array.isArray(row.seed) && row.seed.length>0) c.seed = row.seed;
+          if(typeof row.pendingCount==='number') c.pendingCount = row.pendingCount;
+          c.blocked = !!row.blocked;
+          c.taDeletedByPartner = !!row.taDeletedByPartner;
+          c.taDeletedAt = row.taDeletedAt||0;
+          c.taDeletedPrevBlocked = !!row.taDeletedPrevBlocked;
+          if(typeof row.unread==='number') c.unread = row.unread;
+          if(row.memory) c.memory = row.memory;
+          if(typeof row.userProfileUpdatedAt==='number') c.userProfileUpdatedAt = row.userProfileUpdatedAt;
+          if(typeof row.userProfileLastMsgCount==='number') c.userProfileLastMsgCount = row.userProfileLastMsgCount;
+          if(Array.isArray(row.worldBooks)) c.worldBooks = row.worldBooks;
         });
+        if(typeof syncRenderedContactRows==='function') syncRenderedContactRows();
         cb&&cb(true);
       };
       req.onerror = function(){ cb&&cb(false); };

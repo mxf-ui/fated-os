@@ -52,6 +52,7 @@
     var d = window.coupleData();
     var entry = { id:'diary-' + Date.now(), date:ymdKey(new Date()), text:v, source:'user', ts:Date.now() };
     d.diary.push(entry);
+    if(typeof fatedLogEvent==='function') fatedLogEvent('couple.diary.add', {app:'couple', contactId:coupleState.partner, actor:'user', text:v, title:'diary'});
     window.saveCoupleState();
     t.value = '';
     window.renderDiaryList();
@@ -94,6 +95,10 @@
       if(!feeling) feeling = '\u6211\u7684\u611f\u53d7\uff1a\u60f3\u66f4\u8d34\u8fd1\u4f60\u4eca\u5929\u771f\u6b63\u5728\u610f\u7684\u90a3\u4e00\u90e8\u5206\u3002';
       d.diaryReplies.push({entryId:entry.id, text:reply.trim(), ts:Date.now(), partnerId:coupleState.partner});
       d.diaryFeelings.push({entryId:entry.id, text:feeling.trim(), ts:Date.now(), partnerId:coupleState.partner});
+      if(typeof fatedLogEvent==='function'){
+        fatedLogEvent('couple.diary.partner_reply', {app:'couple', contactId:coupleState.partner, actor:partnerName(), text:reply.trim(), title:'diary reply'});
+        fatedLogEvent('couple.diary.partner_feeling', {app:'couple', contactId:coupleState.partner, actor:partnerName(), text:feeling.trim(), title:'diary feeling'});
+      }
       window.saveCoupleState();
       window.renderDiaryList();
     });
@@ -134,6 +139,7 @@
     var v = t.value.trim(); if(!v) return;
     var d = window.coupleData();
     d.notes.push({id:'note-' + Date.now(), date:ymdKey(new Date()), text:v, source:'user', ts:Date.now()});
+    if(typeof fatedLogEvent==='function') fatedLogEvent('couple.note.add', {app:'couple', contactId:coupleState.partner, actor:'user', text:v, title:'note'});
     window.saveCoupleState(); t.value = ''; window.renderNoteList();
   };
   window.coupleDelNote = function(i){ var d = window.coupleData(); d.notes.splice(i,1); window.saveCoupleState(); window.renderNoteList(); };
@@ -162,7 +168,7 @@
     if(isNaN(la)||isNaN(ln)){ alert('\u8bf7\u8f93\u5165\u6709\u6548\u7ecf\u7eac\u5ea6'); return; }
     var st=document.getElementById('cp-loc-status'); if(st) st.textContent='\u5df2\u624b\u52a8\u8bbe\u7f6e\u4f4d\u7f6e'; window.coupleSetLoc(la,ln);
   };
-  window.coupleSetLoc = function(lat,lng){ var d=window.coupleData(); d.location={lat:lat,lng:lng,ts:Date.now()}; window.saveCoupleState(); window.renderLocationView(lat,lng); };
+  window.coupleSetLoc = function(lat,lng){ var d=window.coupleData(); d.location={lat:lat,lng:lng,ts:Date.now()}; if(typeof fatedLogEvent==='function') fatedLogEvent('couple.location.set', {app:'couple', contactId:coupleState.partner, actor:'user', text:'lat '+Number(lat).toFixed(4)+', lng '+Number(lng).toFixed(4), title:'location'}); window.saveCoupleState(); window.renderLocationView(lat,lng); };
   window.renderLocationView = function(lat,lng){
     var mb=document.getElementById('cp-loc-map'); if(!mb) return; var dd=0.01; var bbox=(lng-dd)+','+(lat-dd)+','+(lng+dd)+','+(lat+dd);
     mb.innerHTML='<iframe width="100%" height="200" frameborder="0" style="border-radius:12px;" src="https://www.openstreetmap.org/export/embed.html?bbox='+bbox+'&layer=mapnik&marker='+lat+'%2C'+lng+'"></iframe><div style="font-size:11px;color:#888;margin-top:4px;">lat '+lat.toFixed(5)+' / lng '+lng.toFixed(5)+'</div>';
@@ -170,6 +176,7 @@
   };
   window.coupleShareLocation = function(lat,lng){
     var c=contacts[coupleState.partner]; if(c&&c.seed){ c.seed.push({mine:true,kind:'text',text:'[\u6211\u7684\u5b9e\u65f6\u4f4d\u7f6e] lat '+lat.toFixed(4)+', lng '+lng.toFixed(4),from:'me',ts:nowStamp()}); saveChatThread(coupleState.partner); if(currentContact===coupleState.partner) renderThread(); }
+    if(typeof fatedLogEvent==='function') fatedLogEvent('couple.location.share', {app:'couple', contactId:coupleState.partner, actor:'user', text:'lat '+lat.toFixed(4)+', lng '+lng.toFixed(4), title:'share location'});
     showToast('\u5df2\u5206\u4eab\u4f4d\u7f6e', 1600);
   };
 })();

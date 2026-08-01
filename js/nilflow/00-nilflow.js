@@ -186,6 +186,7 @@ function nilflowBuildChatMessages(user, text){
     'relationship: stage='+(relationship.stage||'new')+' trust='+(relationship.trust||0)+' intimacy='+(relationship.intimacy||0)+' tension='+(relationship.tension||0)+' lastTopic='+(relationship.lastTopic||'none'),
     'memory: '+(memory.summary||'none')+' keyFacts='+(memory.keyFacts||[]).join(';'),
     'viewer profile: id='+(profile.id||'unset')+' bio='+(profile.bio||'')+' tags='+(profile.tags||[]).join(','),
+    (typeof fatedGlobalContextPrompt==='function' ? fatedGlobalContextPrompt(null, {limit:14}) : ''),
     '\u8fd9\u6b21\u8981\u6839\u636e\u4eba\u8bbe\u3001\u4e16\u754c\u89c2\u3001\u5173\u7cfb\u9636\u6bb5\u548c\u804a\u5929\u5386\u53f2\u56de\u5e94\uff0c\u4e0d\u8981\u6a21\u677f\u5316\uff0c\u4e0d\u8981\u50cf\u5ba2\u670d\u3002'
   ].join('\n');
   return [{role:'system', content:system}].concat(recent).concat([{role:'user', content:text}]);
@@ -271,6 +272,7 @@ function nilflowToggleLikePost(id){
   var idx=p.likedBy.indexOf(me);
   if(idx>=0) p.likedBy.splice(idx,1); else p.likedBy.push(me);
   p.likes=p.likedBy.length;
+  if(typeof fatedLogEvent==='function') fatedLogEvent(idx>=0?'nilflow.post.unlike':'nilflow.post.like', {app:'nilflow', actor:me, title:p.author, text:p.text});
   nilflowSave();
   nilflowRender();
 }
@@ -294,6 +296,7 @@ function nilflowAddComment(id){
   if(!Array.isArray(p.commentList)) p.commentList=[];
   p.commentList.push({id:nilflowId(), author:nilflowState.profile.id.trim(), text:text, ts:Date.now()});
   p.comments=p.commentList.length;
+  if(typeof fatedLogEvent==='function') fatedLogEvent('nilflow.post.comment', {app:'nilflow', actor:nilflowState.profile.id.trim(), title:p.author, text:text});
   if(input) input.value='';
   nilflowSave();
   nilflowRender();
@@ -346,6 +349,7 @@ function nilflowAcceptMatch(id){
   if(!nilflowState.chats[id]) nilflowState.chats[id]=[{from:'system', text:'双方申请已通过，匿名私聊已解锁。', ts:Date.now()}];
   nilflowState.history.push({id:id, action:'已通过并解锁私聊', ts:Date.now()});
   nilflowActiveChat=id;
+  if(typeof fatedLogEvent==='function') fatedLogEvent('nilflow.match.accept', {app:'nilflow', actor:nilflowState.profile.id || 'guest', target:id, title:id, text:'anonymous private chat unlocked'});
   nilflowState.tab='messages';
   nilflowSave();
   nilflowRender();
@@ -386,6 +390,7 @@ function nilflowSendMessage(){
   var id=nilflowActiveChat;
   var list=nilflowState.chats[id] || (nilflowState.chats[id]=[]);
   list.push({from:'me', text:text, ts:Date.now()});
+  if(typeof fatedLogEvent==='function') fatedLogEvent('nilflow.chat.user', {app:'nilflow', actor:nilflowState.profile.id || 'guest', target:id, title:id, text:text});
   if(input) input.value='';
   nilflowSave();
   nilflowRender();
@@ -414,6 +419,7 @@ function nilflowRetryReply(id){
     if(reply){
       nilflowApplyRelationship(user, lastMe, reply);
       next.push({from:'them', text:reply, ts:Date.now()});
+      if(typeof fatedLogEvent==='function') fatedLogEvent('nilflow.chat.reply', {app:'nilflow', actor:id, target:nilflowState.profile.id || 'guest', title:id, text:reply});
       nilflowMaybeAutoChatImage(id, user, lastMe, reply);
     }else{
       next.push({from:'system', text:'\u5168\u5c40 API \u8c03\u7528\u5931\u8d25\uff0c\u8bf7\u68c0\u67e5\u8bbe\u7f6e\u91cc\u7684 API \u914d\u7f6e\u540e\u91cd\u8bd5\u3002', ts:Date.now(), failed:true});
@@ -450,6 +456,7 @@ function nilflowCreatePost(){
   if(!text){ nilflowToast('\u5148\u5199\u4e00\u70b9\u5185\u5bb9'); return; }
   var post={id:nilflowId(), author:nilflowState.profile.id.trim(), avatar:nilflowState.profile.avatar||'', text:text, style:styleEl?styleEl.value:'minimal', likes:0, likedBy:[], comments:0, commentList:[], reposts:0, ts:Date.now(), media:nilflowPostMedia?nilflowPostMedia.data:null, mediaType:nilflowPostMedia?nilflowPostMedia.type:''};
   nilflowState.posts.unshift(post);
+  if(typeof fatedLogEvent==='function') fatedLogEvent('nilflow.post.create', {app:'nilflow', actor:post.author, title:post.style, text:text});
   if(!nilflowPostMedia) nilflowMaybeAutoPostImage(post, text);
   nilflowPostMedia=null;
   nilflowState.tab='home';

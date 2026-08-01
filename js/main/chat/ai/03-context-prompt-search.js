@@ -25,6 +25,10 @@ function buildContextAddons(contactId){
   if(c.memory && c.memory.enabled && c.memory.summary){
     s += '\n\n[专属记忆 - 根据过往聊天自动总结，请自然融入回复]\n'+c.memory.summary;
   }
+  if(typeof fatedGlobalContextPrompt==='function'){
+    var globalCtx = fatedGlobalContextPrompt(contactId, {limit:16});
+    if(globalCtx) s += '\n\n' + globalCtx;
+  }
   return s;
 }
 

@@ -136,11 +136,7 @@ function initApp(){  /* 记忆模式：不再清空旧存档，保留用户所�
       { id:2, authorId:'me', text:'我是 user，正在做最后的上线检查。', vis:'公开', hidden:[], ts: nowStamp()-1000*60*60*24, place:'', likes:3, liked:false, comments:[] }
     ];
   }
-  Object.keys(contacts).forEach(k=>{
-    if((k[0]==='p'||k[0]==='g') && !document.querySelector('#contact-items [onclick*="'+k+'"]')){
-      if(contacts[k].isGroup) addContactRow(k,true); else addContactRow(k,false);
-    }
-  });
+  if(typeof syncRenderedContactRows==='function') syncRenderedContactRows();
   applyUserName(); applyUserPrefs(); updateUserAvatarEl();
   applyMomentsBg(); renderMoments(); populateViewAs();
   dailyGenContactMoments(); /* 每日零点自动生成联系人朋友圈 */
@@ -158,11 +154,7 @@ function initApp(){  /* 记忆模式：不再清空旧存档，保留用户所�
     if(ok){ renderStickerLib(); }
     loadStateBackupFromDB(function(restoredCore){
       if(restoredCore){
-        Object.keys(contacts).forEach(function(k){
-          if((k[0]==='p'||k[0]==='g') && !document.querySelector('#contact-items [onclick*="'+k+'"]')){
-            if(contacts[k].isGroup) addContactRow(k,true); else addContactRow(k,false);
-          }
-        });
+        if(typeof syncRenderedContactRows==='function') syncRenderedContactRows();
         populateViewAs();
         renderWallet();
         renderMoments();

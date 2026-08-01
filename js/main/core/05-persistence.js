@@ -1,4 +1,4 @@
-/* ============ PERSISTENCE ============ */
+﻿/* ============ PERSISTENCE ============ */
 var bubbleMineColor = '#1a1a1a', bubbleTheirsColor = '#ffffff';
 var widgetCustom = {}; var removedPlugins = [];
 var lastPersistenceWarningAt = 0;
@@ -17,6 +17,61 @@ function buildActivePluginsSnapshot(){
   return list;
 }
 function getSavedPluginTypes(){ return Array.isArray(savedPluginTypes) ? savedPluginTypes.slice() : null; }
+function isPersistableContactId(id){
+  if(!id || id==='me') return false;
+  if(/^tmp[-_]/.test(id) || /^draft[-_]/.test(id)) return false;
+  return !!(contacts && contacts[id]);
+}
+function normalizeRestoredContactShape(id, c, seedRow){
+  seedRow=seedRow||{}; c=c||{};
+  c.name = c.name || seedRow.name || seedRow.displayName || id;
+  c.displayName = c.displayName || seedRow.displayName || '';
+  c.tone = c.tone || seedRow.tone || seedRow.persona || '';
+  c.persona = c.persona || seedRow.persona || c.tone || '';
+  c.userPrompt = c.userPrompt || seedRow.userPrompt || '';
+  c.pendingCount = typeof c.pendingCount==='number' ? c.pendingCount : (seedRow.pendingCount||0);
+  c.idleTimer = null;
+  c.avatarColor = c.avatarColor || seedRow.avatarColor || (typeof randAvatarColor==='function' ? randAvatarColor() : '#9bb37a');
+  c.avatar = c.avatar!==undefined ? c.avatar : (seedRow.avatar||null);
+  c.cover = c.cover!==undefined ? c.cover : (seedRow.cover||'');
+  c.blocked = c.blocked!==undefined ? !!c.blocked : !!seedRow.blocked;
+  c.isGroup = c.isGroup!==undefined ? !!c.isGroup : !!seedRow.isGroup;
+  if(seedRow.members && !c.members) c.members = seedRow.members;
+  c.worldBooks = Array.isArray(c.worldBooks) ? c.worldBooks : (Array.isArray(seedRow.worldBooks) ? seedRow.worldBooks : []);
+  c.memory = c.memory || seedRow.memory || {enabled:true, threshold:20, summary:'', lastMsgCount:0};
+  if(c.memory.enabled===undefined) c.memory.enabled=true;
+  if(!c.memory.threshold) c.memory.threshold=20;
+  c.seed = Array.isArray(c.seed) ? c.seed : (Array.isArray(seedRow.seed) ? seedRow.seed : []);
+  c.unread = typeof c.unread==='number' ? c.unread : (seedRow.unread||0);
+  c.wxid = c.wxid || seedRow.wxid || id;
+  c.bio = c.bio || seedRow.bio || '';
+  c.relations = Array.isArray(c.relations) ? c.relations : (Array.isArray(seedRow.relations) ? seedRow.relations : []);
+  c.proactive = c.proactive!==undefined ? c.proactive : (seedRow.proactive!==false);
+  c.imageGenEnabled = c.imageGenEnabled===true || seedRow.imageGenEnabled===true;
+  c.userProfile = c.userProfile || seedRow.userProfile || '';
+  c.userProfileUpdatedAt = c.userProfileUpdatedAt || seedRow.userProfileUpdatedAt || 0;
+  c.userProfileLastMsgCount = c.userProfileLastMsgCount || seedRow.userProfileLastMsgCount || 0;
+  c.groupUserPrompt = c.groupUserPrompt || seedRow.groupUserPrompt || '';
+  c.taDeletedByPartner = c.taDeletedByPartner!==undefined ? !!c.taDeletedByPartner : !!seedRow.taDeletedByPartner;
+  c.taDeletedBy = c.taDeletedBy || seedRow.taDeletedBy || '';
+  c.taDeletedAt = c.taDeletedAt || seedRow.taDeletedAt || 0;
+  c.taDeletedPrevBlocked = c.taDeletedPrevBlocked!==undefined ? !!c.taDeletedPrevBlocked : !!seedRow.taDeletedPrevBlocked;
+  return c;
+}
+function ensureRestoredContact(id, seedRow){
+  if(!id || id==='me') return null;
+  contacts[id] = normalizeRestoredContactShape(id, contacts[id]||{}, seedRow||{});
+  return contacts[id];
+}
+function syncRenderedContactRows(){
+  if(typeof document==='undefined' || typeof addContactRow!=='function') return;
+  Object.keys(contacts||{}).forEach(function(id){
+    if(!isPersistableContactId(id)) return;
+    if(!document.querySelector('#contact-items [onclick*="'+id+'"]')) addContactRow(id, !!contacts[id].isGroup);
+  });
+  if(typeof populateViewAs==='function') populateViewAs();
+}
+
 function syncPersonaSeqFromContacts(){
   var max = 0;
   Object.keys(contacts||{}).forEach(function(id){
@@ -37,7 +92,7 @@ function lightFontConfig(){
   };
 }
 function buildContactsSnapshot(){
-  return Object.keys(contacts).filter(function(k){ return k[0]==='p'||k[0]==='g'||k==='tester1'; }).map(function(k){
+  return Object.keys(contacts).filter(function(k){ return isPersistableContactId(k); }).map(function(k){
     var c=contacts[k];
     return {
       id:k,
@@ -97,7 +152,8 @@ function buildLightState(){
     screenTime: typeof screenTimeData!=='undefined' ? screenTimeData : null,
     go: typeof goState!=='undefined' && goState ? goState : null,
     dream: typeof dreamState!=='undefined' && dreamState ? dreamState : null,
-    nilflow: typeof nilflowState!=='undefined' && nilflowState ? nilflowState : null
+    nilflow: typeof nilflowState!=='undefined' && nilflowState ? nilflowState : null,
+    fatedEventState: typeof fatedEventState!=='undefined' && fatedEventState ? fatedEventState : null
   };
 }
 function buildProfileAssets(){
@@ -110,7 +166,7 @@ function buildMomentsAssets(){
   };
 }
 function buildContactAssets(){
-  return Object.keys(contacts).filter(function(k){ return k[0]==='p'||k[0]==='g'||k==='tester1'; }).map(function(k){
+  return Object.keys(contacts).filter(function(k){ return isPersistableContactId(k); }).map(function(k){
     var c=contacts[k];
     return {id:k, avatar:c.avatar||null, cover:c.cover||''};
   });
@@ -147,6 +203,7 @@ function saveState(){
   fatedDBSaveKV('homeWp', homeWp);
   fatedDBSaveAllChats();
   fatedDBSaveStickers();
+  if(typeof cloudNotifyLocalSave==='function') cloudNotifyLocalSave('saveState');
   return savedLocal;
 }
 function mergeApiConfig(saved){
@@ -175,33 +232,12 @@ function mergeApiConfig(saved){
 function applyContactsSnapshot(list){
   if(!Array.isArray(list)) return;
   list.forEach(function(c){
+    if(!c || !c.id) return;
     var id=c.id;
-    if(!id) return;
-    var rest={};
-    Object.keys(c).forEach(function(k){ if(k!=='id' && k!=='avatar' && k!=='cover') rest[k]=c[k]; });
-    contacts[id] = Object.assign(contacts[id]||{pendingCount:0,idleTimer:null}, rest);
-    if(contacts[id].pendingCount===undefined) contacts[id].pendingCount=0;
-    if(contacts[id].idleTimer===undefined) contacts[id].idleTimer=null;
-    if(!contacts[id].worldBooks) contacts[id].worldBooks=[];
-    if(!contacts[id].memory) contacts[id].memory={enabled:true, threshold:20, summary:'', lastMsgCount:0};
-    if(contacts[id].memory.enabled===undefined) contacts[id].memory.enabled=true;
-    if(!contacts[id].memory.threshold) contacts[id].memory.threshold=20;
-    if(contacts[id].blocked===undefined) contacts[id].blocked=false;
-    if(contacts[id].taDeletedByPartner===undefined) contacts[id].taDeletedByPartner=false;
-    if(contacts[id].taDeletedBy===undefined) contacts[id].taDeletedBy='';
-    if(contacts[id].taDeletedAt===undefined) contacts[id].taDeletedAt=0;
-    if(contacts[id].taDeletedPrevBlocked===undefined) contacts[id].taDeletedPrevBlocked=false;
-    if(contacts[id].persona===undefined) contacts[id].persona=contacts[id].tone||'';
-    if(contacts[id].userPrompt===undefined) contacts[id].userPrompt='';
-    if(contacts[id].proactive===undefined) contacts[id].proactive=true;
-    if(contacts[id].imageGenEnabled===undefined) contacts[id].imageGenEnabled=false;
-    if(contacts[id].bio===undefined) contacts[id].bio='';
-    if(contacts[id].cover===undefined) contacts[id].cover='';
-    if(contacts[id].wxid===undefined) contacts[id].wxid=id;
-    if(contacts[id].relations===undefined) contacts[id].relations=[];
-    if(contacts[id].userProfile===undefined) contacts[id].userProfile='';
-    if(contacts[id].userProfileUpdatedAt===undefined) contacts[id].userProfileUpdatedAt=0;
-    if(contacts[id].userProfileLastMsgCount===undefined) contacts[id].userProfileLastMsgCount=0;
+    var target=ensureRestoredContact(id, c);
+    if(!target) return;
+    Object.keys(c).forEach(function(k){ if(k!=='id' && k!=='avatar' && k!=='cover') target[k]=c[k]; });
+    normalizeRestoredContactShape(id, target, c);
   });
   syncPersonaSeqFromContacts();
 }
@@ -242,6 +278,7 @@ function applyStateSnapshot(s){
   if(s.go && typeof s.go==='object') goState=Object.assign(goDefault(), s.go);
   if(s.dream && typeof s.dream==='object'){ dreamState=Object.assign(dreamDefault(), s.dream); if(typeof dreamEnsureStateShape==='function') dreamEnsureStateShape(); }
   if(s.nilflow && typeof s.nilflow==='object'){ nilflowState=Object.assign(nilflowDefault(), s.nilflow); if(typeof nilflowEnsureStateShape==='function') nilflowEnsureStateShape(); }
+  if(s.fatedEventState && typeof s.fatedEventState==='object'){ fatedEventState=s.fatedEventState; if(typeof fatedEnsureEventState==='function') fatedEnsureEventState(); }
 
   if(s.userCover!==undefined) userCover=s.userCover;
   if(s.userAvatar!==undefined) userAvatar=s.userAvatar;
@@ -294,9 +331,11 @@ function applyMomentsAssets(a){
 function applyContactAssets(list){
   if(!Array.isArray(list)) return false;
   list.forEach(function(row){
-    if(!row || !row.id || !contacts[row.id]) return;
-    if(row.avatar!==undefined) contacts[row.id].avatar=row.avatar;
-    if(row.cover!==undefined) contacts[row.id].cover=row.cover;
+    if(!row || !row.id) return;
+    var c=ensureRestoredContact(row.id, row);
+    if(!c) return;
+    if(row.avatar!==undefined) c.avatar=row.avatar;
+    if(row.cover!==undefined) c.cover=row.cover;
   });
   return true;
 }
@@ -306,6 +345,7 @@ function repaintPersistentAssets(){
   if(chatBg){ applyChatBgToDOM(chatBg); }
   paintWallpaper(document.getElementById('lock-wallpaper'), lockWp);
   paintWallpaper(document.getElementById('home-wallpaper'), homeWp);
+  if(typeof syncRenderedContactRows==='function') syncRenderedContactRows();
   renderThread(); renderChatList(); renderDesktopIcons(); renderIconGrid(); applyBubbleColors(); applyFontConfig();
 }
 function loadState(){
@@ -344,8 +384,11 @@ function loadStateAssetsFromDB(cb){
                 if(lwp && typeof lwp==='object'){ lockWp=lwp; changed=true; }
                 fatedDBLoadKV('homeWp', function(hwp){
                   if(hwp && typeof hwp==='object'){ homeWp=hwp; changed=true; }
-                  if(changed) repaintPersistentAssets();
-                  cb&&cb(changed);
+                  fatedDBLoadKV('fated_event_state', function(evState){
+                    if(evState && typeof evState==='object'){ fatedEventState=evState; if(typeof fatedEnsureEventState==='function') fatedEnsureEventState(); changed=true; }
+                    if(changed) repaintPersistentAssets();
+                    cb&&cb(changed);
+                  });
                 });
               });
             });
@@ -362,3 +405,4 @@ function saveChatThread(contactId){
   fatedDBSaveChat(id);
 }
 function saveStickersDB(){ fatedDBSaveStickers(); }
+

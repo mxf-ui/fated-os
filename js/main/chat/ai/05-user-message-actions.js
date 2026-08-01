@@ -51,7 +51,9 @@ function sendMsg(){
   const input = document.getElementById('msg-input');
   const text = input.value.trim();
   if(!text) return;
-  c.seed.push({mine:true, kind:'text', text, from:'me', ts:nowStamp()});
+  c.seed.push({mine:true, kind:'text', text, from:'me', ts:nowStamp()});
+
+  if(typeof fatedLogEvent==='function') fatedLogEvent('wechat.message.user', {app:'wechat', contactId:currentContact, actor:'user', text:text});
   c.pendingCount++;
   input.value='';
   renderThread();
@@ -66,7 +68,9 @@ function sendVoice(){
   const c = contacts[currentContact];
   if(c.pendingCount >= MAX_STREAK) return;
   const dur = Math.floor(3 + Math.random()*10);
-  c.seed.push({mine:true, kind:'voice', dur, from:'me', ts:nowStamp()});
+  c.seed.push({mine:true, kind:'voice', dur, from:'me', ts:nowStamp()});
+
+  if(typeof fatedLogEvent==='function') fatedLogEvent('wechat.message.user.voice', {app:'wechat', contactId:currentContact, actor:'user', text:'voice message'});
   c.pendingCount++;
   renderThread();
   saveChatThread();

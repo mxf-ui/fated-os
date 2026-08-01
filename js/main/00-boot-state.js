@@ -7,30 +7,28 @@ var safeLS = {
   removeItem:function(k){ try{ window.localStorage.removeItem(k); }catch(e){ delete __memStore[k]; } }
 };
 
-/* ============ INVITE CODE ============ */
+/* ============ CLOUD ENTRY GATE ============ */
 var INVITE_CODE = '123456';
 (function(){
   try{
-    var saved = safeLS.getItem('invite_verified');
-    var scr = document.getElementById('invite-screen');
-    if(scr) scr.style.display = (saved==='true') ? 'none' : 'flex';
     window._apiBase = '/api';
-  }catch(e){ /* 出错也绝不阻断后续脚本，保证页面能渲染 */ }
+    var scr = document.getElementById('invite-screen');
+    if(scr) scr.style.display = 'flex';
+    if(typeof window.cloudShowEntryGate === 'function') window.cloudShowEntryGate();
+  }catch(e){ /* keep boot non-blocking */ }
 })();
 
 function grantInvite(){
-  safeLS.setItem('invite_verified','true');
-  var s=document.getElementById('invite-screen'); if(s) s.style.display='none';
+  if(typeof cloudHasSession === 'function' && cloudHasSession()){
+    var s=document.getElementById('invite-screen'); if(s) s.style.display='none';
+  }
 }
 function denyInvite(msg){
   var m=document.getElementById('invite-msg'); if(m) m.textContent=msg;
 }
 function verifyInvite(){
-  var code = document.getElementById('invite-input').value.trim();
-  if(!code){ denyInvite('Please enter a code'); return; }
-  // 纯前端校验：邀请码已内置前端，直接比对，不依赖服务器（任何部署方式都能进）
-  if(code === INVITE_CODE) grantInvite();
-  else denyInvite('邀请码错误 / Invalid code');
+  if(typeof cloudEntryLogin === 'function') return cloudEntryLogin();
+  denyInvite('Please sign in after the app finishes loading.');
 }
 
 function pad(n){ return n.toString().padStart(2,'0'); }
