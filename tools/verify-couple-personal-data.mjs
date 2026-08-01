@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 
 const state = readFileSync('js/couple/00-state.js', 'utf8');
 const gen = readFileSync('js/couple/01-generated-data-contacts.js', 'utf8');
@@ -92,4 +92,10 @@ assertMissing(diary, '\u0041\u0049\u751f\u6210\u65e5\u8bb0', 'diary UI must not 
   "coupleRefreshPartnerWishlist(true);couplePartnerWishlist();",
   "\\u624b\\u52a8\\u5237\\u65b0 TA \\u6e05\\u5355"
 ].forEach((needle) => assertIncludes(shop, needle, 'wishlist purchase and manual refresh'));
+
+const coupleMain = readFileSync('js/main/08-couple-space.js', 'utf8');
+assertMissing(coupleMain, 'coupleState.notes = [];', 'legacy couple generator must not clear manual notes');
+assertMissing(coupleMain, 'coupleState.diary = [];', 'legacy couple generator must not clear manual diary');
+assertIncludes(gen, 'if(!force && d.wishlistDailyKey === key && !d.partnerWishlist.length) force = true;', 'wishlist auto-refills after cart is empty');
+assertIncludes(shop, 'coupleRefreshPartnerWishlist(true);', 'partner wishlist manual refresh should force new products');
 console.log('Couple personal data verification passed.');

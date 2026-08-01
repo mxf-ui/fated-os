@@ -1,4 +1,4 @@
-/* Couple Space generated data and contact switching */
+﻿/* Couple Space generated data and contact switching */
 (function(){
   if(typeof coupleState === 'undefined' || !coupleState) return;
 
@@ -34,6 +34,7 @@
     var d = window.coupleData();
     var key = window.coupleWishlistDailyKey();
     if(!force && d.wishlistDailyKey === key && d.partnerWishlist.length) return d.partnerWishlist;
+    if(!force && d.wishlistDailyKey === key && !d.partnerWishlist.length) force = true;
     var c = contacts[coupleState.partner] || {};
     var base = wishlistTemplates(c).map(function(item, i){
       return Object.assign({}, item, { id:'wish-' + key + '-' + i, date:key, owner:'partner', partnerId:coupleState.partner || '' });
