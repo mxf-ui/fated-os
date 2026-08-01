@@ -119,6 +119,18 @@ assertMissing(systemShell, 'onclick="'+"a.action", 'desktop direct inline action
 assertMissing(takeover, 'setTimeout(runNext, 1200)', 'TA takeover fast fixed delay');
 assertMissing(takeover, 'PLACEHOLDER_FINISH', 'TA takeover placeholder text');
 
+[
+  'coupleTaSpeechContext',
+  'coupleTaEvidenceKey',
+  'recentSpeechKeys',
+  'moneyCooldown',
+  "不要连续两次围绕钱",
+  "本轮查岗焦点",
+  "近期已经说过的话题",
+  "不要重复上一轮同一个细节"
+].forEach((needle) => assertIncludes(takeover, needle, 'TA speech diversity'));
+assertMissing(takeover, "优先评论最暧昧、最花钱", 'TA speech must not always prioritize money');
+
 assertMissing(takeover, 'delete contacts[', 'TA takeover hard delete');
 assertMissing(takeover, 'fatedDBDeleteChat', 'TA takeover hard delete');
 

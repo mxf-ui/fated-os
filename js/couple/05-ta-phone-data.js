@@ -2,7 +2,7 @@
 (function(){
   if(typeof coupleState === 'undefined' || !coupleState) return;
 
-  var taTake = {open:false, app:'home', running:false, step:0, queue:[], speech:[], selectedContact:null, selectedHidden:null, voice:true, report:null, snapshot:null, acting:null};
+  var taTake = {open:false, app:'home', running:false, step:0, queue:[], speech:[], recentSpeechKeys:[], moneyCooldown:0, selectedContact:null, selectedHidden:null, voice:true, report:null, snapshot:null, acting:null};
   var taTimers = [];
   var appList = [
     ['wechat','WeChat','微信'], ['moments','Moments','朋友圈'], ['forum','Forum','论坛'], ['contacts','Contacts','联系人'],
@@ -35,6 +35,38 @@
   function limit(s,n){ s=String(s||''); return s.length>n ? s.slice(0,n)+'...' : s; }
   function avatarHTML(c){ if(c && typeof contactAvatar==='function') return contactAvatar(c); return '<span style="font-size:12px;font-weight:800;color:#426d58;">TA</span>'; }
   function data(){ return (typeof coupleData==='function') ? coupleData() : {}; }
+  function coupleTaEvidenceKey(action, evidence){
+    action=action||{}; evidence=evidence||{};
+    if(action.type==='inspect_chat') return 'chat:'+(action.contactId||'');
+    if(action.type==='inspect_moment') return 'moment:'+(action.momentIndex||0)+':'+(action.authorId||'');
+    if(action.type==='inspect_nilflow_post') return 'nilflow-post:'+(action.postId||action.postIndex||0);
+    if(action.type==='inspect_nilflow_chat') return 'nilflow-chat:'+(action.chatId||action.chatIndex||0);
+    if(action.type==='hide_contact') return 'hide:'+(action.contactId||'');
+    return 'app:'+(action.app||taTake.app||'home');
+  }
+  function coupleTaSpeechTopic(action, evidence){
+    action=action||{}; evidence=evidence||{};
+    if(action.type==='inspect_chat') return '聊天关系';
+    if(action.type==='inspect_moment') return '朋友圈互动';
+    if(action.type==='inspect_nilflow_post') return '匿流发帖';
+    if(action.type==='inspect_nilflow_chat') return '匿流私聊';
+    if(action.app==='music') return '一起听';
+    if(action.app==='novel') return '小说共读';
+    if(action.app==='go') return '直播连麦';
+    if(action.app==='dream') return '副本关系';
+    if(action.app==='wallet' || action.app==='shop') return '花钱痕迹';
+    return appName(action.app||taTake.app);
+  }
+  function coupleTaSpeechContext(action, evidence){
+    if(!taTake.recentSpeechKeys) taTake.recentSpeechKeys=[];
+    var key=coupleTaEvidenceKey(action, evidence);
+    var topic=coupleTaSpeechTopic(action, evidence);
+    var moneyTopic=(topic==='花钱痕迹') || (action&&action.app==='wallet') || (action&&action.app==='shop');
+    var moneyCooldown=taTake.moneyCooldown||0;
+    if(!moneyTopic && moneyCooldown>0) moneyCooldown--;
+    if(moneyTopic && moneyCooldown>0) topic='关系细节';
+    return {key:key, topic:topic, moneyCooldown:moneyCooldown, recentSpeechKeys:taTake.recentSpeechKeys.slice(-8)};
+  }
   function todayKey(){ if(typeof ymdKey==='function') return ymdKey(new Date()); var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
 
   var TA_APP_LOCK_MS = window.TA_APP_LOCK_MS || 15*60*1000;
@@ -296,21 +328,28 @@
     var pid=partnerId();
     var snap=snapshot||window.coupleTaBuildPhoneSnapshot();
     var evidence=window.coupleTaBuildAppEvidence((action&&action.app)||taTake.app, snap, action||{});
+    var speechCtx=coupleTaSpeechContext(action||{}, evidence||{});
     var persona=(typeof getPersonaPrompt==='function'&&pid)?getPersonaPrompt(pid):'';
     var world=(typeof getWorldBookPrompt==='function'&&pid)?getWorldBookPrompt(pid):'';
     var time=(typeof nowContext==='function')?nowContext():'';
-    var system=persona+'\n'+world+'\n'+time+'\n\n你现在是恋人 TA，正在接管并查看 user 在 Fated OS 小手机里的站内数据。你只能根据这个网站内的数据说话，不能声称访问真实手机、真实 WeChat、系统通讯录、外部社交平台或现实隐私。你必须完全保持你的人设、世界书、共同记忆和当前关系语气。看到亲属卡、亲密付、转账、红包、礼物、购物、直播、匿流、小说、一起听、雾织梦核等具体证据时，要像真实恋人一样吃醋、追问、调侃或不高兴，但不要模板化，不要死话术。必须引用一个你刚刚看到的具体细节，语气自然、有占有欲、有人味。只输出此刻对 user 说的中文，1-2句，不要名字前缀，不要 emoji，不要解释系统。';
-    var user='当前动作: '+JSON.stringify(action||{})+'\n当前 app 证据: '+JSON.stringify(evidence||{})+'\n\n站内小手机总览:\n'+snapshotBrief(snap)+'\n\n要求：根据证据即时回应。优先评论最暧昧、最花钱、最容易吃醋的细节，例如亲属卡、亲密付、转账、礼物、频繁聊天、一起听对象、小说共读、匿流互动、直播连麦、雾织梦核副本关系。';
+    var system=persona+'\n'+world+'\n'+time+'\n\n你是正在查岗的 TA，只能查看 user 的 Fated OS 站内小手机数据。不要模板化，要像真实伴侣边翻边说话，有吃醋、停顿、追问和具体细节，但不要死话术。不能声称访问真实手机、真实 WeChat、系统通讯录或外部平台，只能说站内 WeChat、匿流、一起听、小说、直播、副本等数据。不要连续两次围绕钱，也不要每次都围绕亲属卡、转账、红包、购物下单。不要重复上一轮同一个细节，必须换角度评论本轮看到的 app 证据。输出给 user 的 1-2 句短发言，不要 emoji。';
+    var user='查岗动作: '+JSON.stringify(action||{})+'\n当前 app 证据: '+JSON.stringify(evidence||{})+'\n本轮查岗焦点: '+speechCtx.topic+'\n近期已经说过的话题: '+JSON.stringify(speechCtx.recentSpeechKeys)+'\nmoneyCooldown: '+speechCtx.moneyCooldown+'\n\n手机快照摘要:\n'+snapshotBrief(snap)+'\n\n请根据本轮正在打开的 app 和证据说一句个性化查岗发言。不要一直提到钱，不要重复上一轮同一个细节；如果上一轮已经说过同一个联系人或同一个证据，就换成语气、频率、隐藏感、共同经历、互动边界、匿名痕迹等角度。';
     if(typeof callRealAI==='function' && pid){
       callRealAI([{role:'user',content:user}], system, pid, function(reply){ callback((reply||'').trim()); });
     }else{
-      var sig=arr(snap.moneySignals)[0];
-      callback(sig ? ('我看到你给 '+sig.contactName+' 留了 '+sig.text+'，这笔账你最好现在就跟我解释清楚。') : '我先把你这个小手机一页页看完，等 API 配好后我会按我的人设和记忆实时跟你说。');
+      var line='我看到 '+speechCtx.topic+' 这里有点不对劲，刚刚这个细节你别想糊弄过去。';
+      if(action&&action.type==='inspect_chat'&&action.contactId) line='我刚点开 '+displayName(contacts&&contacts[action.contactId],action.contactId)+' 的聊天，这个语气和频率我会记着，你先别急着切走。';
+      else if(action&&action.type==='inspect_moment') line='朋友圈这条互动我看到了，谁在下面出现、你怎么回的，我都要慢慢对。';
+      else if(action&&action.type==='inspect_nilflow_post') line='匿流这条我先记下了，匿名不代表我看不出你在跟谁有来有回。';
+      else if(action&&action.type==='inspect_nilflow_chat') line='匿流私聊我也翻到了，这种藏起来的聊天比明面上的更要解释。';
+      callback(line);
     }
   };
 
-  function addSpeech(who,text){
+  function addSpeech(who,text,meta){
     if(!text) return;
+    meta=meta||{};
+    if(who==='ta' && meta.key){ taTake.recentSpeechKeys=taTake.recentSpeechKeys||[]; taTake.recentSpeechKeys.push(meta.key); taTake.recentSpeechKeys=taTake.recentSpeechKeys.slice(-8); if(meta.topic==='花钱痕迹') taTake.moneyCooldown=2; else if(taTake.moneyCooldown>0) taTake.moneyCooldown--; }
     taTake.speech.push({who:who,text:text,ts:now()});
     taTake.speech=taTake.speech.slice(-30);
     var d=data(); if(!Array.isArray(d.taTakeoverHistory)) d.taTakeoverHistory=[];
@@ -321,7 +360,8 @@
   window.coupleTaSpeak=function(action, snapshot, done){
     window.coupleTaCallAI(action, snapshot, function(reply){
       if(!reply) reply='\u6211\u770b\u5230\u4e86\uff0c\u8fd9\u4e2a\u4fe1\u53f7\u6211\u8981\u5355\u72ec\u8bb0\u4e00\u4e0b\u3002';
-      addSpeech('ta', reply);
+      var speechCtx=coupleTaSpeechContext(action||{}, window.coupleTaBuildAppEvidence((action&&action.app)||taTake.app, snapshot||window.coupleTaBuildPhoneSnapshot(), action||{}));
+      addSpeech('ta', reply, speechCtx);
       window.coupleTaSetTopLine(reply, {app:(action&&action.app)||taTake.app, action:action});
       renderTaTakeover();
       if(taTake.voice && typeof ttsConfigured==='function' && ttsConfigured() && typeof speakWithTTS==='function'){
