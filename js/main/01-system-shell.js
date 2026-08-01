@@ -69,12 +69,46 @@ iconInput.addEventListener('change', e=>{
 });
 function pickIcon(id){ activeIconId=id; iconInput.click(); }
 function resetIcon(e, id){ e.stopPropagation(); const def=appIcons.find(a=>a.id===id); def.img=null; renderDesktopIcons(); renderIconGrid(); }
+var TA_APP_LOCK_MS = window.TA_APP_LOCK_MS || 15*60*1000;
+function coupleAppLockRemaining(id){
+  try{
+    var until = coupleState && coupleState.lockedApps ? Number(coupleState.lockedApps[id]||0) : 0;
+    var left = Math.max(0, until-Date.now());
+    if(until && left<=0 && coupleState && coupleState.lockedApps){ delete coupleState.lockedApps[id]; if(typeof saveCoupleState==='function') saveCoupleState(); if(typeof saveState==='function') saveState(); }
+    return left;
+  }catch(e){ return 0; }
+}
+function coupleCheckAppLocked(id, opts){
+  opts = opts || {};
+  if(opts.bypassLock) return false;
+  var left = coupleAppLockRemaining(id);
+  if(left<=0) return false;
+  var min = Math.max(1, Math.ceil(left/60000));
+  var msg = 'TA 刚刚查岗后锁定了这个 app，约 '+min+' 分钟后可用。';
+  if(typeof coupleTaSetTopLine==='function') coupleTaSetTopLine(msg, {kind:'lock',app:id});
+  if(typeof showToast==='function') showToast(msg, 1800, 'warn');
+  return true;
+}
+function runDesktopAction(action){
+  if(typeof action==='function') return action();
+  if(typeof action==='string') return (new Function(action))();
+}
+function openDesktopApp(id, opts){
+  opts = opts || {};
+  var a = appIcons.find(function(x){ return x.id===id; });
+  if(!a) return false;
+  if(coupleCheckAppLocked(id, opts)) return false;
+  runDesktopAction(a.action);
+  return true;
+}
 function renderDesktopIcons(){
   var board=document.getElementById('desktop-board');
   board.innerHTML=appIcons.map(function(a){
     var bg=a.img?' style="background-image:url('+a.img+');background-size:cover;"':'';
     var inner=a.img?'':'<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">'+a.ico+'</div>';
-    return '<div class="d-tile"'+bg+' onclick="'+a.action+'">'+inner+'</div>';
+    var locked=coupleAppLockRemaining(a.id);
+    var badge=locked?'<span style="position:absolute;right:4px;top:4px;background:rgba(18,40,30,.82);color:#fff;border-radius:999px;padding:2px 5px;font-size:8px;font-weight:800;">'+Math.ceil(locked/60000)+'m</span>':'';
+    return '<div class="d-tile" data-ta-app-id="'+a.id+'"'+bg+' onclick="openDesktopApp(\''+a.id+'\')" style="position:relative;'+(locked?'filter:saturate(.55);opacity:.72;':'')+'">'+inner+badge+'</div>';
   }).join('');
   board.innerHTML+='<div style="text-align:center;font-size:9px;color:#bbb;letter-spacing:1px;margin-top:4px;">'+appIcons.map(function(a){return a.name;}).join(' &middot; ')+'</div>';
   var dock=document.getElementById('desktop-dock');
@@ -83,7 +117,9 @@ function renderDesktopIcons(){
     var a=appIcons.find(function(x){return x.id===id;});
     var bg=a.img?' style="background-image:url('+a.img+');background-size:cover;"':'';
     var inner=a.img?'':'<div style="display:flex;align-items:center;justify-content:center;">'+a.ico+'</div>';
-    return '<div class="tile"'+bg+' onclick="'+a.action+'">'+inner+'</div>';
+    var locked=coupleAppLockRemaining(a.id);
+    var badge=locked?'<span style="position:absolute;right:2px;top:2px;background:rgba(18,40,30,.82);color:#fff;border-radius:999px;padding:2px 5px;font-size:8px;font-weight:800;">'+Math.ceil(locked/60000)+'m</span>':'';
+    return '<div class="tile" data-ta-app-id="'+a.id+'"'+bg+' onclick="openDesktopApp(\''+a.id+'\')" style="position:relative;'+(locked?'filter:saturate(.55);opacity:.72;':'')+'">'+inner+badge+'</div>';
   }).join('');
 }
 function renderIconGrid(){

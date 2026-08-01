@@ -7,6 +7,7 @@ const persistence = readFileSync('js/main/core/05-persistence.js', 'utf8');
 const indexedDb = readFileSync('js/main/core/04-indexeddb.js', 'utf8');
 const chatList = readFileSync('js/main/chat/03-lists-widgets.js', 'utf8');
 const cloudSync = readFileSync('js/main/core/08-cloud-sync.js', 'utf8');
+const systemShell = readFileSync('js/main/01-system-shell.js', 'utf8');
 
 function assertIncludes(source, needle, label){
   if(!source.includes(needle)) throw new Error(label + ' is missing ' + needle);
@@ -83,6 +84,28 @@ function assertMissing(source, needle, label){
 });
 
 assertIncludes(chatList, 'taDeletedByPartner', 'chat list filter');
+[
+  'openDesktopApp',
+  'coupleCheckAppLocked',
+  'coupleAppLockRemaining',
+  'data-ta-app-id',
+  'bypassLock',
+  'TA_APP_LOCK_MS'
+].forEach((needle) => assertIncludes(systemShell, needle, 'desktop lock gateway'));
+assertMissing(systemShell, 'onclick="'+"a.action", 'desktop direct inline action');
+[
+  'coupleTaTopBanner',
+  'coupleTaSetTopLine',
+  'coupleTaLockApp',
+  'coupleTaFindJealousSignal',
+  'TA_APP_LOCK_MS',
+  'lockUntil',
+  '15分钟',
+  '暧昧',
+  'bypassLock',
+  'coupleTaOpenRealApp'
+].forEach((needle) => assertIncludes(takeover, needle, 'TA real takeover'));
+
 assertMissing(takeover, 'delete contacts[', 'TA takeover hard delete');
 assertMissing(takeover, 'fatedDBDeleteChat', 'TA takeover hard delete');
 

@@ -37,6 +37,109 @@
   function data(){ return (typeof coupleData==='function') ? coupleData() : {}; }
   function todayKey(){ if(typeof ymdKey==='function') return ymdKey(new Date()); var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
 
+  var TA_APP_LOCK_MS = window.TA_APP_LOCK_MS || 15*60*1000;
+  window.TA_APP_LOCK_MS = TA_APP_LOCK_MS;
+  /* verification keywords: 15分钟 暧昧 */
+  function hasDesktopApp(id){ return (typeof appIcons!=='undefined' && Array.isArray(appIcons) && appIcons.some(function(a){ return a && a.id===id; })); }
+  function lockTargetApp(app){
+    if(hasDesktopApp(app)) return app;
+    if(app==='contacts' || app==='moments') return 'wechat';
+    if(app==='wallet' || app==='shop' || app==='browse' || app==='diary' || app==='notes') return 'wechat';
+    return app || 'wechat';
+  }
+  function closeRealSheets(){
+    try{ document.querySelectorAll('.sheet.open').forEach(function(el){ el.classList.remove('open'); }); }catch(e){}
+  }
+  function coupleTaTopBanner(){
+    var root=document.getElementById('screen') || document.body;
+    var bar=document.getElementById('couple-ta-top-banner');
+    if(!bar){
+      bar=document.createElement('div');
+      bar.id='couple-ta-top-banner';
+      bar.style.cssText='position:absolute;left:10px;right:10px;top:8px;z-index:520;display:none;pointer-events:auto;background:rgba(247,255,250,.94);border:1px solid rgba(43,102,71,.22);box-shadow:0 12px 34px rgba(18,52,34,.18);backdrop-filter:blur(18px);border-radius:18px;padding:9px 10px;color:#123627;font-size:12px;line-height:1.42;';
+      bar.innerHTML='<div style="display:flex;gap:9px;align-items:flex-start;"><div style="width:29px;height:29px;border-radius:11px;overflow:hidden;background:#dff2e8;display:flex;align-items:center;justify-content:center;flex:0 0 auto;" id="couple-ta-top-avatar"></div><div style="flex:1;min-width:0;"><div style="font-size:10px;color:#5d826f;font-weight:850;margin-bottom:2px;">TA \u6b63\u5728\u63a5\u7ba1\u5c0f\u624b\u673a</div><div id="couple-ta-top-text" style="font-weight:800;white-space:pre-wrap;"></div><div id="couple-ta-top-meta" style="font-size:10px;color:#72907f;margin-top:2px;"></div></div><button type="button" onclick="closeTaTakeover()" style="border:0;background:rgba(43,102,71,.08);color:#28593f;border-radius:999px;width:24px;height:24px;font-size:16px;line-height:20px;cursor:pointer;">\u00d7</button></div>';
+      root.appendChild(bar);
+    }
+    var av=bar.querySelector('#couple-ta-top-avatar');
+    if(av) av.innerHTML=avatarHTML(partner());
+    return bar;
+  }
+  window.coupleTaSetTopLine=function(text, meta){
+    var bar=coupleTaTopBanner();
+    var line=bar.querySelector('#couple-ta-top-text');
+    var small=bar.querySelector('#couple-ta-top-meta');
+    if(line) line.textContent=text || '';
+    if(small){
+      var app=(meta&&meta.app)?appName(meta.app):appName(taTake.app);
+      small.textContent=(meta&&meta.kind==='lock') ? ('\u5df2\u9501\u5b9a '+app+' 15\u5206\u949f') : ('\u6b63\u5728\u67e5\u770b '+app);
+    }
+    bar.style.display=text?'block':'none';
+    return bar;
+  };
+  window.coupleTaLockApp=function(app, signal){
+    var target=lockTargetApp(app || (signal&&signal.app));
+    if(!coupleState.lockedApps) coupleState.lockedApps={};
+    var lockUntil=Date.now()+TA_APP_LOCK_MS;
+    coupleState.lockedApps[target]=lockUntil;
+    persist();
+    if(typeof renderDesktopIcons==='function') renderDesktopIcons();
+    var detail=(signal&&signal.contactName)?('\uff0c\u56e0\u4e3a '+signal.contactName+' \u7684\u66a7\u6627\u75d5\u8ff9'):'\uff0c\u56e0\u4e3a\u521a\u521a\u67e5\u5230\u66a7\u6627\u75d5\u8ff9';
+    window.coupleTaSetTopLine('\u8fd9\u4e2a app \u5148\u522b\u60f3\u70b9\u5f00\u4e86'+detail+'\uff0c\u6211\u9501 15\u5206\u949f\uff0c\u4f60\u5148\u89e3\u91ca\u3002', {kind:'lock',app:target,lockUntil:lockUntil});
+    if(typeof showToast==='function') showToast('TA \u5df2\u9501\u5b9a '+appName(target)+' 15\u5206\u949f', 1600, 'warn');
+    return lockUntil;
+  };
+  function signalFromContact(app, contactId, label, text){
+    if(!contactId || contactId===partnerId() || !contacts || !contacts[contactId]) return null;
+    var c=contacts[contactId];
+    return {type:'ambiguous', app:lockTargetApp(app), contactId:contactId, contactName:displayName(c,contactId), label:label||'\u66a7\u6627', text:limit(text||'',120)};
+  }
+  window.coupleTaFindJealousSignal=function(action, snapshot){
+    var s=snapshot || window.coupleTaBuildPhoneSnapshot();
+    var app=(action&&action.app) || taTake.app;
+    var scopedMoney=(app==='wechat'||app==='contacts'||app==='wallet'||app==='shop'||app==='couple');
+    if(scopedMoney){
+      var money=arr(s.moneySignals).filter(function(x){ return x.contactId && x.contactId!==partnerId(); })[0];
+      if(money) return {type:money.type||'money', app:lockTargetApp(app), contactId:money.contactId, contactName:money.contactName, label:'\u66a7\u6627\u82b1\u94b1', text:money.text};
+    }
+    if(action && action.type==='inspect_chat' && action.contactId){
+      var chat=arr(s.wechat).filter(function(x){ return x.id===action.contactId; })[0];
+      if(chat && chat.id!==partnerId() && chat.count>=8) return signalFromContact('wechat', chat.id, '\u9891\u7e41\u804a\u5929', chat.lastText||'\u804a\u5929\u8fc7\u5bc6');
+    }
+    if(app==='music' && s.music && s.music.contact) return signalFromContact('music', s.music.contact, '\u4e00\u8d77\u542c', s.music.current||'\u5171\u542c\u8bb0\u5f55');
+    if(app==='novel' && s.novel && s.novel.contact) return signalFromContact('novel', s.novel.contact, '\u5171\u8bfb\u5c0f\u8bf4', s.novel.title||s.novel.excerpt||'\u5171\u8bfb\u8bb0\u5f55');
+    if(app==='go' && s.go && s.go.linkMicContactId) return signalFromContact('go', s.go.linkMicContactId, '\u76f4\u64ad\u8fde\u9ea6', s.go.linkMicName||'\u8fde\u9ea6\u8bb0\u5f55');
+    if(app==='dream' && s.dream){
+      var other=arr(s.dream.selectedContacts).filter(function(id){ return id && id!==partnerId(); })[0];
+      if(other) return signalFromContact('dream', other, '\u526f\u672c\u5173\u7cfb', s.dream.objective||s.dream.worldName||'\u526f\u672c\u540c\u884c');
+    }
+    return null;
+  };
+  window.coupleTaOpenRealApp=function(action){
+    action=action||{};
+    var app=action.app || taTake.app || 'wechat';
+    closeRealSheets();
+    if(action.type==='inspect_chat' && action.contactId && typeof openThread==='function'){
+      if(typeof goToScreen==='function') goToScreen('wechatapp');
+      openThread(action.contactId);
+      return true;
+    }
+    if(app==='contacts'){
+      if(typeof goToScreen==='function') goToScreen('wechatapp');
+      if(typeof switchTab==='function') switchTab('contacts');
+      return true;
+    }
+    if(app==='moments'){
+      if(typeof goToScreen==='function') goToScreen('wechatapp');
+      if(typeof switchTab==='function') switchTab('moments');
+      return true;
+    }
+    if(hasDesktopApp(app) && typeof openDesktopApp==='function') return openDesktopApp(app, {bypassLock:true});
+    if(app==='wallet' && typeof openSheet==='function'){ openSheet('wallet'); return true; }
+    if(typeof goToScreen==='function') goToScreen('home');
+    return false;
+  };
+
+
   window.coupleTaBuildDesktopApps=function(){
     var source=(typeof appIcons!=='undefined' && Array.isArray(appIcons)) ? appIcons : [];
     var map={}; source.forEach(function(a){ if(a && (a.id||a[0])) map[a.id||a[0]]=a; });
@@ -192,6 +295,7 @@
     window.coupleTaCallAI(action, snapshot, function(reply){
       if(!reply) reply='\u6211\u770b\u5230\u4e86\uff0c\u8fd9\u4e2a\u4fe1\u53f7\u6211\u8981\u5355\u72ec\u8bb0\u4e00\u4e0b\u3002';
       addSpeech('ta', reply);
+      window.coupleTaSetTopLine(reply, {app:(action&&action.app)||taTake.app, action:action});
       renderTaTakeover();
       if(taTake.voice && typeof ttsConfigured==='function' && ttsConfigured() && typeof speakWithTTS==='function'){
         try{ speakWithTTS(reply, (apiConfig.voiceIds&&apiConfig.voiceIds[partnerId()])||''); }catch(e){}
@@ -218,29 +322,46 @@
 
   function runNext(){
     if(!taTake.open || !taTake.running) return;
-    if(taTake.step>=taTake.queue.length){ taTake.running=false; taTake.app='couple'; taTake.acting={type:'finish_report',app:'couple'}; renderTaTakeover(); return; }
+    if(taTake.step>=taTake.queue.length){
+      taTake.running=false; taTake.app='couple'; taTake.acting={type:'finish_report',app:'couple'};
+      window.coupleTaOpenRealApp(taTake.acting);
+      window.coupleTaSetTopLine('\u6211\u628a\u4f60\u8fd9\u4e2a\u5c0f\u624b\u673a\u80fd\u770b\u7684\u5730\u65b9\u90fd\u770b\u5b8c\u4e86\uff0c\u521a\u521a\u9501\u6389\u7684 app \u5230\u65f6\u95f4\u624d\u51c6\u7528\u3002', {app:'couple'});
+      renderTaTakeover();
+      return;
+    }
     var action=taTake.queue[taTake.step++]; taTake.acting=action; if(action.app) taTake.app=action.app; if(action.contactId) taTake.selectedContact=action.contactId;
-    if(action.type==='hide_contact') window.coupleTaHideContact(action.contactId);
-    taTake.snapshot=window.coupleTaBuildPhoneSnapshot(); renderTaTakeover(); window.coupleTaSpeak(action, taTake.snapshot, function(){ taTimers.push(setTimeout(runNext, 1200)); });
+    window.coupleTaOpenRealApp(action);
+    taTake.snapshot=window.coupleTaBuildPhoneSnapshot();
+    var signal=window.coupleTaFindJealousSignal(action, taTake.snapshot);
+    if(action.type==='hide_contact'){
+      window.coupleTaHideContact(action.contactId);
+      window.coupleTaLockApp(action.app || 'wechat', signal || {app:action.app,contactId:action.contactId,contactName:displayName(contacts&&contacts[action.contactId],action.contactId),text:action.reason||''});
+    }else if(signal){
+      if(signal.contactId) window.coupleTaHideContact(signal.contactId);
+      window.coupleTaLockApp(signal.app || action.app, signal);
+    }
+    renderTaTakeover();
+    window.coupleTaSpeak(action, taTake.snapshot, function(){ taTimers.push(setTimeout(runNext, 1200)); });
   }
 
   window.coupleTaTakeover=function(){
     if(!partnerId() || !partner()){ if(typeof showToast==='function') showToast('\u8bf7\u5148\u7ed1\u5b9a\u4e00\u4e2a WeChat \u8054\u7cfb\u4eba',1500); return; }
     var ov=document.getElementById('screen-tatake');
-    if(!ov){ ov=document.createElement('div'); ov.id='screen-tatake'; ov.className='topview'; var root=document.getElementById('screen')||document.body; root.appendChild(ov); }
+    if(ov) ov.classList.remove('active');
     taTimers.forEach(function(t){clearTimeout(t);}); taTimers=[];
     taTake={open:true, app:'wechat', running:true, step:0, queue:[], speech:[], selectedContact:null, selectedHidden:null, voice:true, report:null, snapshot:window.coupleTaBuildPhoneSnapshot(), acting:{type:'open_app',app:'wechat'}};
     taTake.queue=window.coupleTaActionQueue(taTake.snapshot);
-    ov.classList.add('active'); ov.style.background='#f6fbf8'; ov.style.color='#10251c'; ov.style.zIndex='90';
     addSpeech('system','\u5df2\u6388\u6743 TA \u67e5\u770b\u4f60\u5728 Fated OS \u91cc\u7684\u5c0f\u624b\u673a\u6570\u636e\u3002');
+    window.coupleTaSetTopLine('\u6211\u5f00\u59cb\u63a5\u7ba1\u4f60\u7684\u5c0f\u624b\u673a\u4e86\uff0c\u4e00\u4e2a app \u4e00\u4e2a app \u770b\uff0c\u522b\u60f3\u7740\u8d81\u6211\u67e5\u5c97\u7684\u65f6\u5019\u8eb2\u3002', {app:'wechat'});
+    if(typeof goToScreen==='function') goToScreen('home');
     renderTaTakeover(); taTimers.push(setTimeout(runNext, 80));
   };
-  window.closeTaTakeover=function(){ taTimers.forEach(function(t){clearTimeout(t);}); taTimers=[]; taTake.open=false; taTake.running=false; var ov=document.getElementById('screen-tatake'); if(ov) ov.classList.remove('active'); };
-  window.taOpenApp=function(k){ taTake.running=false; taTake.app=k; taTake.acting={type:'manual_open_app',app:k}; taTake.snapshot=window.coupleTaBuildPhoneSnapshot(); renderTaTakeover(); window.coupleTaSpeak(taTake.acting, taTake.snapshot); };
+  window.closeTaTakeover=function(){ taTimers.forEach(function(t){clearTimeout(t);}); taTimers=[]; taTake.open=false; taTake.running=false; var ov=document.getElementById('screen-tatake'); if(ov) ov.classList.remove('active'); var bar=document.getElementById('couple-ta-top-banner'); if(bar) bar.style.display='none'; };
+  window.taOpenApp=function(k){ taTake.running=false; taTake.app=k; taTake.acting={type:'manual_open_app',app:k}; window.coupleTaOpenRealApp(taTake.acting); taTake.snapshot=window.coupleTaBuildPhoneSnapshot(); renderTaTakeover(); window.coupleTaSpeak(taTake.acting, taTake.snapshot); };
   window.taBackHome=function(){ taTake.running=false; taTake.app='home'; renderTaTakeover(); };
   window.coupleTaToggleVoice=function(){ taTake.voice=!taTake.voice; renderTaTakeover(); };
   window.coupleTaSendUserLine=function(){ var i=document.getElementById('ta-user-line'); if(!i) return; var v=i.value.trim(); if(!v) return; i.value=''; addSpeech('user',v); renderTaTakeover(); window.coupleTaSpeak({type:'user_reply',text:v,app:taTake.app,currentContact:taTake.selectedContact}, window.coupleTaBuildPhoneSnapshot()); };
-  window.coupleTaOpenChat=function(id){ taTake.running=false; taTake.app='wechat'; taTake.selectedContact=id; taTake.acting={type:'inspect_chat',app:'wechat',contactId:id}; taTake.snapshot=window.coupleTaBuildPhoneSnapshot(); renderTaTakeover(); window.coupleTaSpeak(taTake.acting, taTake.snapshot); };
+  window.coupleTaOpenChat=function(id){ taTake.running=false; taTake.app='wechat'; taTake.selectedContact=id; taTake.acting={type:'inspect_chat',app:'wechat',contactId:id}; window.coupleTaOpenRealApp(taTake.acting); taTake.snapshot=window.coupleTaBuildPhoneSnapshot(); renderTaTakeover(); window.coupleTaSpeak(taTake.acting, taTake.snapshot); };
   window.coupleTaSelectHidden=function(id){ taTake.selectedHidden=id; renderTaTakeover(); };
 
   function shell(inner){
