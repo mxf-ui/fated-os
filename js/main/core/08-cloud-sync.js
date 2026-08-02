@@ -66,7 +66,7 @@ function cloudBytesToB64(bytes){
 }
 async function cloudDeriveKey(password, saltBase64){
   var material=await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
-  return crypto.subtle.deriveKey({name:'PBKDF2', salt:cloudB64ToBytes(saltBase64), iterations:150000, hash:'SHA-256'}, material, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt:cloudB64ToBytes(saltBase64), iterations:150000, hash:'SHA-256'}, material, {name:'AES-GCM', length:256}, true, ['encrypt','decrypt']);
 }
 async function cloudEncryptSnapshot(snapshot, key){
   var iv=new Uint8Array(12); crypto.getRandomValues(iv);
@@ -77,6 +77,42 @@ async function cloudEncryptSnapshot(snapshot, key){
 async function cloudDecryptSnapshot(remote, key){
   var plain=await crypto.subtle.decrypt({name:'AES-GCM', iv:cloudB64ToBytes(remote.iv)}, key, cloudB64ToBytes(remote.ciphertext));
   return JSON.parse(new TextDecoder().decode(plain));
+}
+function cloudRememberKeyId(user){
+  var id=(user && user.id) || (cloudSyncState.user && cloudSyncState.user.id) || '';
+  return id ? 'fated_cloud_unlock_key_'+id : '';
+}
+async function cloudRememberUnlock(user, key){
+  if(!user || !key || !crypto || !crypto.subtle) return false;
+  try{
+    var raw=await crypto.subtle.exportKey('raw', key);
+    var storageKey=cloudRememberKeyId(user);
+    if(!storageKey) return false;
+    localStorage.setItem(storageKey, cloudBytesToB64(new Uint8Array(raw)));
+    localStorage.setItem('fated_cloud_user_id', user.id||'');
+    return true;
+  }catch(e){ return false; }
+}
+async function cloudLoadRememberedUnlock(user){
+  if(!user || !crypto || !crypto.subtle) return null;
+  try{
+    var storageKey=cloudRememberKeyId(user);
+    var raw=storageKey ? localStorage.getItem(storageKey) : '';
+    if(!raw) return null;
+    return await crypto.subtle.importKey('raw', cloudB64ToBytes(raw), {name:'AES-GCM'}, true, ['encrypt','decrypt']);
+  }catch(e){
+    cloudForgetRememberedUnlock(user);
+    return null;
+  }
+}
+function cloudForgetRememberedUnlock(user){
+  try{
+    var storageKey=cloudRememberKeyId(user);
+    if(storageKey) localStorage.removeItem(storageKey);
+    var id=(user && user.id) || (cloudSyncState.user && cloudSyncState.user.id) || '';
+    var rememberedId=localStorage.getItem('fated_cloud_user_id')||'';
+    if(!id || rememberedId===id) localStorage.removeItem('fated_cloud_user_id');
+  }catch(e){}
 }
 async function cloudApi(path, options){
   var resp=await fetch(path, Object.assign({credentials:'include', headers:{'Content-Type':'application/json'}}, options||{}));
@@ -194,9 +230,16 @@ async function cloudSyncInit(){
   cloudSetStatus('Checking account...', '');
   try{
     var me=await cloudApi('/api/auth/me');
-    cloudApplyUser(me.user, null);
-    cloudSetStatus(cloudSyncState.key ? CLOUD_MSG.SYNC_UNLOCKED : CLOUD_MSG.SIGNED_IN_UNLOCK, '');
-    if(!cloudHasSession()) cloudShowEntryGate(CLOUD_MSG.ENTER_UNLOCK);
+    var rememberedKey=await cloudLoadRememberedUnlock(me.user);
+    cloudApplyUser(me.user, rememberedKey);
+    if(cloudHasSession()){
+      cloudHideEntryGate();
+      cloudSetStatus(CLOUD_MSG.SYNC_UNLOCKED, '');
+      await cloudAutoSyncAfterUnlock('remembered');
+    }else{
+      cloudSetStatus(CLOUD_MSG.SIGNED_IN_UNLOCK, '');
+      cloudShowEntryGate(CLOUD_MSG.ENTER_UNLOCK);
+    }
   }catch(e){
     cloudSyncState.user=null; cloudSyncState.key=null; cloudRenderAuthState();
     cloudSetStatus(e.data && e.data.setupRequired ? CLOUD_MSG.D1_MISSING : CLOUD_MSG.SIGN_IN_CREATE_SYNC, e.data && e.data.setupRequired ? 'warn' : '');
@@ -213,6 +256,7 @@ async function cloudLogin(opts){
     var data=await cloudApi('/api/auth/login', {method:'POST', body:JSON.stringify(input)});
     var key=await cloudDeriveKey(input.password, data.user.encryptionSalt);
     cloudApplyUser(data.user, key);
+    await cloudRememberUnlock(data.user, key);
     cloudSetStatus(CLOUD_MSG.SIGNED_SYNCING, '');
     cloudShowEntryGate(CLOUD_MSG.SYNCING_SAVE);
     await cloudAutoSyncAfterUnlock('login');
@@ -231,6 +275,7 @@ async function cloudRegister(opts){
     var data=await cloudApi('/api/auth/register', {method:'POST', body:JSON.stringify(input)});
     var key=await cloudDeriveKey(input.password, data.user.encryptionSalt);
     cloudApplyUser(data.user, key);
+    await cloudRememberUnlock(data.user, key);
     cloudSetStatus(CLOUD_MSG.ACCOUNT_CREATED, '');
     cloudShowEntryGate(CLOUD_MSG.UPLOADING_SAVE);
     await cloudUploadSnapshot({manual:false, reason:'register'});
@@ -242,6 +287,7 @@ async function cloudLogout(){
   cloudSetBusy(true);
   try{ await cloudApi('/api/auth/logout', {method:'POST', body:'{}'}); }catch(e){}
   if(cloudSyncState.autosaveTimer) clearTimeout(cloudSyncState.autosaveTimer);
+  cloudForgetRememberedUnlock();
   cloudSyncState.user=null; cloudSyncState.key=null; cloudSyncState.autosaveTimer=null; cloudSyncState.autosaveInFlight=false; cloudSyncState.autosavePending=false;
   cloudRenderAuthState();
   cloudShowEntryGate(CLOUD_MSG.SIGNED_OUT_ENTER);
