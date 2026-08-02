@@ -1,4 +1,4 @@
-/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
+﻿/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
 var cloudSyncState = {
   user:null,
   key:null,
@@ -338,6 +338,59 @@ function cloudSnapshotWeight(payload){
   if(Array.isArray(a.stickers)) score += a.stickers.length;
   return score;
 }
+function cloudUserDataWeight(payload){
+  if(!payload) return 0;
+  var s=payload.state||{}, a=payload.assets||{}, score=0;
+  var contactsExtra=Array.isArray(s.contactsExtra) ? s.contactsExtra : [];
+  contactsExtra.forEach(function(c){
+    if(!c || !c.id || c.id==='tester1') return;
+    score += 4;
+    if(c.avatar || c.cover) score += 2;
+    if(c.tone || c.persona || c.bio || c.userPrompt) score += 2;
+  });
+  if(Array.isArray(payload.chats)){
+    payload.chats.forEach(function(c){
+      if(!c || !c.id || c.id==='tester1') return;
+      if(Array.isArray(c.seed) && c.seed.length) score += c.seed.length;
+      if(c.avatar || c.cover) score += 2;
+      if(c.tone || c.persona || c.bio || c.userPrompt) score += 2;
+    });
+  }
+  if(s.apiConfig && Array.isArray(s.apiConfig.profiles) && s.apiConfig.profiles.some(function(p){ return p && (p.key || p.endpoint || p.model); })) score += 4;
+  if(s.worldBooks && typeof s.worldBooks==='object' && Object.keys(s.worldBooks).filter(function(k){ return k!=='wb1'; }).length) score += 4;
+  if(s.coupleState) score += 3;
+  if(s.dream) score += 3;
+  if(s.nilflow) score += 3;
+  if(a.profile && (a.profile.userAvatar || a.profile.userCover || a.profile.chatBg)) score += 4;
+  if(a.moments && Array.isArray(a.moments.images) && a.moments.images.length) score += a.moments.images.length * 2;
+  if(Array.isArray(a.contacts)) score += a.contacts.filter(function(c){ return c && c.id!=='tester1' && (c.avatar || c.cover); }).length * 2;
+  if(a.widgetCustom && typeof a.widgetCustom==='object') score += Object.keys(a.widgetCustom).length * 2;
+  if(Array.isArray(a.appIconImgs) && a.appIconImgs.some(function(i){ return i && i.img; })) score += 3;
+  if(a.lockWp || a.homeWp) score += 2;
+  if(Array.isArray(a.stickers) && a.stickers.length) score += 2;
+  return score;
+}
+function cloudLocalHasRealSave(){
+  if(typeof localPersistenceHasSavedData==='function' && localPersistenceHasSavedData()) return true;
+  try{
+    var raw=localStorage.getItem('fated_state');
+    if(raw && raw.length>24) return true;
+  }catch(e){}
+  return false;
+}
+function cloudShouldRestoreRemote(local, remotePayload, remoteSnapshot){
+  var localWeight=cloudSnapshotWeight(local);
+  var remoteWeight=cloudSnapshotWeight(remotePayload);
+  var localUserWeight=cloudUserDataWeight(local);
+  var remoteUserWeight=cloudUserDataWeight(remotePayload);
+  var remoteTime=Number((remoteSnapshot && (remoteSnapshot.clientUpdatedAt || remoteSnapshot.updatedAt)) || 0);
+  var localTime=Number((local && local.savedAt) || 0);
+  if(remoteUserWeight>0 && localUserWeight===0) return true;
+  if(!cloudLocalHasRealSave() && remoteWeight>0) return true;
+  if(localWeight < 8 && remoteWeight >= localWeight) return true;
+  if(remoteTime > (localTime + 5000)) return true;
+  return false;
+}
 function cloudIsDataUrl(value){
   return typeof value==='string' && /^data:(image|audio)\/[a-z0-9.+-]+;base64,/i.test(value) && value.length>256;
 }
@@ -418,7 +471,7 @@ async function cloudUploadSnapshot(opts){
   opts=opts||{};
   if(!cloudSyncState.user || !cloudSyncState.key) return null;
   await cloudWaitForPersistenceReady({status:opts.manual!==false});
-  if(opts.manual) cloudSetStatus('Encrypting local save... / 正在加密本机存档...', '');
+  if(opts.manual) cloudSetStatus('Encrypting local save... / ????????...', '');
   var snapshot=await cloudBuildLocalSnapshot();
   await cloudExternalizeSnapshotAssets(snapshot);
   var encrypted=await cloudEncryptSnapshot(snapshot, cloudSyncState.key);
@@ -440,15 +493,15 @@ async function cloudUploadNow(){
 async function cloudRestoreNow(){
   if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first. / 请先用密码登录。', 'warn');
   if(!confirm('Restore cloud save to this device? Current local data will be replaced by the cloud snapshot. / 确定恢复云端存档到本设备吗？当前本机数据会被云端快照替换。')) return;
-  cloudSetBusy(true); cloudSetStatus('Downloading cloud save... / 正在下载云端存档...', '');
+  cloudSetBusy(true); cloudSetStatus('Downloading cloud save... / ????????...', '');
   try{
     var data=await cloudApi('/api/sync');
     if(!data.snapshot) throw new Error('No cloud save found. Upload once from your main device first. / 没有找到云端存档，请先在主设备上传一次。');
-    cloudSetStatus('Decrypting cloud save... / 正在解密云端存档...', '');
+    cloudSetStatus('Decrypting cloud save... / ????????...', '');
     var payload=await cloudDecryptSnapshot(data.snapshot, cloudSyncState.key);
     await cloudRestoreSnapshotPayload(payload);
     cloudSetStatus('Cloud save restored. Local data has been refreshed. / 云端存档已恢复，本机数据已刷新。', 'ok');
-  }catch(e){ cloudSetStatus(e.message || 'Restore failed / 恢复失败', 'warn'); }
+  }catch(e){ cloudSetStatus(e.message || 'Restore failed / ????', 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 function cloudNotifyLocalSave(reason){
@@ -480,12 +533,9 @@ async function cloudAutoSyncAfterUnlock(reason){
     await cloudWaitForPersistenceReady({status:true});
     var remote=await cloudApi('/api/sync');
     var local=await cloudBuildLocalSnapshot();
-    var localWeight=cloudSnapshotWeight(local);
     if(remote.snapshot){
       var remotePayload=await cloudDecryptSnapshot(remote.snapshot, cloudSyncState.key);
-      var remoteWeight=cloudSnapshotWeight(remotePayload);
-      var remoteTime=Number(remote.snapshot.clientUpdatedAt || remote.snapshot.updatedAt || 0);
-      if((localWeight < 8 && remoteWeight >= localWeight) || remoteTime > (local.savedAt + 5000)){
+      if(cloudShouldRestoreRemote(local, remotePayload, remote.snapshot)){
         await cloudRestoreSnapshotPayload(remotePayload);
         cloudSetStatus('Cloud save restored automatically. / 已自动恢复云端存档。', 'ok');
         return;
@@ -502,4 +552,6 @@ document.addEventListener('visibilitychange', function(){ if(document.hidden && 
 
 
 window.addEventListener('load', function(){ cloudBootAuthGate(); });
+
+
 
