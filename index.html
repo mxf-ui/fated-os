@@ -683,7 +683,7 @@
         <option value="memory">Memory / 记忆</option>
       </select>
       <div class="field-label">内容</div>
-      <textarea class="field-input" id="wbe-content" style="min-height:200px;" placeholder="????????????????????????????????????????????????"></textarea>
+      <textarea class="field-input" id="wbe-content" style="min-height:200px;" placeholder="Paste worldbook, persona, rules, memories, or scene notes here."></textarea>
       <div style="margin:10px 0;">
         <div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">导入文件</div>
         <label style="display:flex;gap:8px;align-items:center;padding:10px;border:1px dashed var(--ink-faint);border-radius:10px;cursor:pointer;font-size:12px;color:var(--ink-soft);">
@@ -827,9 +827,9 @@
       <label class="cloud-sync-label">Email / 邮箱</label>
       <input id="cloud-email" class="cloud-sync-input" type="email" placeholder="you@example.com" autocomplete="email">
       <label class="cloud-sync-label">Password / 密码</label>
-      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="至少 8 位字 autocomplete="current-password">
+      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="At least 8 characters / &#33267;&#23569; 8 &#20301;" autocomplete="current-password">
 
-      <label class="cloud-sync-label">Invite Code / ???</label>
+      <label class="cloud-sync-label">Invite Code / &#36992;&#35831;&#30721;</label>
 
       <input id="cloud-invite" class="cloud-sync-input" placeholder="123456" maxlength="20" autocomplete="off">
       <button id="cloud-login-btn" class="cloud-sync-btn primary" onclick="cloudLogin()">Sign In / 登录</button>
@@ -1911,7 +1911,9 @@
 <script src="js/main/core/05-persistence.js?v=20260802-local-save-marker2"></script>
 <script src="js/main/core/06-export-history.js"></script>
 <script src="js/main/core/07-wallet.js"></script>
-<script src="js/main/core/08-cloud-sync.js?v=20260802-remembered-unlock"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/main/core/08a-supabase-config.js?v=20260802-supabase"></script>
+<script src="js/main/core/08-cloud-sync.js?v=20260802-supabase"></script>
 
 <script src="js/main/core/10-event-memory.js"></script>
 

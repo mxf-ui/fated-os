@@ -114,15 +114,146 @@ function cloudForgetRememberedUnlock(user){
     if(!id || rememberedId===id) localStorage.removeItem('fated_cloud_user_id');
   }catch(e){}
 }
-async function cloudApi(path, options){
-  var resp=await fetch(path, Object.assign({credentials:'include', headers:{'Content-Type':'application/json'}}, options||{}));
-  var data=null;
-  try{ data=await resp.json(); }catch(e){ data={error:'Invalid server response'}; }
-  if(!resp.ok){
-    var msg=data && data.setupRequired ? 'Cloudflare D1 is not configured yet' : (data && data.error ? data.error : ('HTTP '+resp.status));
-    var err=new Error(msg); err.data=data; err.status=resp.status; throw err;
+function cloudSupabaseConfig(){
+  var c=window.FATED_SUPABASE_CONFIG||{};
+  return {
+    url:String(c.url||window.FATED_SUPABASE_URL||'').trim(),
+    anonKey:String(c.anonKey||window.FATED_SUPABASE_ANON_KEY||'').trim(),
+    assetBucket:String(c.assetBucket||window.FATED_SUPABASE_ASSET_BUCKET||'fated-assets').trim()||'fated-assets'
+  };
+}
+var cloudSupabaseClientCache=null;
+function cloudSetupError(){
+  var err=new Error('Supabase is not configured yet. Fill js/main/core/08a-supabase-config.js first. / \u8bf7\u5148\u586b\u5199 Supabase \u914d\u7f6e\u6587\u4ef6\u3002');
+  err.data={setupRequired:true};
+  return err;
+}
+function cloudSupabaseClient(){
+  var cfg=cloudSupabaseConfig();
+  if(!cfg.url || !cfg.anonKey || cfg.url.indexOf('YOUR_')>=0 || cfg.anonKey.indexOf('YOUR_')>=0) throw cloudSetupError();
+  if(!window.supabase || !window.supabase.createClient) throw new Error('Supabase SDK failed to load. / Supabase SDK \u52a0\u8f7d\u5931\u8d25\u3002');
+  if(!cloudSupabaseClientCache){
+    cloudSupabaseClientCache=window.supabase.createClient(cfg.url, cfg.anonKey, {auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true}});
   }
-  return data;
+  return cloudSupabaseClientCache;
+}
+function cloudThrowSupabase(error, fallback){
+  if(!error) return;
+  var msg=error.message||fallback||'Supabase request failed';
+  var err=new Error(msg);
+  err.data=error;
+  throw err;
+}
+function cloudNormalizeUser(authUser, profile){
+  profile=profile||{};
+  return {id:authUser.id, email:authUser.email||profile.email||'', encryptionSalt:profile.encryption_salt||profile.encryptionSalt||''};
+}
+function cloudRandomB64(length){
+  var bytes=new Uint8Array(length||16);
+  crypto.getRandomValues(bytes);
+  return cloudBytesToB64(bytes);
+}
+async function cloudGetCurrentUser(){
+  var sb=cloudSupabaseClient();
+  var res=await sb.auth.getSession();
+  cloudThrowSupabase(res.error, 'Unable to read session');
+  var authUser=res.data && res.data.session && res.data.session.user;
+  if(!authUser) return null;
+  var profile=await cloudGetProfile(authUser.id);
+  return cloudNormalizeUser(authUser, profile||{});
+}
+async function cloudGetProfile(userId){
+  var sb=cloudSupabaseClient();
+  var res=await sb.from('fated_profiles').select('id,email,encryption_salt,created_at,updated_at').eq('id', userId).maybeSingle();
+  cloudThrowSupabase(res.error, 'Unable to read profile');
+  return res.data||null;
+}
+async function cloudUpsertProfile(authUser, salt){
+  var sb=cloudSupabaseClient();
+  var row={id:authUser.id, email:authUser.email||'', encryption_salt:salt, updated_at:new Date().toISOString()};
+  var res=await sb.from('fated_profiles').upsert(row, {onConflict:'id'}).select('id,email,encryption_salt').single();
+  cloudThrowSupabase(res.error, 'Unable to save profile');
+  return cloudNormalizeUser(authUser, res.data);
+}
+async function cloudRedeemInvite(inviteCode){
+  var sb=cloudSupabaseClient();
+  var res=await sb.rpc('redeem_fated_invite', {code_input:inviteCode});
+  if(res.error) throw new Error((res.error.message||'Invite code invalid')+' / \u9080\u8bf7\u7801\u65e0\u6548\u6216\u5df2\u7528\u5b8c\u3002');
+  if(res.data!==true) throw new Error('Invite code invalid or exhausted. / \u9080\u8bf7\u7801\u65e0\u6548\u6216\u5df2\u7528\u5b8c\u3002');
+  return true;
+}
+async function cloudSignInWithPassword(email, password){
+  var sb=cloudSupabaseClient();
+  var res=await sb.auth.signInWithPassword({email:email, password:password});
+  cloudThrowSupabase(res.error, 'Sign in failed');
+  if(!res.data || !res.data.user) throw new Error('Sign in failed. / \u767b\u5f55\u5931\u8d25\u3002');
+  return res.data.user;
+}
+async function cloudCreateAccount(email, password){
+  var sb=cloudSupabaseClient();
+  var res=await sb.auth.signUp({email:email, password:password});
+  cloudThrowSupabase(res.error, 'Create account failed');
+  var user=res.data && res.data.user;
+  if(!user || !(res.data && res.data.session)) user=await cloudSignInWithPassword(email, password);
+  return user;
+}
+async function cloudFetchRemoteSnapshot(){
+  var sb=cloudSupabaseClient();
+  var user=cloudSyncState.user;
+  if(!user) return {snapshot:null};
+  var res=await sb.from('fated_snapshots').select('ciphertext,iv,schema_version,client_updated_at,updated_at,meta').eq('user_id', user.id).maybeSingle();
+  cloudThrowSupabase(res.error, 'Unable to download cloud save');
+  if(!res.data) return {snapshot:null};
+  var updatedAt=Date.parse(res.data.updated_at||'')||Number(res.data.client_updated_at)||0;
+  return {snapshot:{ciphertext:res.data.ciphertext, iv:res.data.iv, schemaVersion:res.data.schema_version||2, clientUpdatedAt:Number(res.data.client_updated_at)||0, updatedAt:updatedAt, meta:res.data.meta||{}}, updatedAt:updatedAt};
+}
+async function cloudPutRemoteSnapshot(encrypted, snapshot, opts){
+  var sb=cloudSupabaseClient();
+  var user=cloudSyncState.user;
+  if(!user) throw new Error('Not signed in. / \u672a\u767b\u5f55\u3002');
+  var updatedIso=new Date().toISOString();
+  var row={
+    user_id:user.id,
+    ciphertext:encrypted.ciphertext,
+    iv:encrypted.iv,
+    schema_version:snapshot.schemaVersion||2,
+    client_updated_at:snapshot.savedAt,
+    updated_at:updatedIso,
+    meta:{device:navigator.userAgent, appVersion:'fated-os-supabase-autosync', reason:(opts&&opts.reason)||''}
+  };
+  var res=await sb.from('fated_snapshots').upsert(row, {onConflict:'user_id'}).select('updated_at,client_updated_at').single();
+  cloudThrowSupabase(res.error, 'Unable to upload cloud save');
+  var updatedAt=Date.parse((res.data&&res.data.updated_at)||updatedIso)||Date.now();
+  return {updatedAt:updatedAt};
+}
+function cloudAssetExt(mime){
+  if(mime==='image/jpeg') return '.jpg';
+  if(mime==='image/png') return '.png';
+  if(mime==='image/webp') return '.webp';
+  if(mime==='image/gif') return '.gif';
+  if(mime==='audio/mpeg') return '.mp3';
+  if(mime==='audio/wav') return '.wav';
+  if(mime==='audio/ogg') return '.ogg';
+  return '';
+}
+function cloudHex(bytes){
+  return Array.prototype.map.call(bytes, function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+}
+async function cloudUploadSupabaseAsset(parsed){
+  if(!cloudSyncState.user) return null;
+  var sb=cloudSupabaseClient();
+  var cfg=cloudSupabaseConfig();
+  var bytes=cloudB64ToBytes(parsed.base64);
+  var hash=new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+  var assetPath=cloudSyncState.user.id+'/assets/'+cloudHex(hash)+cloudAssetExt(parsed.mimeType);
+  var blob=new Blob([bytes], {type:parsed.mimeType});
+  var res=await sb.storage.from(cfg.assetBucket).upload(assetPath, blob, {cacheControl:'31536000', upsert:true, contentType:parsed.mimeType});
+  cloudThrowSupabase(res.error, 'Unable to upload asset');
+  var publicRes=sb.storage.from(cfg.assetBucket).getPublicUrl(assetPath);
+  return publicRes && publicRes.data ? publicRes.data.publicUrl : null;
+}
+async function cloudApi(path, options){
+  throw cloudSetupError();
 }
 function cloudClonePlain(value, fallback){
   try{ return JSON.parse(JSON.stringify(value)); }
@@ -229,9 +360,10 @@ async function cloudSyncInit(){
   cloudRenderAuthState();
   cloudSetStatus('Checking account...', '');
   try{
-    var me=await cloudApi('/api/auth/me');
-    var rememberedKey=await cloudLoadRememberedUnlock(me.user);
-    cloudApplyUser(me.user, rememberedKey);
+    var user=await cloudGetCurrentUser();
+    if(!user) throw new Error(CLOUD_MSG.SIGN_IN_CREATE_SYNC);
+    var rememberedKey=await cloudLoadRememberedUnlock(user);
+    cloudApplyUser(user, rememberedKey);
     if(cloudHasSession()){
       cloudHideEntryGate();
       cloudSetStatus(CLOUD_MSG.SYNC_UNLOCKED, '');
@@ -242,8 +374,8 @@ async function cloudSyncInit(){
     }
   }catch(e){
     cloudSyncState.user=null; cloudSyncState.key=null; cloudRenderAuthState();
-    cloudSetStatus(e.data && e.data.setupRequired ? CLOUD_MSG.D1_MISSING : CLOUD_MSG.SIGN_IN_CREATE_SYNC, e.data && e.data.setupRequired ? 'warn' : '');
-    cloudShowEntryGate(e.data && e.data.setupRequired ? CLOUD_MSG.D1_MISSING : CLOUD_MSG.SIGN_IN_CREATE_ENTER, e.data && e.data.setupRequired ? 'warn' : '');
+    cloudSetStatus(e.data && e.data.setupRequired ? 'Supabase is not configured. / \u8bf7\u5148\u914d\u7f6e Supabase\u3002' : CLOUD_MSG.SIGN_IN_CREATE_SYNC, e.data && e.data.setupRequired ? 'warn' : '');
+    cloudShowEntryGate(e.data && e.data.setupRequired ? 'Supabase is not configured. / \u8bf7\u5148\u914d\u7f6e Supabase\u3002' : CLOUD_MSG.SIGN_IN_CREATE_ENTER, e.data && e.data.setupRequired ? 'warn' : '');
   }
 }
 async function cloudLogin(opts){
@@ -253,10 +385,13 @@ async function cloudLogin(opts){
   if(!input.inviteCode){ cloudShowEntryGate(CLOUD_MSG.INVITE_REQUIRED, 'warn'); return cloudSetStatus(CLOUD_MSG.INVITE_REQUIRED, 'warn'); }
   cloudSetBusy(true); cloudSetStatus('Signing in...', ''); cloudShowEntryGate(CLOUD_MSG.SIGNING_IN);
   try{
-    var data=await cloudApi('/api/auth/login', {method:'POST', body:JSON.stringify(input)});
-    var key=await cloudDeriveKey(input.password, data.user.encryptionSalt);
-    cloudApplyUser(data.user, key);
-    await cloudRememberUnlock(data.user, key);
+    var authUser=await cloudSignInWithPassword(input.email, input.password);
+    await cloudRedeemInvite(input.inviteCode);
+    var profile=await cloudGetProfile(authUser.id);
+    var user=profile && profile.encryption_salt ? cloudNormalizeUser(authUser, profile) : await cloudUpsertProfile(authUser, cloudRandomB64(16));
+    var key=await cloudDeriveKey(input.password, user.encryptionSalt);
+    cloudApplyUser(user, key);
+    await cloudRememberUnlock(user, key);
     cloudSetStatus(CLOUD_MSG.SIGNED_SYNCING, '');
     cloudShowEntryGate(CLOUD_MSG.SYNCING_SAVE);
     await cloudAutoSyncAfterUnlock('login');
@@ -272,10 +407,13 @@ async function cloudRegister(opts){
   if(input.password.length<8){ cloudShowEntryGate(CLOUD_MSG.PASSWORD_LENGTH, 'warn'); return cloudSetStatus(CLOUD_MSG.PASSWORD_LENGTH, 'warn'); }
   cloudSetBusy(true); cloudSetStatus('Creating account...', ''); cloudShowEntryGate(CLOUD_MSG.CREATING_ACCOUNT);
   try{
-    var data=await cloudApi('/api/auth/register', {method:'POST', body:JSON.stringify(input)});
-    var key=await cloudDeriveKey(input.password, data.user.encryptionSalt);
-    cloudApplyUser(data.user, key);
-    await cloudRememberUnlock(data.user, key);
+    var authUser=await cloudCreateAccount(input.email, input.password);
+    await cloudRedeemInvite(input.inviteCode);
+    var existingProfile=await cloudGetProfile(authUser.id);
+    var user=existingProfile && existingProfile.encryption_salt ? cloudNormalizeUser(authUser, existingProfile) : await cloudUpsertProfile(authUser, cloudRandomB64(16));
+    var key=await cloudDeriveKey(input.password, user.encryptionSalt);
+    cloudApplyUser(user, key);
+    await cloudRememberUnlock(user, key);
     cloudSetStatus(CLOUD_MSG.ACCOUNT_CREATED, '');
     cloudShowEntryGate(CLOUD_MSG.UPLOADING_SAVE);
     await cloudUploadSnapshot({manual:false, reason:'register'});
@@ -285,7 +423,7 @@ async function cloudRegister(opts){
 }
 async function cloudLogout(){
   cloudSetBusy(true);
-  try{ await cloudApi('/api/auth/logout', {method:'POST', body:'{}'}); }catch(e){}
+  try{ await cloudSupabaseClient().auth.signOut(); }catch(e){}
   if(cloudSyncState.autosaveTimer) clearTimeout(cloudSyncState.autosaveTimer);
   cloudForgetRememberedUnlock();
   cloudSyncState.user=null; cloudSyncState.key=null; cloudSyncState.autosaveTimer=null; cloudSyncState.autosaveInFlight=false; cloudSyncState.autosavePending=false;
@@ -448,8 +586,8 @@ async function cloudUploadDataUrlAsset(value){
   var parsed=cloudParseDataUrl(value);
   if(!parsed) return value;
   try{
-    var data=await cloudApi('/api/assets', {method:'POST', body:JSON.stringify(parsed)});
-    return data && data.url ? data.url : value;
+    var url=await cloudUploadSupabaseAsset(parsed);
+    return url||value;
   }catch(e){
     try{ console.warn('[Fated cloud assets] upload skipped', e && e.message ? e.message : e); }catch(_e){}
     return value;
@@ -517,11 +655,11 @@ async function cloudUploadSnapshot(opts){
   opts=opts||{};
   if(!cloudSyncState.user || !cloudSyncState.key) return null;
   await cloudWaitForPersistenceReady({status:opts.manual!==false});
-  if(opts.manual) cloudSetStatus('Encrypting local save... / ????????...', '');
+  if(opts.manual) cloudSetStatus('Encrypting local save... / \u6b63\u5728\u52a0\u5bc6\u672c\u5730\u5b58\u6863...', '');
   var snapshot=await cloudBuildLocalSnapshot();
   await cloudExternalizeSnapshotAssets(snapshot);
   var encrypted=await cloudEncryptSnapshot(snapshot, cloudSyncState.key);
-  var data=await cloudApi('/api/sync', {method:'PUT', body:JSON.stringify({ciphertext:encrypted.ciphertext, iv:encrypted.iv, schemaVersion:snapshot.schemaVersion||2, clientUpdatedAt:snapshot.savedAt, meta:{device:navigator.userAgent, appVersion:'fated-os-split-autosync', reason:opts.reason||''}})});
+  var data=await cloudPutRemoteSnapshot(encrypted, snapshot, opts);
   cloudSyncState.lastRemote=data.updatedAt;
   cloudSyncState.lastUploadedLocalSaveAt=snapshot.savedAt;
   var label='Saved to cloud at '+new Date(data.updatedAt).toLocaleString()+' / 已自动保存到云端。';
@@ -539,15 +677,15 @@ async function cloudUploadNow(){
 async function cloudRestoreNow(){
   if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first. / 请先用密码登录。', 'warn');
   if(!confirm('Restore cloud save to this device? Current local data will be replaced by the cloud snapshot. / 确定恢复云端存档到本设备吗？当前本机数据会被云端快照替换。')) return;
-  cloudSetBusy(true); cloudSetStatus('Downloading cloud save... / ????????...', '');
+  cloudSetBusy(true); cloudSetStatus('Downloading cloud save... / \u6b63\u5728\u4e0b\u8f7d\u4e91\u7aef\u5b58\u6863...', '');
   try{
-    var data=await cloudApi('/api/sync');
+    var data=await cloudFetchRemoteSnapshot();
     if(!data.snapshot) throw new Error('No cloud save found. Upload once from your main device first. / 没有找到云端存档，请先在主设备上传一次。');
-    cloudSetStatus('Decrypting cloud save... / ????????...', '');
+    cloudSetStatus('Decrypting cloud save... / \u6b63\u5728\u89e3\u5bc6\u4e91\u7aef\u5b58\u6863...', '');
     var payload=await cloudDecryptSnapshot(data.snapshot, cloudSyncState.key);
     await cloudRestoreSnapshotPayload(payload);
     cloudSetStatus('Cloud save restored. Local data has been refreshed. / 云端存档已恢复，本机数据已刷新。', 'ok');
-  }catch(e){ cloudSetStatus(e.message || 'Restore failed / ????', 'warn'); }
+  }catch(e){ cloudSetStatus(e.message || 'Restore failed / \u6062\u590d\u5931\u8d25', 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 function cloudNotifyLocalSave(reason){
@@ -577,7 +715,7 @@ async function cloudAutoSyncAfterUnlock(reason){
   if(!cloudHasSession()) return;
   try{
     await cloudWaitForPersistenceReady({status:true});
-    var remote=await cloudApi('/api/sync');
+    var remote=await cloudFetchRemoteSnapshot();
     var local=await cloudBuildLocalSnapshot();
     if(remote.snapshot){
       var remotePayload=await cloudDecryptSnapshot(remote.snapshot, cloudSyncState.key);
