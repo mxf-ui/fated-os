@@ -409,7 +409,9 @@ function loadStateAssetsFromDB(cb){
 function saveChatThread(contactId){
   var id = contactId || currentContact;
   if(!id || !contacts[id]) return;
-  fatedDBSaveChat(id);
+  fatedDBSaveChat(id, function(){
+    if(typeof cloudNotifyLocalSave==='function') cloudNotifyLocalSave('chat');
+  });
 }
 function saveStickersDB(){ fatedDBSaveStickers(); }
 
