@@ -38,7 +38,7 @@ function bytesToHex(bytes) {
 }
 
 function getAssetBucket(env) {
-  const bucket = env && env.ASSETS;
+  const bucket = env && env.ASSET_BUCKET;
   return bucket && typeof bucket.put === 'function' && typeof bucket.get === 'function' ? bucket : null;
 }
 
@@ -69,7 +69,9 @@ export async function onRequestPost(context) {
   try {
     return await handleAssetPost(context);
   } catch (e) {
-    return jsonResponse({ error: 'Asset upload failed', detail: String(e && e.message || e) }, 500);
+    const body = { error: 'Asset upload failed' };
+    if (context.env && context.env.DEBUG_ASSET_ERRORS === '1') body.detail = String(e && e.message || e);
+    return jsonResponse(body, 500);
   }
 }
 
@@ -137,7 +139,7 @@ export async function onRequestGet(context) {
     });
   }
 
-  if (!bucket) return jsonResponse({ error: 'Cloud asset bucket is not configured and this file was stored in R2', setupRequired: true, binding: 'ASSETS' }, 503);
+  if (!bucket) return jsonResponse({ error: 'Cloud asset bucket is not configured and this file was stored in R2', setupRequired: true, binding: 'ASSET_BUCKET' }, 503);
   const object = await bucket.get(row.object_key);
   if (!object) return jsonResponse({ error: 'Asset object missing' }, 404);
   return new Response(object.body, {
@@ -148,5 +150,6 @@ export async function onRequestGet(context) {
     },
   });
 }
+
 
 
