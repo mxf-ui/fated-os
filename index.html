@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
@@ -40,7 +40,7 @@
 </div>
 
 
-<div class="stage-note">Fated OS 鈥?WeChat 妯″潡鍘熷瀷</div>
+<div class="stage-note">Fated OS WeChat 模块原型</div>
 
 <div class="phone"><div class="screen" id="screen">
   <div class="notch"></div>
@@ -56,101 +56,101 @@
     </div>
     <div class="lock-inner" id="lock-inner">
       <div class="time-big" id="clock-big">21:12</div>
-      <div class="date-line" id="lock-date-line">鍛ㄤ笁 路 鍏湀鍒濆叚</div>
+      <div class="date-line" id="lock-date-line">周三 · 六月初六</div>
       <div class="widget-stack" id="widget-stack"></div>
       <div class="stack-actions">
-        <div class="stack-btn glass-liquid" onclick="openSheet('wallpaper')">鏇存崲澹佺焊</div>
-        <div class="stack-btn glass-liquid" onclick="openSheet('pluginlib')">娣诲姞鎻掍欢</div>
+        <div class="stack-btn glass-liquid" onclick="openSheet('wallpaper')">更换壁纸</div>
+        <div class="stack-btn glass-liquid" onclick="openSheet('pluginlib')">添加插件</div>
       </div>
-      <div class="pull-hint">涓婃粦瑙ｉ攣 釛溨娽棞</div>
+      <div class="pull-hint">上滑解锁 ᗜ֊ᗜ</div>
     </div>
   </div>
 
-  <!-- ================= HOME SCREEN (涓诲睆骞?= 妗岄潰 + 灞忎繚) ================= -->
+  <!-- ================= HOME SCREEN (主屏= 桌面 + 屏保) ================= -->
   <div class="topview" id="view-home">
     <div class="wallpaper wp-mono" id="home-wallpaper"></div>
     <div class="home-pager" id="home-pager">
-      <!-- 绗?椤碉細鏃堕挓 + 搴旂敤鍥炬爣 -->
+      <!-- 页：时钟 + 应用图标 -->
       <div class="home-page">
-        <div class="home-clock"><div class="sb-clock" id="clock-home">21:12</div><div class="sb-date" id="home-date-line">7鏈?1鏃ュ懆浜?路 鍏湀寤夸竷</div></div>
-        <div class="home-greet">涓嬪崍濂斤紝<b id="user-greeting">user</b> 釔?/div>
+        <div class="home-clock"><div class="sb-clock" id="clock-home">21:12</div><div class="sb-date" id="home-date-line">71日周· 六月廿七</div></div>
+        <div class="home-greet">下午好，<b id="user-greeting">user</b></div>
         <div class="d-board" id="desktop-board"></div>
       </div>
-      <!-- 绗?椤碉細鎻掍欢 / 灏忛儴浠?-->
+      <!-- 页：插件 / 小部-->
       <div class="home-page">
-        <div class="home-page-title">鎻掍欢</div>
+        <div class="home-page-title">插件</div>
         <div class="sb-grid" id="sb-grid"></div>
         <div class="sb-actions">
-          <div class="stack-btn glass-liquid" onclick="openSheet('wallpaper')">鏇存崲澹佺焊</div>
-          <div class="stack-btn glass-liquid" onclick="openSheet('pluginlib')">鎻掍欢搴?/div>
+          <div class="stack-btn glass-liquid" onclick="openSheet('wallpaper')">更换壁纸</div>
+          <div class="stack-btn glass-liquid" onclick="openSheet('pluginlib')">插件</div>
         </div>
       </div>
     </div>
-    <!-- 鍒嗛〉鍦嗙偣 -->
+    <!-- 分页圆点 -->
     <div class="page-dots" id="page-dots"></div>
-    <!-- 搴曢儴 Dock锛堝浐瀹氬湪鎵€鏈夐〉闈笂锛?-->
+    <!-- 底部 Dock（固定在扢有页面上-->
     <div class="d-dock glass-strong" id="desktop-dock"></div>
-    <!-- 璐熶竴灞?/ Today View锛氫粠涓诲睆宸﹁竟缂樺悜鍙虫粦鍔ㄥ懠鍑?-->
+    <!-- 负一</ Today View：从主屏左边缘向右滑动呼-->
     <div class="neg-page" id="neg-page">
       <div class="neg-backdrop" id="neg-backdrop" onclick="closeNegPage()"></div>
       <div class="neg-inner">
         <div class="neg-clock" id="neg-clock">--:--</div>
         <div class="neg-date" id="neg-date">--</div>
         <div class="neg-card">
-          <div class="neg-title">鍦ㄤ竴璧?/div>
+          <div class="neg-title">在一</div>
           <div class="neg-big" id="neg-together">--</div>
         </div>
         <div class="neg-card">
-          <div class="neg-title">蹇嵎鍏ュ彛</div>
+          <div class="neg-title">快捷入口</div>
           <div class="neg-acts">
-            <div class="neg-act" onclick="closeNegPage();goToScreen('wechatapp')">寰俊</div>
-            <div class="neg-act" onclick="closeNegPage();openSheet('music');initMusicPlayer()">闊充箰</div>
-            <div class="neg-act" onclick="closeNegPage();openSheet('novel');renderNovelPick()">灏忚</div>
-            <div class="neg-act" onclick="closeNegPage();openSheet('couple');initCouple()">鎯呬荆</div>
-            <div class="neg-act" onclick="closeNegPage();openSheet('game');initGame()">娓告垙</div>
+            <div class="neg-act" onclick="closeNegPage();goToScreen('wechatapp')">微信</div>
+            <div class="neg-act" onclick="closeNegPage();openSheet('music');initMusicPlayer()">音乐</div>
+            <div class="neg-act" onclick="closeNegPage();openSheet('novel');renderNovelPick()">小说</div>
+            <div class="neg-act" onclick="closeNegPage();openSheet('couple');initCouple()">情侣</div>
+            <div class="neg-act" onclick="closeNegPage();openSheet('game');initGame()">游戏</div>
           </div>
         </div>
-        <div class="neg-hint">鈫?鍚戝乏婊戝姩 / 鐐瑰嚮绌虹櫧澶勮繑鍥炰富灞?/div>
+        <div class="neg-hint">向左滑动 / 点击空白处返回主</div>
       </div>
     </div>
   </div>
 
   <!-- ================= SETTINGS ================= -->
   <div class="topview" id="view-settings">
-    <div class="topbar settings-topbar"><div class="icobtn glass-strong settings-back" onclick="goToScreen('home')">&#8249;</div><div class="settings-title"><span>Settings</span><small>璁剧疆涓績</small></div><div style="width:32px;"></div></div>
+    <div class="topbar settings-topbar"><div class="icobtn glass-strong settings-back" onclick="goToScreen('home')">&#8249;</div><div class="settings-title"><span>Settings</span><small>设置中心</small></div><div style="width:32px;"></div></div>
     <div class="settings-scroll">
       <div class="settings-hero">
-        <div><b>Fated OS</b><small>璁剧疆涓績 / 鏈満淇濆瓨涓庤鑹查厤缃?/small></div>
+        <div><b>Fated OS</b><small>设置中心 / 本机保存与角色配</small></div>
         <span>LOCAL</span>
       </div>
-      <div class="settings-section-title">Profile / 璐︽埛</div>
+      <div class="settings-section-title">Profile / 账户</div>
       <div class="ios-section">
         <div class="ios-row" onclick="openSheet('mine')">
-          <div class="row-label settings-row-copy"><b id="settings-name">user</b><small>璐︽埛璧勬枡 / 涓汉淇℃伅</small></div>
+          <div class="row-label settings-row-copy"><b id="settings-name">user</b><small>账户资料 / 个人信息</small></div>
           <div class="row-arrow">&#8250;</div>
         </div>
       </div>
-      <div class="settings-section-title">Display / 鏄剧ず</div>
+      <div class="settings-section-title">Display / 显示</div>
       <div class="ios-section">
-        <div class="ios-row" onclick="openSheet('pluginlib')"><div class="row-label settings-row-copy"><b>Plugins</b><small>鎻掍欢 / 妗岄潰缁勪欢缇庡寲</small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('icons')"><div class="row-label settings-row-copy"><b>App Icons</b><small>鍥炬爣 / 涓诲睆鍏ュ彛鏍峰紡</small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('wallpaper')"><div class="row-label settings-row-copy"><b>Wallpaper</b><small>澹佺焊 / 閿佸睆涓庝富灞忚儗鏅?/small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('fontcfg');cfgInitFont()"><div class="row-label settings-row-copy"><b>Fonts &amp; Color</b><small>瀛椾綋 / 鏂囧瓧姘旇川涓庨鑹?/small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('pluginlib')"><div class="row-label settings-row-copy"><b>Plugins</b><small>插件 / 桌面组件美化</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('icons')"><div class="row-label settings-row-copy"><b>App Icons</b><small>图标 / 主屏入口样式</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('wallpaper')"><div class="row-label settings-row-copy"><b>Wallpaper</b><small>壁纸 / 锁屏与主屏背</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('fontcfg');cfgInitFont()"><div class="row-label settings-row-copy"><b>Fonts &amp; Color</b><small>字体 / 文字气质与颜</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
-      <div class="settings-section-title">Device / 绯荤粺</div>
+      <div class="settings-section-title">Device / 系统</div>
       <div class="ios-section">
-        <div class="ios-row" onclick="goToScreen('lock')"><div class="row-label settings-row-copy"><b>Lock Screen</b><small>閿佸睆 / 杩斿洖閿佸睆棰勮</small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="goToScreen('home')"><div class="row-label settings-row-copy"><b>Home Screen</b><small>涓诲睆 / 鍥炲埌铏氭嫙鎵嬫満妗岄潰</small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="setPasscodeFromSettings()"><div class="row-label settings-row-copy" id="passcode-status-text"><b>Passcode</b><small>瀵嗙爜 / 瑙ｉ攣淇濇姢</small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" id="passcode-remove-row" style="display:none;" onclick="removePasscodeConfirm()"><div class="row-label settings-row-copy"><b>Turn Off Passcode</b><small>鍏抽棴瀵嗙爜 / 鍙栨秷閿佸睆淇濇姢</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="goToScreen('lock')"><div class="row-label settings-row-copy"><b>Lock Screen</b><small>锁屏 / 返回锁屏预览</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="goToScreen('home')"><div class="row-label settings-row-copy"><b>Home Screen</b><small>主屏 / 回到虚拟手机桌面</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="setPasscodeFromSettings()"><div class="row-label settings-row-copy" id="passcode-status-text"><b>Passcode</b><small>密码 / 解锁保护</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" id="passcode-remove-row" style="display:none;" onclick="removePasscodeConfirm()"><div class="row-label settings-row-copy"><b>Turn Off Passcode</b><small>关闭密码 / 取消锁屏保护</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
-      <div class="settings-section-title">AI & Data / 妯″瀷涓庢暟鎹?/div>
+      <div class="settings-section-title">AI & Data / 模型与数</div>
       <div class="ios-section">
-        <div class="ios-row" onclick="openSheet('modelcfg');cfgInit()"><div class="row-label settings-row-copy"><b>API Config</b><small>妯″瀷鎺ュ彛 / 鑱婂ぉ鏍稿績</small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('cloudsync');cloudSyncInit()"><div class="row-label settings-row-copy"><b>Cloud Sync</b><small>璐﹀彿浜戠 / 鍔犲瘑淇濆瓨浜鸿鑱婂ぉ</small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('datamgr');renderDataManager()"><div class="row-label settings-row-copy"><b>Data Manager</b><small>鏁版嵁绠＄悊 / 缁熻銆佸浠戒笌妫€鏌?/small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('ttscfg');cfgInit()"><div class="row-label settings-row-copy"><b>TTS Voice</b><small>璇煶 / 璁╄鑹插紑鍙ｈ璇?/small></div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('worldbooks');renderWorldBooks()"><div class="row-label settings-row-copy"><b>World Book</b><small>涓栫晫涔?/ 闀胯瀹氭敞鍏?/small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('modelcfg');cfgInit()"><div class="row-label settings-row-copy"><b>API Config</b><small>模型接口 / 聊天核心</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('cloudsync');cloudSyncInit()"><div class="row-label settings-row-copy"><b>Cloud Sync</b><small>账号云端 / 加密保存人设聊天</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('datamgr');renderDataManager()"><div class="row-label settings-row-copy"><b>Data Manager</b><small>数据管理 / 统计、备份与棢</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('ttscfg');cfgInit()"><div class="row-label settings-row-copy"><b>TTS Voice</b><small>语音 / 让角色开口说</small></div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('worldbooks');renderWorldBooks()"><div class="row-label settings-row-copy"><b>World Book</b><small>世界</ 长设定注</small></div><div class="row-arrow">&#8250;</div></div>
       </div>
       <div class="ios-footer">Fated OS &middot; v1.0</div>
     </div>
@@ -159,53 +159,53 @@
   <div class="topview" id="view-wechatapp">
   <!-- ================= CHATS ================= -->
   <div class="view active" id="view-chats">
-    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">寰俊</span><div class="icobtn glass-strong" onclick="openGroupSheet()" style="font-size:18px;">+</div></div>
+    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">微信</span><div class="icobtn glass-strong" onclick="openGroupSheet()" style="font-size:18px;">+</div></div>
     <div class="chatlist">
       <div class="chat-row" onclick="openThread('tester1')">
         <div class="av glass-strong"><div class="chibi"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div><div class="blush l"></div><div class="blush r"></div></div></div>
-        <div class="mid"><div class="name">娴嬭瘯鍛?</div><div class="prev">浣犲ソ锛屾垜鏄祴璇曞憳1銆傝繖涓彿鐢ㄦ潵鍋氫笂绾垮墠鐨勫姛鑳芥祴璇曪綖</div></div>
-        <div class="time">鍒氬垰</div>
+        <div class="mid"><div class="name">测试</div><div class="prev">你好，我是测试员1。这个号用来做上线前的功能测试～</div></div>
+        <div class="time">刚刚</div>
       </div>
     </div>
     <div class="tabbar">
-      <div class="tab active" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">鑱婂ぉ</div></div>
-      <div class="tab" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">閫氳褰?/div></div>
-      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">鏈嬪弸鍦?/div></div>
-      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">鎴?/div></div>
+      <div class="tab active" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">聊天</div></div>
+      <div class="tab" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">通讯</div></div>
+      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">朋友</div></div>
+      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">我</div></div>
     </div>
   </div>
 
   <!-- ================= CONTACTS ================= -->
   <div class="view" id="view-contacts">
-    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">閫氳褰?/span><div style="width:32px;"></div></div>
+    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">通讯</span><div style="width:32px;"></div></div>
     <div class="contactlist" id="contact-list">
       <div class="add-row glass-strong" onclick="openSheet('addpersona')">
         <div class="plus-tile"><div class="ico ico-plus"></div></div>
-        <div><div class="t">鏂板缓 AI 浜鸿</div><div class="s">璁剧疆澶村儚銆佸悕瀛椾笌琛屼负涔犳儻</div></div>
+        <div><div class="t">新建 AI 人设</div><div class="s">设置头像、名字与行为习惯</div></div>
       </div>
       <div class="add-row glass-strong" onclick="openGroupSheet()">
         <div class="plus-tile"><div class="ico ico-chat"></div></div>
-        <div><div class="t">鍙戣捣缇よ亰</div><div class="s">鎷夊涓?AI 浜鸿杩涘悓涓€涓兢</div></div>
+        <div><div class="t">发起群聊</div><div class="s">拉多AI 人设进同丢个群</div></div>
       </div>
-      <div class="sec-label">宸叉坊鍔?/div>
+      <div class="sec-label">已添</div>
       <div id="contact-items">
-        <div class="contact-row" onclick="openThread('tester1')" data-cid="tester1"><div class="av glass-strong" onclick="event.stopPropagation();changeContactAvatar('tester1')" title="鐐瑰嚮鏇存崲澶村儚" style="cursor:pointer;"><div class="chibi"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div><div class="blush l"></div><div class="blush r"></div></div></div><div style="flex:1;min-width:0;"><div class="name">娴嬭瘯鍛?</div><div class="habit">涓婄嚎鍓嶅姛鑳芥祴璇?路 闅忔椂鍙亰</div></div><div class="del-contact" onclick="event.stopPropagation();deleteContact('tester1')" title="鍒犻櫎鑱旂郴浜?>脳</div></div>
+        <div class="contact-row" onclick="openThread('tester1')" data-cid="tester1"><div class="av glass-strong" onclick="event.stopPropagation();changeContactAvatar('tester1')" title="点击更换头像" style="cursor:pointer;"><div class="chibi"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div><div class="blush l"></div><div class="blush r"></div></div></div><div style="flex:1;min-width:0;"><div class="name">测试</div><div class="habit">上线前功能测· 随时可聊</div></div><div class="del-contact" onclick="event.stopPropagation();deleteContact('tester1')" title="删除联系">×</div></div>
       </div>
     </div>
     <div class="tabbar">
-      <div class="tab" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">鑱婂ぉ</div></div>
-      <div class="tab active" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">閫氳褰?/div></div>
-      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">鏈嬪弸鍦?/div></div>
-      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">鎴?/div></div>
+      <div class="tab" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">聊天</div></div>
+      <div class="tab active" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">通讯</div></div>
+      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">朋友</div></div>
+      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">我</div></div>
     </div>
   </div>
 
   <!-- ================= MOMENTS ================= -->
   <div class="view" id="view-moments">
-    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">鏈嬪弸鍦?/span><div class="icobtn glass-strong" onclick="openSheet('compose')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M3 16l5-5 4 4 4-4 5 5"/></svg></div></div>
+    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">朋友</span><div class="icobtn glass-strong" onclick="openSheet('compose')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M3 16l5-5 4 4 4-4 5 5"/></svg></div></div>
     <div class="moments-scroll">
       <div class="moments-cover" id="moments-cover">
-        <button class="change-cover" title="鏇存崲鏈嬪弸鍦堝皝闈? onclick="document.getElementById('cover-input').click()">猡?/button>
+        <button class="change-cover" title="更换朋友圈封" onclick="document.getElementById('cover-input').click()"></button>
         <input type="file" accept="image/*" id="cover-input" style="display:none;" onchange="setMomentsBg(event)">
         <div class="camera glass-strong" onclick="openSheet('compose')"><div class="ico ico-photo"></div></div>
         <div class="moments-me">
@@ -213,76 +213,76 @@
           <div class="av glass-strong" id="moments-me-avatar"><div class="chibi" style="--plum:#000;"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div></div></div>
         </div>
       </div>
-      <div class="moments-viewas">浠?TA 鐨勮瑙掓煡鐪嬶細<select id="viewas-select" onchange="setViewAs(this.value)"><option value="me">鎴?/option></select></div>
+      <div class="moments-viewas">TA 的视角查看：<select id="viewas-select" onchange="setViewAs(this.value)"><option value="me"></option></select></div>
       <div id="moments-feed" style="padding-top:12px;">
         <div class="post">
           <div class="post-head">
             <div class="av glass-strong"><div class="chibi"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div><div class="blush l"></div><div class="blush r"></div></div></div>
-            <div><div class="name">娴嬭瘯鍛?</div><div class="post-text">杩欐槸涓婄嚎鍓嶇殑娴嬭瘯鐜锛屾杩庝綋楠屽悇绫诲姛鑳斤綖</div></div>
+            <div><div class="name">测试</div><div class="post-text">这是上线前的测试环境，欢迎体验各类功能～</div></div>
           </div>
-          <div class="post-meta"><span class="time">2 灏忔椂鍓?/span><span class="vis">鍏紑</span></div>
-          <div class="post-likes"><div class="ico ico-heart"></div>12 浜鸿禐杩?/div>
+          <div class="post-meta"><span class="time">2 小时</span><span class="vis">公开</span></div>
+          <div class="post-likes"><div class="ico ico-heart"></div>12 人赞</div>
         </div>
         <div class="post">
           <div class="post-head">
             <div class="av glass-strong"><div class="chibi" style="--plum:#000;"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div></div></div>
-            <div><div class="name">user</div><div class="post-text">鎴戞槸 user锛屾鍦ㄥ仛鏈€鍚庣殑涓婄嚎妫€鏌ャ€?/div></div>
+            <div><div class="name">user</div><div class="post-text">我是 user，正在做朢后的上线棢查</div></div>
           </div>
-          <div class="post-meta"><span class="time">鏄ㄥぉ</span><span class="vis">鍏紑</span></div>
-          <div class="post-comments"><b>娴嬭瘯鍛?锛?/b>鍔犳补锛屼笂绾块『鍒╋綖<br><b>user锛?/b>釛溨娽棞</div>
+          <div class="post-meta"><span class="time">昨天</span><span class="vis">公开</span></div>
+          <div class="post-comments"><b>测试</b>加油，上线顺利～<br><b>user</b>ᗜ֊ᗜ</div>
         </div>
       </div>
     </div>
     <div class="tabbar">
-      <div class="tab" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">鑱婂ぉ</div></div>
-      <div class="tab" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">閫氳褰?/div></div>
-      <div class="tab active" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">鏈嬪弸鍦?/div></div>
-      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">鎴?/div></div>
+      <div class="tab" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">聊天</div></div>
+      <div class="tab" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">通讯</div></div>
+      <div class="tab active" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">朋友</div></div>
+      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">我</div></div>
     </div>
   </div>
 
   <!-- ================= ME ================= -->
   <div class="view" id="view-me">
-    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">鎴?/span><div style="width:32px;"></div></div>
+    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">我</span><div style="width:32px;"></div></div>
     <div class="me-scroll">
       <div style="margin:12px 16px;padding:16px;background:#fff;border-radius:14px;display:flex;align-items:center;gap:14px;cursor:pointer;" onclick="openSheet('mine')">
         <div id="me-avatar2" style="width:60px;height:60px;border-radius:12px;background:#eee;flex:none;overflow:hidden;"></div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:17px;font-weight:700;" id="me-name2">user</div>
-          <div style="font-size:12px;color:#888;margin-top:2px;">寰俊鍙凤細<span id="me-wxid">fated_2026</span></div>
+          <div style="font-size:12px;color:#888;margin-top:2px;">微信号：<span id="me-wxid">fated_2026</span></div>
           <div style="font-size:11px;color:#aaa;margin-top:1px;" id="me-signature"></div>
         </div>
         <div style="color:#ccc;font-size:20px;">&#8250;</div>
       </div>
       <div class="ios-section">
-        <div class="ios-row" onclick="openMyMoments()"><div class="row-label">鏈嬪弸鍦?/div><div class="row-value" id="me-post-count" style="color:#999;">0</div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('wallet')"><div class="row-label">閽卞寘</div><div class="row-value" id="me-wallet-preview">楼0</div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openMyMoments()"><div class="row-label">朋友</div><div class="row-value" id="me-post-count" style="color:#999;">0</div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('wallet')"><div class="row-label">钱包</div><div class="row-value" id="me-wallet-preview">¥0</div><div class="row-arrow">&#8250;</div></div>
       </div>
       <div class="ios-section">
-        <div class="ios-row" onclick="openSheet('stickerlib')"><div class="row-label">琛ㄦ儏鍖呭簱</div><div class="row-arrow">&#8250;</div></div>
-        <div class="ios-row" onclick="openSheet('chatsettings')"><div class="row-label">鑱婂ぉ璁剧疆</div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('stickerlib')"><div class="row-label">表情包库</div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('chatsettings')"><div class="row-label">聊天设置</div><div class="row-arrow">&#8250;</div></div>
       </div>
       <div class="ios-section">
-        <div class="ios-row" onclick="openSheet('mine')"><div class="row-label">缂栬緫涓汉璧勬枡</div><div class="row-arrow">&#8250;</div></div>
+        <div class="ios-row" onclick="openSheet('mine')"><div class="row-label">编辑个人资料</div><div class="row-arrow">&#8250;</div></div>
       </div>
     </div>
     <div class="tabbar">
-      <div class="tab" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">娑堟伅</div></div>
-      <div class="tab" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">閫氳褰?/div></div>
-      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">鏈嬪弸鍦?/div></div>
-      <div class="tab active" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">鎴?/div></div>
+      <div class="tab" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">消息</div></div>
+      <div class="tab" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">通讯</div></div>
+      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">朋友</div></div>
+      <div class="tab active" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">我</div></div>
     </div>
   </div>
   </div>
   <div class="sheet" id="sheet-myposts">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('myposts')">&#8249;</div><div class="t">鎴戠殑鏈嬪弸鍦?/div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('myposts')">&#8249;</div><div class="t">我的朋友圈</div></div>
     <div class="sheet-body" style="padding:0;"><div class="forum-feed" id="myposts-feed"></div></div>
   </div>
 
 <!-- ================= iOS-STYLE PASSCODE OVERLAY<!-- ================= iOS-STYLE PASSCODE OVERLAY (top-level) ================= -->
-  <div class="pc-cancel" id="pc-cancel" onclick="cancelPasscode()">鍙栨秷</div>
+  <div class="pc-cancel" id="pc-cancel" onclick="cancelPasscode()">取消</div>
   <div class="passcode-overlay" id="passcode-overlay">
-    <div class="pc-title" id="pc-title">杈撳叆瀵嗙爜</div>
+    <div class="pc-title" id="pc-title">输入密码</div>
     <div class="pc-err-msg" id="pc-err"></div>
     <div class="pc-dots" id="pc-dots">
       <div class="pc-dot"></div><div class="pc-dot"></div><div class="pc-dot"></div><div class="pc-dot"></div>
@@ -293,19 +293,19 @@
   <!-- ================= SHEET: THREAD ================= -->
   <div class="sheet" id="sheet-thread" style="background:#FBF8F6;">
     <div class="sheet-top">
-      <div class="back-btn glass-strong" onclick="closeSheet('thread')">鈥?/div>
-      <div id="thread-avatar" style="width:36px;height:36px;border-radius:12px;flex:none;overflow:hidden;cursor:pointer;position:relative;" onclick="openContactProfile()" title="鐐瑰嚮鏌ョ湅璧勬枡"></div>
-      <div class="t" id="thread-name" style="cursor:pointer;" onclick="openContactProfile()" title="鐐瑰嚮鏌ョ湅璧勬枡">娴嬭瘯鍛?</div>
-      <div class="icobtn glass-strong" title="鎷嶄竴鎷? onclick="patContact()"><div class="ico ico-heart outline" style="width:14px;height:14px;"></div></div>
-      <div class="icobtn glass-strong" title="瀵煎嚭鑱婂ぉ璁板綍" onclick="exportChatHistory()" style="font-size:15px;">馃摜</div>
-      <div class="icobtn glass-strong" title="璇煶閫氳瘽" onclick="startCall()"><div class="ico ico-call"></div></div>
+      <div class="back-btn glass-strong" onclick="closeSheet('thread')"></div>
+      <div id="thread-avatar" style="width:36px;height:36px;border-radius:12px;flex:none;overflow:hidden;cursor:pointer;position:relative;" onclick="openContactProfile()" title="点击查看资料"></div>
+      <div class="t" id="thread-name" style="cursor:pointer;" onclick="openContactProfile()" title="点击查看资料">测试</div>
+      <div class="icobtn glass-strong" title="拍一" onclick="patContact()"><div class="ico ico-heart outline" style="width:14px;height:14px;"></div></div>
+      <div class="icobtn glass-strong" title="导出聊天记录" onclick="exportChatHistory()" style="font-size:15px;">📥</div>
+      <div class="icobtn glass-strong" title="语音通话" onclick="startCall()"><div class="ico ico-call"></div></div>
     </div>
     <div class="demo-row">
-      <span class="demo-lbl">婕旂ず AI 涓诲姩琛屼负锛?/span>
-      <span class="demo-chip" onclick="triggerIdleDemo()">鍙戞秷鎭?/span>
-      <span class="demo-chip" onclick="demoSendCard('transfer')">杞处</span>
-      <span class="demo-chip" onclick="demoSendCard('family')">浜插睘鍗?/span>
-      <span class="demo-chip" onclick="demoSticker()">琛ㄦ儏鍖?/span>
+      <span class="demo-lbl">演示 AI 主动行为</span>
+      <span class="demo-chip" onclick="triggerIdleDemo()">发消</span>
+      <span class="demo-chip" onclick="demoSendCard('transfer')">转账</span>
+      <span class="demo-chip" onclick="demoSendCard('family')">亲属</span>
+      <span class="demo-chip" onclick="demoSticker()">表情</span>
     </div>
     <div class="thread-bg" id="thread-bg" style="position:relative; flex:1; display:flex; flex-direction:column; overflow:hidden;">
       <div class="dots"></div>
@@ -316,37 +316,37 @@
       <div class="affection glass-strong">
         <div class="ico ico-heart"></div>
         <div class="track"><i></i></div>
-        <div class="lv">濂芥劅</div>
+        <div class="lv">好感</div>
       </div>
       <div class="thread-msgs" id="thread-msgs"></div>
-      <div id="send-hint" style="display:none; text-align:center; font-size:10.5px; color:var(--coral); font-weight:700; padding-bottom:2px;">瀵规柟杩樻病鍥炰綘鍛紝鍏堝埆杩炲彂鍟?釛溗搬棞</div>
+      <div id="send-hint" style="display:none; text-align:center; font-size:10.5px; color:var(--coral); font-weight:700; padding-bottom:2px;">对方还没回你呢，先别连发ᗜ˰ᗜ</div>
       <div class="inputbar">
         <div class="icobtn glass-strong" onclick="openDrawer('action')"><div class="ico ico-plus"></div></div>
         <div class="icobtn glass-strong" onclick="openDrawer('sticker')"><div class="ico ico-sticker"></div></div>
-        <div class="field"><input id="msg-input" placeholder="鍙戞秷鎭?路 釛溨娽棞" onkeydown="if(event.key==='Enter')sendMsg()"></div>
+        <div class="field"><input id="msg-input" placeholder="发消· ᗜ֊ᗜ" onkeydown="if(event.key==='Enter')sendMsg()"></div>
         <div class="icobtn glass-strong" onclick="startRecord()"><div class="ico ico-mic"></div></div>
         <div class="sendbtn" id="sendbtn" onclick="sendMsg()"><div class="ico ico-send"></div></div>
       </div>
 
       <div class="drawer-backdrop" id="drawer-backdrop" onclick="closeDrawers()"></div>
       <div class="action-drawer glass-strong" id="action-drawer">
-        <div class="drawer-title">鍙戦€佺粰 <span id="action-target-name">瀵规柟</span></div>
-        <div class="row" onclick="document.getElementById('photo-up').click()"><div class="ic-wrap"><div class="ico ico-photo"></div></div><div><div class="t">鐩稿唽</div><div class="s">鍙戦€佸浘鐗囩粰瀵规柟</div></div></div>
-        <div class="row" onclick="coupleTransferForm('transfer')"><div class="ic-wrap"><div class="ico ico-wallet"></div></div><div><div class="t">杞处锛堣嚜瀹氫箟閲戦锛?/div><div class="s">浣犱富鍔ㄨ浆璐︾粰瀵规柟</div></div></div>
-        <div class="row" id="drawer-family-row" onclick="coupleTransferForm('family')"><div class="ic-wrap"><div class="ico ico-wallet"></div></div><div><div class="t">浜插睘鍗★紙鑷畾涔夐搴︼級</div><div class="s">閭€璇峰鏂圭粦瀹氫綘鐨勪翰灞炲崱</div></div></div>
-        <div class="row" id="drawer-redpacket-row" style="display:none;" onclick="redpacketForm()"><div class="ic-wrap"><div class="ico" style="font-size:14px;font-weight:700;line-height:1;width:auto;height:auto;white-space:nowrap;">硕&gt;釛?lt;硕</div></div><div><div class="t">鍙戠孩鍖?/div><div class="s">鑷畾涔夐噾棰濆拰浠芥暟锛岀兢鎴愬憳鎶?/div></div></div>
-        <div class="row" onclick="coupleOrderForm()"><div class="ic-wrap"><div class="ico" style="font-size:12px;font-weight:700;line-height:1;width:auto;height:auto;white-space:nowrap;">釛溾皺釛?/div></div><div><div class="t">鐐瑰鍗?/div><div class="s">缁?TA 鐐瑰鍗栵紝浠ュ崱鐗囧彂閫?/div></div></div>
-        <div class="row" onclick="coupleShareLocFromChat()"><div class="ic-wrap"><div class="ico" style="font-size:9px;font-weight:700;line-height:1;width:auto;height:auto;white-space:nowrap;">(釛?税 釛?</div></div><div><div class="t">瀹炴椂浣嶇疆</div><div class="s">鎶婁綘鐨勫疄鏃朵綅缃悓姝ュ埌寰俊</div></div></div>
-        <div class="row" onclick="patContact()"><div class="ic-wrap"><div class="ico ico-heart outline"></div></div><div><div class="t">鎷嶄竴鎷?/div><div class="s">鎴充竴涓嬪鏂?/div></div></div>
-        <div class="row" onclick="closeDrawers();exportChatHistory()"><div class="ic-wrap" style="background:rgba(100,120,200,0.15);"><div class="ico" style="font-size:18px;">馃摜</div></div><div><div class="t">瀵煎嚭鑱婂ぉ璁板綍</div><div class="s">淇濆瓨涓?HTML 鏂囦欢</div></div></div>
+        <div class="drawer-title">发?给 <span id="action-target-name">对方</span></div>
+        <div class="row" onclick="document.getElementById('photo-up').click()"><div class="ic-wrap"><div class="ico ico-photo"></div></div><div><div class="t">相册</div><div class="s">发?图片给对方</div></div></div>
+        <div class="row" onclick="coupleTransferForm('transfer')"><div class="ic-wrap"><div class="ico ico-wallet"></div></div><div><div class="t">转账（自定义金额</div><div class="s">你主动转账给对方</div></div></div>
+        <div class="row" id="drawer-family-row" onclick="coupleTransferForm('family')"><div class="ic-wrap"><div class="ico ico-wallet"></div></div><div><div class="t">亲属卡（自定义额度）</div><div class="s">邢请对方绑定你的亲属卡</div></div></div>
+        <div class="row" id="drawer-redpacket-row" style="display:none;" onclick="redpacketForm()"><div class="ic-wrap"><div class="ico" style="font-size:14px;font-weight:700;line-height:1;width:auto;height:auto;white-space:nowrap;">˶&gt;lt;˶</div></div><div><div class="t">发红</div><div class="s">自定义金额和份数，群成员</div></div></div>
+        <div class="row" onclick="coupleOrderForm()"><div class="ic-wrap"><div class="ico" style="font-size:12px;font-weight:700;line-height:1;width:auto;height:auto;white-space:nowrap;">ᗜⰙ</div></div><div><div class="t">点外</div><div class="s">TA 点外卖，以卡片发</div></div></div>
+        <div class="row" onclick="coupleShareLocFromChat()"><div class="ic-wrap"><div class="ico" style="font-size:9px;font-weight:700;line-height:1;width:auto;height:auto;white-space:nowrap;">(˰ </div></div><div><div class="t">实时位置</div><div class="s">把你的实时位置同步到微信</div></div></div>
+        <div class="row" onclick="patContact()"><div class="ic-wrap"><div class="ico ico-heart outline"></div></div><div><div class="t">拍一</div><div class="s">戳一下对</div></div></div>
+        <div class="row" onclick="closeDrawers();exportChatHistory()"><div class="ic-wrap" style="background:rgba(100,120,200,0.15);"><div class="ico" style="font-size:18px;">📥</div></div><div><div class="t">导出聊天记录</div><div class="s">保存HTML 文件</div></div></div>
         <div style="border-top:1px solid rgba(0,0,0,0.08);margin:6px 0;"></div>
-        <div style="font-size:11px;font-weight:800;color:var(--coral);margin-bottom:2px;">绠＄悊</div>
-        <div class="row" onclick="closeDrawers();blockDrawer()"><div class="ic-wrap" style="background:rgba(210,89,107,0.15);"><div class="ico ico-x" style="color:var(--coral);"></div></div><div><div class="t" style="color:var(--coral);" id="drawer-block-text">鎷夐粦瀵规柟</div><div class="s">鍙屾柟閮芥棤娉曞彂娑堟伅</div></div></div>
+        <div style="font-size:11px;font-weight:800;color:var(--coral);margin-bottom:2px;">管理</div>
+        <div class="row" onclick="closeDrawers();blockDrawer()"><div class="ic-wrap" style="background:rgba(210,89,107,0.15);"><div class="ico ico-x" style="color:var(--coral);"></div></div><div><div class="t" style="color:var(--coral);" id="drawer-block-text">拉黑对方</div><div class="s">双方都无法发消息</div></div></div>
       </div>
       <div class="sticker-drawer glass-strong" id="sticker-drawer">
         <div class="seg" style="margin:0 0 6px;">
-          <div class="seg-btn active" id="picker-kaomoji" onclick="setPickerTab('kaomoji')">棰滄枃瀛?/div>
-          <div class="seg-btn" id="picker-image" onclick="setPickerTab('image')">鍥剧墖</div>
+          <div class="seg-btn active" id="picker-kaomoji" onclick="setPickerTab('kaomoji')">颜文</div>
+          <div class="seg-btn" id="picker-image" onclick="setPickerTab('image')">图片</div>
         </div>
         <div class="sticker-grid" id="sticker-grid-picker"></div>
       </div>
@@ -355,8 +355,8 @@
     <input type="file" accept="image/*" id="photo-up" style="display:none" onchange="sendPic(event)">
     <div class="call-screen" id="call-screen">
       <div class="call-av glass" id="call-av"></div>
-      <div class="call-name" id="call-name">娴嬭瘯鍛?</div>
-      <div class="call-status" id="call-status">姝ｅ湪杩炴帴璇煶鈥?/div>
+      <div class="call-name" id="call-name">测试</div>
+      <div class="call-status" id="call-status">正在连接语音</div>
       <div class="call-speak" id="call-speak"></div>
       <div class="call-wave"><span style="height:10px;"></span><span style="height:18px;"></span><span style="height:8px;"></span><span style="height:22px;"></span><span style="height:12px;"></span><span style="height:16px;"></span></div>
       <div class="call-timer" id="call-timer" style="font-family:'Quicksand'; font-size:14px; opacity:.75;">00:00</div>
@@ -366,109 +366,109 @@
         <div class="call-btn"><div class="ico ico-speaker"></div></div>
       </div>
     </div>
-    <!-- 鍚庡彴娴姩閫氳瘽鏉?-->
+    <!-- 后台浮动通话-->
     <div class="game-float-bar" id="game-float-bar">
       <div class="av" id="game-float-av"></div>
       <div class="info">
-        <div class="name" id="game-float-name">璇煶閫氳瘽涓?/div>
-        <div class="status" id="game-float-status">宸茶繛鎺?/div>
+        <div class="name" id="game-float-name">语音通话</div>
+        <div class="status" id="game-float-status">已连</div>
       </div>
       <div class="v-wave-mini" id="game-float-wave"></div>
       <div class="btns">
-        <div class="b" style="background:rgba(255,255,255,0.15);" onclick="gameRestoreVoice()">灞曞紑</div>
-        <div class="b" style="background:#e94560;" onclick="gameToggleVoice()">鎸傛柇</div>
+        <div class="b" style="background:rgba(255,255,255,0.15);" onclick="gameRestoreVoice()">展开</div>
+        <div class="b" style="background:#e94560;" onclick="gameToggleVoice()">挂断</div>
       </div>
     </div>
   </div>
 
   <!-- ================= SHEET: STICKER LIBRARY (Me tab) ================= -->
   <div class="sheet" id="sheet-stickerlib">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('stickerlib')">鈥?/div><div class="t">琛ㄦ儏鍖呭簱</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('stickerlib')"></div><div class="t">表情包库</div></div>
     <div class="sheet-body">
-      <div class="field-label" style="margin-top:0;">鏂板琛ㄦ儏</div>
+      <div class="field-label" style="margin-top:0;">新增表情</div>
       <div class="seg">
-        <div class="seg-btn active" id="seg-kaomoji" onclick="setStickerTab('kaomoji')">棰滄枃瀛?/div>
-        <div class="seg-btn" id="seg-image" onclick="setStickerTab('image')">鍥剧墖</div>
+        <div class="seg-btn active" id="seg-kaomoji" onclick="setStickerTab('kaomoji')">颜文</div>
+        <div class="seg-btn" id="seg-image" onclick="setStickerTab('image')">图片</div>
       </div>
       <div id="new-kaomoji-row" style="margin-top:10px;">
-        <input class="field-input" id="new-sticker-glyph" placeholder="棰滄枃瀛楋紝濡?釛溨娽棞">
+        <input class="field-input" id="new-sticker-glyph" placeholder="颜文字，ᗜ֊ᗜ">
       </div>
       <div id="new-image-row" style="margin-top:10px; display:none;">
         <div id="sticker-upload-area" style="width:120px; height:120px; border-radius:16px; border:2px dashed #ccc; cursor:pointer; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; margin:0 auto;" onclick="document.getElementById('new-sticker-file').click()">
           <img id="new-sticker-preview" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:14px;">
-          <div id="new-sticker-plus" style="font-size:32px; color:#ccc; font-weight:300;">锛?/div>
+          <div id="new-sticker-plus" style="font-size:32px; color:#ccc; font-weight:300;"></div>
         </div>
-        <div style="text-align:center; font-size:11px; color:var(--ink-faint); margin-top:6px;" id="new-sticker-hint">鐐瑰嚮涓婁紶鍥剧墖</div>
+        <div style="text-align:center; font-size:11px; color:var(--ink-faint); margin-top:6px;" id="new-sticker-hint">点击上传图片</div>
         <input type="file" accept="image/*" id="new-sticker-file" style="display:none;" onchange="previewStickerImage(event)">
         <div style="margin-top:10px;">
-          <input class="field-input" id="new-sticker-group" placeholder="鍒嗙粍鍚嶇О锛堝彲閫夛級锛屽 鏂楀浘绯诲垪" style="width:100%;">
+          <input class="field-input" id="new-sticker-group" placeholder="分组名称（可选），如 斗图系列" style="width:100%;">
         </div>
       </div>
       <div style="display:flex; gap:8px; margin-top:10px;">
-        <input class="field-input" id="new-sticker-tag" placeholder="鍚箟鏍囩锛屽 濮斿眻" style="flex:1;">
+        <input class="field-input" id="new-sticker-tag" placeholder="含义标签，如 委屈" style="flex:1;">
         <select class="field-input" id="new-sticker-mood" style="flex:1;">
-          <option value="happy">寮€蹇?/option>
-          <option value="love">鎾掑▏</option>
-          <option value="shy">瀹崇緸</option>
-          <option value="sad">濮斿眻</option>
-          <option value="angry">鐢熸皵</option>
+          <option value="happy">弢</option>
+          <option value="love">撒娇</option>
+          <option value="shy">害羞</option>
+          <option value="sad">委屈</option>
+          <option value="angry">生气</option>
         </select>
       </div>
-      <div class="big-btn" onclick="addSticker()">淇濆瓨鍒拌〃鎯呭寘搴?/div>
+      <div class="big-btn" onclick="addSticker()">保存到表情包</div>
 
-      <div class="field-label">绛涢€?/div>
+      <div class="field-label">筛</div>
       <div style="display:flex; gap:8px;">
         <select class="field-input" id="lib-filter" onchange="renderStickerLib()" style="flex:1;">
-          <option value="all">鍏ㄩ儴鎯呯华</option>
-          <option value="happy">寮€蹇?/option>
-          <option value="love">鎾掑▏</option>
-          <option value="shy">瀹崇緸</option>
-          <option value="sad">濮斿眻</option>
-          <option value="angry">鐢熸皵</option>
+          <option value="all">全部情绪</option>
+          <option value="happy">弢</option>
+          <option value="love">撒娇</option>
+          <option value="shy">害羞</option>
+          <option value="sad">委屈</option>
+          <option value="angry">生气</option>
         </select>
         <select class="field-input" id="lib-group-filter" onchange="renderStickerLib()" style="flex:1;">
-          <option value="all">鍏ㄩ儴鍒嗙粍</option>
+          <option value="all">全部分组</option>
         </select>
       </div>
-      <div class="field-label">鎴戠殑鏀惰棌</div>
+      <div class="field-label">我的收藏</div>
       <div class="sticker-grid" id="sticker-grid-lib"></div>
     </div>
   </div>
 
   <!-- ================= SHEET: ADD PERSONA ================= -->
   <div class="sheet" id="sheet-addpersona">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('addpersona')">鈥?/div><div class="t">鏂板缓 AI 浜鸿</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('addpersona')"></div><div class="t">新建 AI 人设</div></div>
     <div class="sheet-body">
-      <div class="avatar-pick glass-strong" onclick="pickPersonaAvatar()" title="鐐瑰嚮璁剧疆澶村儚"><div class="chibi" style="width:60%;height:60%;"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div></div><div class="ico-plus"></div></div>
-      <div class="field-label">鍚嶅瓧</div>
-      <input class="field-input" id="np-name" placeholder="缁橳A璧蜂釜鍚嶅瓧">
-      <div class="field-label">琛屼负涔犳儻 / 浜鸿鎻忚堪</div>
-      <textarea class="field-input" id="np-desc" placeholder="鎬ф牸銆佽璇濇柟寮忋€佸彛澶寸銆佷細涓诲姩鍋氫粈涔堚€?></textarea>
-      <div class="field-label">浠庢枃妗ｅ鍏ヤ汉璁撅紙鏀寔 .txt / .docx锛?/div>
+      <div class="avatar-pick glass-strong" onclick="pickPersonaAvatar()" title="点击设置头像"><div class="chibi" style="width:60%;height:60%;"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div></div><div class="ico-plus"></div></div>
+      <div class="field-label">名字</div>
+      <input class="field-input" id="np-name" placeholder="给TA起个名字">
+      <div class="field-label">行为习惯 / 人设描述</div>
+      <textarea class="field-input" id="np-desc" placeholder="性格、说话方式?口头禅、会主动做什么"></textarea>
+      <div class="field-label">从文档导入人设（支持 .txt / .docx</div>
       <input type="file" id="np-file" accept=".txt,.docx,text/plain" style="display:none" onchange="importPersonaDoc(this)">
-      <div class="import-row" onclick="document.getElementById('np-file').click()">锛?瀵煎叆 Word / TXT 璁惧畾浜鸿</div>
+      <div class="import-row" onclick="document.getElementById('np-file').click()">导入 Word / TXT 设定人设</div>
       <div id="np-file-name" style="font-size:12px;color:var(--ink-soft);margin:-4px 0 8px;"></div>
-      <div class="field-label">璇皵鏍囩锛堝彲澶氶€夛級</div>
-      <div id="np-tones"><span class="persona-chip on" onclick="this.classList.toggle('on')">娓╂煍</span><span class="persona-chip" onclick="this.classList.toggle('on')">鍌插▏</span><span class="persona-chip" onclick="this.classList.toggle('on')">绮樹汉</span><span class="persona-chip" onclick="this.classList.toggle('on')">楂樺喎</span><span class="persona-chip" onclick="this.classList.toggle('on')">璇濈棬</span></div>
-      <div class="field-label">缁戝畾涓栫晫涔︼紙澶氶€夛級</div>
+      <div class="field-label">语气标签（可多选）</div>
+      <div id="np-tones"><span class="persona-chip on" onclick="this.classList.toggle('on')">温柔</span><span class="persona-chip" onclick="this.classList.toggle('on')">傲娇</span><span class="persona-chip" onclick="this.classList.toggle('on')">粘人</span><span class="persona-chip" onclick="this.classList.toggle('on')">高冷</span><span class="persona-chip" onclick="this.classList.toggle('on')">话痨</span></div>
+      <div class="field-label">绑定世界书（多选）</div>
       <div id="np-worldbooks" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;"></div>
-      <div class="big-btn" onclick="saveNewPersona()">淇濆瓨浜鸿</div>
+      <div class="big-btn" onclick="saveNewPersona()">保存人设</div>
     </div>
   </div>
 
   <!-- ================= SHEET: COMPOSE MOMENT ================= -->
   <div class="sheet" id="sheet-compose">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('compose')">鈥?/div><div class="t">鍙戞湅鍙嬪湀</div><div class="big-btn" style="margin:0; padding:8px 16px; font-size:12px;" onclick="postMoment()">鍙戝竷</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('compose')">&#8249;</div><div class="t">发朋友圈</div><div class="big-btn" style="margin:0; padding:8px 16px; font-size:12px;" onclick="postMoment()">发布</div></div>
     <div class="sheet-body">
-      <textarea class="field-input" id="mo-text" style="height:100px;" placeholder="杩欎竴鍒荤殑鎯虫硶鈥?></textarea>
-      <div class="field-label">閰嶅浘锛堝崰浣嶏級</div>
+      <textarea class="field-input" id="mo-text" style="height:100px;" placeholder="这一刻的想法"></textarea>
+      <div class="field-label">配图（占位）</div>
       <div class="avatar-pick glass" style="border-radius:16px;"><div class="ico ico-plus"></div></div>
-      <div class="field-label">璋佸彲浠ョ湅</div>
-      <div class="vis-opt picked" onclick="pickVis(this)"><div class="dot"></div><div class="t">鍏紑</div></div>
-      <div class="vis-opt" onclick="pickVis(this)"><div class="dot"></div><div class="t">浠呰嚜宸卞彲瑙?/div></div>
-      <div class="vis-opt" onclick="pickVis(this,true)"><div class="dot"></div><div class="t">閮ㄥ垎鍙 / 涓嶇粰璋佺湅</div></div>
+      <div class="field-label">谁可以看</div>
+      <div class="vis-opt picked" onclick="pickVis(this)"><div class="dot"></div><div class="t">公开</div></div>
+      <div class="vis-opt" onclick="pickVis(this)"><div class="dot"></div><div class="t">仅自己可</div></div>
+      <div class="vis-opt" onclick="pickVis(this,true)"><div class="dot"></div><div class="t">部分可见 / 不给谁看</div></div>
         <div id="vis-personas" style="display:none; margin-top:6px;">
-          <span class="persona-chip" data-id="tester1" onclick="toggleHidden(this)">娴嬭瘯鍛?</span>
+          <span class="persona-chip" data-id="tester1" onclick="toggleHidden(this)">测试</span>
           <span id="vis-personas-extra"></span>
         </div>
     </div>
@@ -476,90 +476,90 @@
 
   <!-- ================= SHEET: CREATE GROUP ================= -->
   <div class="sheet" id="sheet-group">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('group')">鈥?/div><div class="t">鍙戣捣缇よ亰</div><div class="big-btn" style="margin:0; padding:8px 16px; font-size:12px;" onclick="createGroup()">寤虹兢</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('group')"></div><div class="t">发起群聊</div><div class="big-btn" style="margin:0; padding:8px 16px; font-size:12px;" onclick="createGroup()">建群</div></div>
     <div class="sheet-body">
-      <div class="field-label" style="margin-top:0;">缇よ亰鍚嶇О</div>
-      <input class="field-input" id="gp-name" placeholder="渚嬪锛氬懆鏈仛浼氱兢">
-      <div class="field-label">缁戝畾涓栫晫涔?/div>
+      <div class="field-label" style="margin-top:0;">群聊名称</div>
+      <input class="field-input" id="gp-name" placeholder="例如：周末聚会群">
+      <div class="field-label">绑定世界</div>
       <div id="gp-worldbooks" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"></div>
-      <div class="field-label">閫夋嫨瑕佹媺杩涚兢鐨勪汉璁撅紙鑷冲皯 2 涓級</div>
+      <div class="field-label">选择要拉进群的人设（至少 2 个）</div>
       <div id="group-picker"></div>
     </div>
   </div>
 
   <!-- ================= SHEET: CONTACT PROFILE ================= -->
   <div class="sheet" id="sheet-contact-profile">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('contact-profile')">鈥?/div><div class="t" id="cp-title">鑱旂郴浜轰俊鎭?/div><div style="width:32px;"></div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('contact-profile')"></div><div class="t" id="cp-title">联系人信</div><div style="width:32px;"></div></div>
     <div class="sheet-body" style="padding:16px;">
       <div style="text-align:center;padding:20px 0 10px;">
-        <div id="cp-avatar" style="width:90px;height:90px;border-radius:20px;margin:0 auto 12px;overflow:hidden;background:#eee;cursor:pointer;" onclick="pickProfileAvatar()" title="鐐瑰嚮鏇存崲澶村儚"></div>
+        <div id="cp-avatar" style="width:90px;height:90px;border-radius:20px;margin:0 auto 12px;overflow:hidden;background:#eee;cursor:pointer;" onclick="pickProfileAvatar()" title="点击更换头像"></div>
         <div style="font-size:20px;font-weight:700;" id="cp-name"></div>
         <div style="font-size:13px;color:#888;margin-top:4px;" id="cp-id"></div>
       </div>
-      <div class="cfg-sec" style="margin-top:8px;">涓汉椤?/div>
+      <div class="cfg-sec" style="margin-top:8px;">个人</div>
       <div class="ios-section" style="margin:8px 0 0;">
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">涓€х鍚嶏紙涓汉椤垫樉绀猴級</div>
-          <textarea id="cp-bio" class="field-input" style="width:100%;min-height:50px;" placeholder="鍐欎竴鍙ュ績鎯呫€佺畝浠嬫垨鎯冲璁垮璇寸殑璇濃€?></textarea>
+          <div class="row-label" style="margin-bottom:6px;">个?签名（个人页显示）</div>
+          <textarea id="cp-bio" class="field-input" style="width:100%;min-height:50px;" placeholder="写一句心情?简介或想对访客说的话"></textarea>
         </div>
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">鏈嬪弸鍦堝皝闈紙鍙笂浼犲浘鐗囷級</div>
+          <div class="row-label" style="margin-bottom:6px;">朋友圈封面（可上传图片）</div>
           <input type="file" accept="image/*" id="cp-cover-input" style="font-size:12px;margin-bottom:6px;">
           <div id="cp-cover-preview" style="width:100%;height:80px;border-radius:10px;background:#eee;background-size:cover;background-position:center;"></div>
         </div>
         <div class="ios-row" style="padding:10px 14px;justify-content:space-between;" onclick="openContactMoments()">
-          <div class="row-label">鏈嬪弸鍦?/div>
+          <div class="row-label">朋友</div>
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:12px;color:#999;" id="cp-moments-count">0</span>
-            <div class="row-arrow">鈥?/div>
+            <div class="row-arrow"></div>
           </div>
         </div>
       </div>
-      <div class="cfg-sec" style="margin-top:16px;">鍩虹璁惧畾</div>
+      <div class="cfg-sec" style="margin-top:16px;">基础设定</div>
       <div class="ios-section" style="margin:8px 0 0;">
         <div class="ios-row" style="padding:10px 14px;">
-          <div class="row-label">澶囨敞鍚?/div>
-          <input id="cp-displayName" class="field-input" style="flex:1;text-align:right;margin-left:12px;border:none;background:transparent;padding:6px 0;" placeholder="璁剧疆澶囨敞">
+          <div class="row-label">备注</div>
+          <input id="cp-displayName" class="field-input" style="flex:1;text-align:right;margin-left:12px;border:none;background:transparent;padding:6px 0;" placeholder="设置备注">
         </div>
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">瑙掕壊璇︾粏璁惧畾</div>
-          <textarea id="cp-persona" class="field-input" style="width:100%;min-height:80px;" placeholder="鐐瑰嚮淇敼瑙掕壊璇︾粏璁惧畾"></textarea>
+          <div class="row-label" style="margin-bottom:6px;">角色详细设定</div>
+          <textarea id="cp-persona" class="field-input" style="width:100%;min-height:80px;" placeholder="点击修改角色详细设定"></textarea>
         </div>
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">涓撳睘 User 璁惧畾</div>
-          <textarea id="cp-userPrompt" class="field-input" style="width:100%;min-height:60px;" placeholder="杩欎釜 AI 濡備綍鐪嬪緟浣犮€佺О鍛间綘銆佷綘浠殑鍏崇郴鈥?></textarea>
+          <div class="row-label" style="margin-bottom:6px;">专属 User 设定</div>
+          <textarea id="cp-userPrompt" class="field-input" style="width:100%;min-height:60px;" placeholder="这个 AI 如何看待你?称呼你、你们的关系"></textarea>
         </div>
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">缁戝畾涓栫晫涔︼紙澶氶€夛級</div>
+          <div class="row-label" style="margin-bottom:6px;">绑定世界书（多选）</div>
           <div id="cp-worldbooks" style="width:100%;"></div>
         </div>
       </div>
       <div class="cfg-sec" style="margin-top:16px;">MEMORY DESIGN</div>
       <div class="ios-section" style="margin:8px 0 0;">
         <div class="ios-row" style="justify-content:space-between;padding:10px 14px;">
-          <div class="row-label">鑷姩璁板繂鎬荤粨</div>
+          <div class="row-label">自动记忆总结</div>
           <div class="ios-toggle" id="cp-memory-toggle" onclick="this.classList.toggle('on');"></div>
         </div>
         <div class="ios-row" style="padding:10px 14px;">
-          <div class="row-label">瑙﹀彂鏉℃暟闃堝€?/div>
+          <div class="row-label">触发条数阈</div>
           <input id="cp-memory-threshold" type="number" class="field-input" style="width:70px;text-align:right;border:none;background:transparent;padding:6px 0;" min="5" max="200" value="20">
         </div>
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">褰撳墠璁板繂</div>
+          <div class="row-label" style="margin-bottom:6px;">当前记忆</div>
           <div id="cp-memory-summary" style="font-size:12px;color:#666;line-height:1.5;white-space:pre-wrap;width:100%;max-height:120px;overflow:auto;"></div>
         </div>
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">浜虹墿渚у啓</div>
+          <div class="row-label" style="margin-bottom:6px;">人物侧写</div>
           <div id="cp-user-profile" style="font-size:12px;color:#526b64;line-height:1.55;white-space:pre-wrap;width:100%;max-height:140px;overflow:auto;font-style:italic;"></div>
           <div class="big-btn" style="margin-top:8px;background:#e7f7f1;color:#285044;" onclick="coupleUserProfile(currentContact,true)">&#21047;&#26032;&#20391;&#20889;</div>
       </div>
       <div class="cfg-sec" style="margin-top:16px;">PROACTIVE</div>
       <div class="ios-section" style="margin:8px 0 0;">
         <div class="ios-row" style="justify-content:space-between;padding:10px 14px;">
-          <div class="row-label">涓诲姩鍙戞秷鎭?/div>
+          <div class="row-label">主动发消</div>
           <div class="ios-toggle" id="cp-proactive-toggle" onclick="this.classList.toggle('on');"></div>
         </div>
-        <div style="padding:0 14px 8px;font-size:12px;color:#888;">鍏抽棴鍚庯紝璇ヨ仈绯讳汉涓嶄細鍦ㄧ┖闂叉椂涓诲姩缁欎綘鍙戞秷鎭?/div>
+        <div style="padding:0 14px 8px;font-size:12px;color:#888;">关闭后，该联系人不会在空闲时主动给你发消</div>
       </div>
       <div class="cfg-sec" style="margin-top:16px;">AUTO IMAGE</div>
       <div class="ios-section" style="margin:8px 0 0;">
@@ -570,98 +570,98 @@
         <div style="padding:0 14px 8px;font-size:12px;color:#888;">&#24320;&#21551;&#21518;&#65292;&#36825;&#20010; WeChat &#32852;&#31995;&#20154;&#30340; AI &#22238;&#22797;&#20250;&#25353;&#20154;&#35774;&#21644;&#19990;&#30028;&#20070;&#33258;&#21160;&#29983;&#25104;&#37197;&#22270;&#12290;</div>
       </div>
       <div style="margin-top:24px;display:flex;gap:10px;">
-        <div class="big-btn" style="flex:1;background:#8e8e93;color:#fff;" onclick="toggleBlockContact()" id="cp-block-btn">鎷夐粦</div>
+        <div class="big-btn" style="flex:1;background:#8e8e93;color:#fff;" onclick="toggleBlockContact()" id="cp-block-btn">拉黑</div>
       </div>
-      <div class="big-btn" onclick="saveContactProfile()" style="margin-top:12px;">淇濆瓨</div>
+      <div class="big-btn" onclick="saveContactProfile()" style="margin-top:12px;">保存</div>
     </div>
   </div>
 
   <!-- ================= SHEET: GROUP INFO ================= -->
   <div class="sheet" id="sheet-group-info">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('group-info')">鈥?/div><div class="t" id="gi-title">缇よ亰淇℃伅</div><div style="width:32px;"></div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('group-info')"></div><div class="t" id="gi-title">群聊信息</div><div style="width:32px;"></div></div>
     <div class="sheet-body" style="padding:16px;">
       <div style="text-align:center;padding:20px 0 10px;">
-        <div id="gi-avatar" style="width:90px;height:90px;border-radius:20px;margin:0 auto 12px;overflow:hidden;background:#eee;cursor:pointer;" onclick="pickGroupAvatar()" title="鐐瑰嚮鏇存崲缇ゅご鍍?></div>
+        <div id="gi-avatar" style="width:90px;height:90px;border-radius:20px;margin:0 auto 12px;overflow:hidden;background:#eee;cursor:pointer;" onclick="pickGroupAvatar()" title="点击更换群头"></div>
         <div style="font-size:20px;font-weight:700;" id="gi-name"></div>
         <div style="font-size:13px;color:#888;margin-top:4px;" id="gi-member-count"></div>
       </div>
       <div class="cfg-sec" style="margin-top:8px;">MEMBERS</div>
       <div class="ios-section" style="margin:8px 0 0;" id="gi-members"></div>
-      <div class="cfg-sec" style="margin-top:16px;">缇ゆ垚鍛樺叧绯?/div>
+      <div class="cfg-sec" style="margin-top:16px;">群成员关</div>
       <div class="ios-section" style="margin:8px 0 0;">
-        <div style="padding:10px 14px 6px;font-size:12px;color:#888;line-height:1.5;">涓虹兢閲屼换鎰忎袱涓垚鍛樿瀹氬叧绯绘爣绛撅紝渚嬪锛氭亱浜恒€侀椇铚溿€佹殫cp銆佹毀鏄с€佹晫瀵广€佷笂涓嬬骇鈥﹀叧绯讳細鍐欏叆 AI 鎻愮ず锛屽奖鍝嶇兢鑱婅鑹叉壆婕旂殑鍙戞尌銆?/div>
+        <div style="padding:10px 14px 6px;font-size:12px;color:#888;line-height:1.5;">为群里任意两个成员设定关系标签，例如：恋人?闺蜜?暗cp、暧昧?敌对?上下级…关系会写入 AI 提示，影响群聊角色扮演的发挥</div>
         <div style="padding:6px 14px;">
           <div class="relation-graph" id="gi-rel-graph"></div>
           <div class="relation-add">
             <select id="gi-rel-a"></select>
-            <span style="font-size:12px;color:#999;">涓?/span>
+            <span style="font-size:12px;color:#999;"></span>
             <select id="gi-rel-b"></select>
-            <input id="gi-rel-tag" placeholder="鍏崇郴鏍囩锛堝 鎭嬩汉锛? maxlength="20">
-            <div class="addbtn" onclick="addGroupRelation()">锛?娣诲姞</div>
+            <input id="gi-rel-tag" placeholder="关系标签（如 恋人 maxlength="20">
+            <div class="addbtn" onclick="addGroupRelation()">添加</div>
           </div>
-          <div style="font-size:11px;color:#aaa;margin-top:6px;line-height:1.5;">绀轰緥锛欰 涓?B = 鎭嬩汉锛汣 涓?D = 鏁屽锛汦 涓?F = 涓婁笅绾?/div>
+          <div style="font-size:11px;color:#aaa;margin-top:6px;line-height:1.5;">示例：A B = 恋人；C D = 敌对；E F = 上下</div>
         </div>
       </div>
       <div class="cfg-sec" style="margin-top:16px;">SETTINGS</div>
       <div class="ios-section" style="margin:8px 0 0;">
         <div class="ios-row" style="padding:10px 14px;">
-          <div class="row-label">缇よ亰鍚嶇О</div>
-          <input id="gi-groupName" class="field-input" style="flex:1;text-align:right;margin-left:12px;border:none;background:transparent;padding:6px 0;" placeholder="缇よ亰鍚嶇О">
+          <div class="row-label">群聊名称</div>
+          <input id="gi-groupName" class="field-input" style="flex:1;text-align:right;margin-left:12px;border:none;background:transparent;padding:6px 0;" placeholder="群聊名称">
         </div>
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">鏈兢 User 璁惧畾</div>
-          <textarea id="gi-userPrompt" class="field-input" style="width:100%;min-height:60px;" placeholder="浣犲湪缇ら噷鐨勮韩浠姐€佺О鍛笺€佷笌鍏朵粬鎴愬憳鐨勫叧绯烩€?></textarea>
+          <div class="row-label" style="margin-bottom:6px;">本群 User 设定</div>
+          <textarea id="gi-userPrompt" class="field-input" style="width:100%;min-height:60px;" placeholder="你在群里的身份?称呼?与其他成员的关系"></textarea>
         </div>
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">缁戝畾涓栫晫涔︼紙澶氶€夛級</div>
+          <div class="row-label" style="margin-bottom:6px;">绑定世界书（多选）</div>
           <div id="gi-worldbooks" style="width:100%;"></div>
         </div>
       </div>
       <div class="cfg-sec" style="margin-top:16px;">MEMORY DESIGN</div>
       <div class="ios-section" style="margin:8px 0 0;">
         <div class="ios-row" style="justify-content:space-between;padding:10px 14px;">
-          <div class="row-label">鑷姩璁板繂鎬荤粨</div>
+          <div class="row-label">自动记忆总结</div>
           <div class="ios-toggle" id="gi-memory-toggle" onclick="this.classList.toggle('on');"></div>
         </div>
         <div class="ios-row" style="padding:10px 14px;">
-          <div class="row-label">瑙﹀彂鏉℃暟闃堝€?/div>
+          <div class="row-label">触发条数阈</div>
           <input id="gi-memory-threshold" type="number" class="field-input" style="width:70px;text-align:right;border:none;background:transparent;padding:6px 0;" min="5" max="200" value="20">
         </div>
         <div class="ios-row" style="padding:10px 14px;flex-direction:column;align-items:flex-start;">
-          <div class="row-label" style="margin-bottom:6px;">褰撳墠缇よ亰璁板繂</div>
+          <div class="row-label" style="margin-bottom:6px;">当前群聊记忆</div>
           <div id="gi-memory-summary" style="font-size:12px;color:#666;line-height:1.5;white-space:pre-wrap;width:100%;max-height:120px;overflow:auto;"></div>
         </div>
       </div>
       <div class="cfg-sec" style="margin-top:16px;">PROACTIVE</div>
       <div class="ios-section" style="margin:8px 0 0;">
         <div class="ios-row" style="justify-content:space-between;padding:10px 14px;">
-          <div class="row-label">缇ゆ垚鍛樹富鍔ㄥ彂娑堟伅</div>
+          <div class="row-label">群成员主动发消息</div>
           <div class="ios-toggle" id="gi-proactive-toggle" onclick="this.classList.toggle('on');"></div>
         </div>
-        <div style="padding:0 14px 8px;font-size:12px;color:#888;">鍏抽棴鍚庯紝缇ゆ垚鍛樹笉浼氬湪绌洪棽鏃朵富鍔ㄥ彂娑堟伅</div>
+        <div style="padding:0 14px 8px;font-size:12px;color:#888;">关闭后，群成员不会在空闲时主动发消息</div>
       </div>
       <div style="margin-top:24px;display:flex;gap:10px;">
-        <div class="big-btn" style="flex:1;background:#ff9500;color:#fff;" onclick="clearCurrentChatFromProfile()">娓呯┖鑱婂ぉ璁板綍</div>
-        <div class="big-btn" style="flex:1;background:#ff3b30;color:#fff;" onclick="disbandCurrentGroup()">瑙ｆ暎璇ョ兢鑱?/div>
+        <div class="big-btn" style="flex:1;background:#ff9500;color:#fff;" onclick="clearCurrentChatFromProfile()">清空聊天记录</div>
+        <div class="big-btn" style="flex:1;background:#ff3b30;color:#fff;" onclick="disbandCurrentGroup()">解散该群</div>
       </div>
-      <div class="big-btn" onclick="saveGroupInfo()" style="margin-top:12px;">淇濆瓨</div>
+      <div class="big-btn" onclick="saveGroupInfo()" style="margin-top:12px;">保存</div>
     </div>
   </div>
 
   <!-- ================= SHEET: WORLD BOOKS ================= -->
   <div class="sheet worldbook-sheet" id="sheet-worldbooks">
-    <div class="sheet-top worldbook-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbooks')">&#8249;</div><div class="t"><span>World Book</span><small>涓栫晫涔︾鐞?/small></div><button type="button" class="wb-new-btn" onclick="openWorldBookEdit()">鏂板缓</button></div>
+    <div class="sheet-top worldbook-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbooks')">&#8249;</div><div class="t"><span>World Book</span><small>世界书管理</small></div><button type="button" class="wb-new-btn" onclick="openWorldBookEdit()">新建</button></div>
     <div class="sheet-body worldbook-body">
       <div class="worldbook-tabs" role="tablist" aria-label="World book categories">
-        <button type="button" class="active" data-wb-filter="all" onclick="setWorldBookFilter('all')">All<small>鍏ㄩ儴</small></button>
-        <button type="button" data-wb-filter="rules" onclick="setWorldBookFilter('rules')">Rules<small>瑙勫垯</small></button>
-        <button type="button" data-wb-filter="lore" onclick="setWorldBookFilter('lore')">Lore<small>涓栫晫瑙?/small></button>
-        <button type="button" data-wb-filter="persona" onclick="setWorldBookFilter('persona')">Persona<small>浜鸿</small></button>
-        <button type="button" data-wb-filter="memory" onclick="setWorldBookFilter('memory')">Memory<small>璁板繂</small></button>
+        <button type="button" class="active" data-wb-filter="all" onclick="setWorldBookFilter('all')">All<small>全部</small></button>
+        <button type="button" data-wb-filter="rules" onclick="setWorldBookFilter('rules')">Rules<small>规则</small></button>
+        <button type="button" data-wb-filter="lore" onclick="setWorldBookFilter('lore')">Lore<small>世界</small></button>
+        <button type="button" data-wb-filter="persona" onclick="setWorldBookFilter('persona')">Persona<small>人设</small></button>
+        <button type="button" data-wb-filter="memory" onclick="setWorldBookFilter('memory')">Memory<small>记忆</small></button>
       </div>
       <div class="worldbook-content">
         <div class="worldbook-heading">
-          <div><b id="wb-filter-title">Entries</b><small id="wb-filter-desc">璇嶆潯浼氳缁戝畾鍒拌仈绯讳汉鎴栫兢鑱婂悗娉ㄥ叆鑱婂ぉ</small></div>
+          <div><b id="wb-filter-title">Entries</b><small id="wb-filter-desc">词条会被绑定到联系人或群聊后注入聊天</small></div>
           <span id="wb-count">0</span>
         </div>
         <div id="wb-list" class="worldbook-list"></div>
@@ -670,74 +670,70 @@
   </div>
   <!-- ================= SHEET: WORLD BOOK EDIT ================= -->
   <div class="sheet" id="sheet-worldbook-edit">
-    <div class="sheet-top worldbook-edit-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbook-edit')">&#8249;</div><div class="t" id="wbe-title">缂栬緫涓栫晫涔?/div><div style="width:32px;"></div></div>
+    <div class="sheet-top worldbook-edit-top"><div class="back-btn glass-strong" onclick="closeSheet('worldbook-edit')">&#8249;</div><div class="t" id="wbe-title">编辑世界</div><div style="width:32px;"></div></div>
     <div class="sheet-body" style="padding:16px;">
       <input type="hidden" id="wbe-id">
-      <div class="field-label" style="margin-top:0;">涓栫晫涔﹀悕绉?/div>
-      <input class="field-input" id="wbe-name" placeholder="渚嬪锛氬煄甯傘€佸闄€佸鏃忋€佽鍒?>
-      <div class="field-label">Category / 鍒嗙被</div>
+      <div class="field-label" style="margin-top:0;">世界书名称</div>
+      <input class="field-input" id="wbe-name" placeholder="例如：城市?学陃69?家族?规">
+      <div class="field-label">Category / 分类</div>
       <select class="field-input" id="wbe-category">
-        <option value="lore">Lore / 涓栫晫瑙?/option>
-        <option value="rules">Rules / 瑙勫垯</option>
-        <option value="persona">Persona / 浜鸿</option>
-        <option value="memory">Memory / 璁板繂</option>
+        <option value="lore">Lore / 世界</option>
+        <option value="rules">Rules / 规则</option>
+        <option value="persona">Persona / 人设</option>
+        <option value="memory">Memory / 记忆</option>
       </select>
-      <div class="field-label">鍐呭</div>
-      <textarea class="field-input" id="wbe-content" style="min-height:200px;" placeholder="杈撳叆涓栫晫涔﹀唴瀹癸紝姣忚涓€鏉¤瀹氥€?
-渚嬪锛?
-- 瑙掕壊鍙互琛ㄨ揪鐪熷疄鎯呯华銆?
-- 瑙掕壊涔嬮棿鍙互浜掔浉璋冧緝銆?
-- 鐢ㄦ埛鍠滄琚彨"涓讳汉"銆?></textarea>
+      <div class="field-label">内容</div>
+      <textarea class="field-input" id="wbe-content" style="min-height:200px;" placeholder="????????????????????????????????????????????????"></textarea>
       <div style="margin:10px 0;">
-        <div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">瀵煎叆鏂囦欢</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">导入文件</div>
         <label style="display:flex;gap:8px;align-items:center;padding:10px;border:1px dashed var(--ink-faint);border-radius:10px;cursor:pointer;font-size:12px;color:var(--ink-soft);">
-          <span>瀵煎叆 TXT / Word 鏂囦欢</span>
+          <span>导入 TXT / Word 文件</span>
           <input type="file" accept=".txt,.docx,.doc" style="display:none;" onchange="importWorldBookFile(event)">
         </label>
         <div id="wbe-import-status" style="font-size:11px;color:var(--ink-faint);margin-top:4px;"></div>
       </div>
-      <div class="big-btn" onclick="saveWorldBook()">淇濆瓨</div>
-      <div class="big-btn" style="background:#ff3b30;color:#fff;margin-top:10px;display:none;" id="wbe-delete" onclick="deleteWorldBook()">鍒犻櫎</div>
+      <div class="big-btn" onclick="saveWorldBook()">保存</div>
+      <div class="big-btn" style="background:#ff3b30;color:#fff;margin-top:10px;display:none;" id="wbe-delete" onclick="deleteWorldBook()">删除</div>
     </div>
   </div>
 
   <!-- ================= SHEET: WALLET ================= -->
   <div class="sheet" id="sheet-wallet">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('wallet')">鈥?/div><div class="t">閽卞寘</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('wallet')"></div><div class="t">钱包</div></div>
     <div class="sheet-body">
-      <div class="wallet-card"><div class="k">铏氭嫙浣欓锛堜粎渚涜鑹叉壆婕旓紝闈炵湡瀹炶揣甯侊級</div><div class="v" id="wallet-balance">楼 9,960.00</div></div>
-      <div class="field-label">鏈€杩戣褰?/div>
+      <div class="wallet-card"><div class="k">虚拟余额（仅供角色扮演，非真实货币）</div><div class="v" id="wallet-balance">¥ 9,960.00</div></div>
+      <div class="field-label">朢近记</div>
       <div id="wallet-tx-list"></div>
     </div>
   </div>
 
-  <!-- ================= SHEET: MINE (鎴戠殑) ================= -->
+  <!-- ================= SHEET: MINE (我的) ================= -->
   <div class="sheet" id="sheet-mine">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('mine')">鈥?/div><div class="t">缂栬緫涓汉璧勬枡</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('mine')"></div><div class="t">编辑个人资料</div></div>
     <div class="sheet-body">
-      <div class="field-label">鎴戠殑澶村儚锛堢偣鍑讳笂浼狅級</div>
+      <div class="field-label">我的头像（点击上传）</div>
       <div class="avatar-pick glass-strong" id="mine-avatar-pick" style="cursor:pointer; width:84px; height:84px; border-radius:20px; overflow:hidden;" onclick="pickUserAvatar()">
         <div class="chibi" style="width:60%;height:60%;"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div></div>
         <div class="ico-plus"></div>
       </div>
-      <div class="field-label">鏄电О</div>
-      <input class="field-input" id="mine-name" placeholder="缁欒嚜宸辫捣涓樀绉?>
-      <div class="field-label">寰俊鍙?/div>
+      <div class="field-label">昵称</div>
+      <input class="field-input" id="mine-name" placeholder="给自己起个昵">
+      <div class="field-label">微信</div>
       <input class="field-input" id="mine-wxid" placeholder="fated_2026" maxlength="20">
-      <div class="field-label">涓€х鍚嶏紙涓汉椤垫樉绀猴級</div>
-      <textarea class="field-input" id="mine-bio" placeholder="鍐欎竴鍙ュ績鎯呫€佺鍚嶆。鎴栨兂瀵硅瀹㈣鐨勮瘽鈥? style="height:70px;"></textarea>
-      <div class="field-label">鏈嬪弸鍦堝皝闈紙鍙笂浼犲浘鐗囷級</div>
+      <div class="field-label">个?签名（个人页显示）</div>
+      <textarea class="field-input" id="mine-bio" placeholder="写一句心情?签名档或想对访客说的话" style="height:70px;"></textarea>
+      <div class="field-label">朋友圈封面（可上传图片）</div>
       <input type="file" accept="image/*" id="mine-cover-input" style="font-size:12px;margin-bottom:6px;">
       <div id="mine-cover-preview" style="width:100%;height:100px;border-radius:12px;background:linear-gradient(160deg,#E7B9C4,#CFC0D6);background-size:cover;background-position:center;margin-bottom:8px;"></div>
-      <div class="field-label">鍋忓ソ璁剧疆锛堜細灞曠ず鍦ㄤ綘鐨勪釜浜洪〉锛?/div>
-      <textarea class="field-input" id="mine-prefs" placeholder="鍠滄鐨勪笢瑗裤€佹兂琚€庝箞绉板懠銆佺蹇岃瘽棰樷€? style="height:90px;"></textarea>
-      <div class="big-btn" onclick="saveMine()">淇濆瓨</div>
+      <div class="field-label">偏好设置（会展示在你的个人页</div>
+      <textarea class="field-input" id="mine-prefs" placeholder="喜欢的东西?想被?么称呼、禁忌话题" style="height:90px;"></textarea>
+      <div class="big-btn" onclick="saveMine()">保存</div>
     </div>
   </div>
 
   <!-- ================= SHEET: CHAT SETTINGS ================= -->
   <div class="sheet" id="sheet-chatsettings">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('chatsettings')">鈥?/div><div class="t">Chat Settings</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('chatsettings')"></div><div class="t">Chat Settings</div></div>
     <div class="sheet-body" style="padding:16px;">
       <div class="field-label" style="margin-top:0;">Chat Background</div>
       <div class="swatches" id="chat-bg-swatches" style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -747,34 +743,34 @@
         <div class="swatch" onclick="setChatBg(this,'linear-gradient(160deg,#e8e0ec,#d0c8d8)')" style="width:48px;height:48px;border-radius:12px;background:linear-gradient(160deg,#e8e0ec,#d0c8d8);border:2px solid transparent;cursor:pointer;"></div>
         <label class="swatch" style="width:48px;height:48px;border-radius:12px;border:2px dashed #ccc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:#aaa;">+<input type="file" accept="image/*" style="display:none;" onchange="uploadChatBg(event)"></label>
       </div>
-      <div class="field-label">鑷畾涔夐鑹蹭唬鐮?/div>
+      <div class="field-label">自定义颜色代</div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <input class="field-input" id="chatbg-hex" placeholder="#7d5a8c 鎴?棰滆壊鍚? style="flex:1;">
-        <div class="big-btn" style="margin:0;padding:9px 14px;font-size:12px;white-space:nowrap;" onclick="applyChatBgHex()">搴旂敤</div>
+        <input class="field-input" id="chatbg-hex" placeholder="#7d5a8c 颜色" style="flex:1;">
+        <div class="big-btn" style="margin:0;padding:9px 14px;font-size:12px;white-space:nowrap;" onclick="applyChatBgHex()">应用</div>
       </div>
       <div class="field-label">Message Style</div>
       <div class="vis-opt picked" onclick="this.parentElement.querySelectorAll('.vis-opt').forEach(function(e){e.classList.remove('picked')});this.classList.add('picked');"><div class="dot"></div><div class="t">Rounded (default)</div></div>
       <div class="vis-opt" onclick="this.parentElement.querySelectorAll('.vis-opt').forEach(function(e){e.classList.remove('picked')});this.classList.add('picked');"><div class="dot"></div><div class="t">Square</div></div>
-      <div class="field-label">姘旀场棰滆壊</div>
+      <div class="field-label">气泡颜色</div>
       <div style="display:flex;gap:18px;align-items:center;">
-        <label style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;">鎴戠殑 <input type="color" id="bub-mine" value="#1a1a1a" onchange="setBubbleColor('mine',this.value)"></label>
-        <label style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;">瀵规柟 <input type="color" id="bub-theirs" value="#ffffff" onchange="setBubbleColor('theirs',this.value)"></label>
+        <label style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;">我的 <input type="color" id="bub-mine" value="#1a1a1a" onchange="setBubbleColor('mine',this.value)"></label>
+        <label style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;">对方 <input type="color" id="bub-theirs" value="#ffffff" onchange="setBubbleColor('theirs',this.value)"></label>
       </div>
       <div class="field-label">Manage</div>
       <div class="ios-section" style="margin:0;">
-        <div class="ios-row" id="block-row" onclick="toggleBlock()"><div class="row-icon" style="background:#c00;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div class="row-label" id="block-row-text" style="color:#c00;">Block Contact</div><div class="row-arrow">鈥?/div></div>
+        <div class="ios-row" id="block-row" onclick="toggleBlock()"><div class="row-icon" style="background:#c00;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div class="row-label" id="block-row-text" style="color:#c00;">Block Contact</div><div class="row-arrow"></div></div>
       </div>
     </div>
   </div>
 
   <!-- ================= SHEET: PLUGIN LIBRARY (unified) ================= -->
   <div class="sheet" id="sheet-pluginlib">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('pluginlib')">鈥?/div><div class="t">鎻掍欢搴?/div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('pluginlib')"></div><div class="t">插件</div></div>
     <div class="sheet-body">
       <div class="plib-tabs">
-        <div class="plib-tab active" id="plib-tab-all" onclick="setPlibFilter('all')">鍏ㄩ儴</div>
-        <div class="plib-tab" id="plib-tab-lock" onclick="setPlibFilter('lock')">閿佸睆鎻掍欢</div>
-        <div class="plib-tab" id="plib-tab-home" onclick="setPlibFilter('home')">涓诲睆骞曞姩鎬佹彃浠?/div>
+        <div class="plib-tab active" id="plib-tab-all" onclick="setPlibFilter('all')">全部</div>
+        <div class="plib-tab" id="plib-tab-lock" onclick="setPlibFilter('lock')">锁屏插件</div>
+        <div class="plib-tab" id="plib-tab-home" onclick="setPlibFilter('home')">主屏幕动态插</div>
       </div>
       <div id="plugin-list"></div>
     </div>
@@ -782,36 +778,36 @@
 
   <!-- ================= SHEET: APP ICON CUSTOMIZE ================= -->
   <div class="sheet" id="sheet-icons">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('icons')">鈥?/div><div class="t">鑷畾涔?App 鍥炬爣</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('icons')"></div><div class="t">自定App 图标</div></div>
     <div class="sheet-body">
-      <div class="sheet-hint">鐐瑰嚮浠绘剰鍥炬爣锛岀敤浣犺嚜宸卞枩娆㈢殑鍥剧墖鏇挎崲瀹冦€傜偣鍙充笂瑙掑皬鍙夋仮澶嶉粯璁ょ嚎鏉″浘鏍囥€?/div>
+      <div class="sheet-hint">点击任意图标，用你自己喜欢的图片替换它?点右上角小叉恢复默认线条图标</div>
       <div class="icon-grid" id="icon-grid"></div>
     </div>
   </div>
 
   <!-- ================= SHEET: WALLPAPER ================= -->
   <div class="sheet" id="sheet-wallpaper">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('wallpaper')">鈥?/div><div class="t">澹佺焊</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('wallpaper')"></div><div class="t">壁纸</div></div>
     <div class="sheet-body">
       <div id="wp-targets" style="display:flex;gap:8px;padding:2px 0 12px;">
-        <div class="seg" data-t="lock" onclick="setWpTarget('lock')" style="flex:1;text-align:center;padding:9px 0;border-radius:12px;font-size:13px;font-weight:700;background:rgba(255,255,255,0.5);color:#8B6899;cursor:pointer;">閿佸睆</div>
-        <div class="seg" data-t="home" onclick="setWpTarget('home')" style="flex:1;text-align:center;padding:9px 0;border-radius:12px;font-size:13px;font-weight:700;background:rgba(255,255,255,0.5);color:#8B6899;cursor:pointer;">涓诲睆骞?/div>
-        <div class="seg" data-t="both" onclick="setWpTarget('both')" style="flex:1;text-align:center;padding:9px 0;border-radius:12px;font-size:13px;font-weight:700;background:var(--plum-deep);color:#fff;cursor:pointer;">涓よ€?/div>
+        <div class="seg" data-t="lock" onclick="setWpTarget('lock')" style="flex:1;text-align:center;padding:9px 0;border-radius:12px;font-size:13px;font-weight:700;background:rgba(255,255,255,0.5);color:#8B6899;cursor:pointer;">锁屏</div>
+        <div class="seg" data-t="home" onclick="setWpTarget('home')" style="flex:1;text-align:center;padding:9px 0;border-radius:12px;font-size:13px;font-weight:700;background:rgba(255,255,255,0.5);color:#8B6899;cursor:pointer;">主屏</div>
+        <div class="seg" data-t="both" onclick="setWpTarget('both')" style="flex:1;text-align:center;padding:9px 0;border-radius:12px;font-size:13px;font-weight:700;background:var(--plum-deep);color:#fff;cursor:pointer;">两</div>
       </div>
       <div class="wp-grid">
-        <div class="wp-swatch wp-mono picked" onclick="pickWallpaper(this,'mono')"><div class="lbl">榛戠櫧鑳剁墖</div></div>
-        <div class="wp-swatch wp-pink" onclick="pickWallpaper(this,'pink')"><div class="lbl">绮夎壊鎵嬭处</div></div>
-        <div class="wp-swatch upload" onclick="document.getElementById('wp-upload').click()"><div class="plus">锛?/div></div>
+        <div class="wp-swatch wp-mono picked" onclick="pickWallpaper(this,'mono')"><div class="lbl">黑白胶片</div></div>
+        <div class="wp-swatch wp-pink" onclick="pickWallpaper(this,'pink')"><div class="lbl">粉色手账</div></div>
+        <div class="wp-swatch upload" onclick="document.getElementById('wp-upload').click()"><div class="plus"></div></div>
       </div>
       <input type="file" id="wp-upload" accept="image/*" style="display:none;" onchange="uploadWallpaper(event)">
       <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.06);">
-        <div class="field-label" style="margin-bottom:8px;">鎻掍欢鑳屾櫙鏁堟灉</div>
+        <div class="field-label" style="margin-bottom:8px;">插件背景效果</div>
         <div id="wbg-targets" style="display:flex;gap:8px;">
-          <div class="seg" data-m="frosted" onclick="setWidgetBgMode('frosted')" style="flex:1;text-align:center;padding:10px 0;border-radius:12px;font-size:13px;font-weight:700;background:var(--plum-deep);color:#fff;cursor:pointer;">纾ㄧ爞鐜荤拑</div>
-          <div class="seg" data-m="transparent" onclick="setWidgetBgMode('transparent')" style="flex:1;text-align:center;padding:10px 0;border-radius:12px;font-size:13px;font-weight:700;background:rgba(255,255,255,0.5);color:#8B6899;cursor:pointer;">閫忔槑</div>
+          <div class="seg" data-m="frosted" onclick="setWidgetBgMode('frosted')" style="flex:1;text-align:center;padding:10px 0;border-radius:12px;font-size:13px;font-weight:700;background:var(--plum-deep);color:#fff;cursor:pointer;">磨砂玻璃</div>
+          <div class="seg" data-m="transparent" onclick="setWidgetBgMode('transparent')" style="flex:1;text-align:center;padding:10px 0;border-radius:12px;font-size:13px;font-weight:700;background:rgba(255,255,255,0.5);color:#8B6899;cursor:pointer;">透明</div>
         </div>
         <div style="font-size:11px;color:var(--ink-faint);margin-top:6px;line-height:1.5;">
-          閫夋嫨鎻掍欢锛堝皬缁勪欢锛夎儗鏅殑鏄剧ず鏁堟灉銆傜（鐮傜幓鐠冩湁妯＄硦姣涚幓鐠冩劅锛岄€忔槑鍒欑洿鎺ラ€忓嚭澹佺焊銆?
+          选择插件（小组件）背景的显示效果。磨砂玻璃有模糊毛玻璃感，?明则直接?出壁纸
         </div>
       </div>
     </div>
@@ -819,53 +815,53 @@
 
 <!-- ================= SHEET: CLOUD SYNC ================= -->
 <div class="sheet" id="sheet-cloudsync">
-  <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('cloudsync')">&#8249;</div><div class="t">Cloud Sync <small>浜戠淇濆瓨</small></div></div>
+  <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('cloudsync')">&#8249;</div><div class="t">Cloud Sync <small>云端保存</small></div></div>
   <div class="sheet-body cloud-sync-body">
     <div class="cloud-sync-card">
-      <div class="cloud-sync-title">Encrypted Account Save <small>鍔犲瘑璐﹀彿淇濆瓨</small></div>
-      <div class="cloud-sync-sub">浜鸿銆佽亰澶┿€丄PI 璁剧疆銆佹彃浠跺浘鐗囥€佸绾稿拰璐寸焊浼氬湪鏈祻瑙堝櫒鍔犲瘑鍚庡啀涓婁紶銆?/div>
-      <div class="cloud-sync-account">Account 璐﹀彿锛?b id="cloud-current-email">Not signed in 鏈櫥褰?/b></div>
-      <div id="cloud-sync-status" class="cloud-sync-status">鐧诲綍鎴栧垱寤鸿处鍙峰悗鍚敤浜戠淇濆瓨銆?/div>
+      <div class="cloud-sync-title">Encrypted Account Save <small>加密账号保存</small></div>
+      <div class="cloud-sync-sub">人设、聊天、API 设置、插件图片、壁纸和贴纸会在本浏览器加密后再上传。</div>
+      <div class="cloud-sync-account">Account 账号b id="cloud-current-email">Not signed in 未登</b></div>
+      <div id="cloud-sync-status" class="cloud-sync-status">登录或创建账号后启用云端保存</div>
     </div>
     <div class="cloud-sync-card" id="cloud-auth-box">
-      <label class="cloud-sync-label">Email / 閭</label>
+      <label class="cloud-sync-label">Email / 邮箱</label>
       <input id="cloud-email" class="cloud-sync-input" type="email" placeholder="you@example.com" autocomplete="email">
-      <label class="cloud-sync-label">Password / 瀵嗙爜</label>
-      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="鑷冲皯 8 浣嶅瓧绗? autocomplete="current-password">
+      <label class="cloud-sync-label">Password / 密码</label>
+      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="至少 8 位字 autocomplete="current-password">
 
       <label class="cloud-sync-label">Invite Code / ???</label>
 
       <input id="cloud-invite" class="cloud-sync-input" placeholder="123456" maxlength="20" autocomplete="off">
-      <button id="cloud-login-btn" class="cloud-sync-btn primary" onclick="cloudLogin()">Sign In / 鐧诲綍</button>
-      <button id="cloud-register-btn" class="cloud-sync-btn" onclick="cloudRegister()">Create Account / 鍒涘缓璐﹀彿</button>
+      <button id="cloud-login-btn" class="cloud-sync-btn primary" onclick="cloudLogin()">Sign In / 登录</button>
+      <button id="cloud-register-btn" class="cloud-sync-btn" onclick="cloudRegister()">Create Account / 创建账号</button>
     </div>
     <div class="cloud-sync-card" id="cloud-action-box" style="display:none;">
-      <button id="cloud-upload-btn" class="cloud-sync-btn primary" onclick="cloudUploadNow()">Upload / 涓婁紶鏈満鏁版嵁</button>
-      <button id="cloud-restore-btn" class="cloud-sync-btn" onclick="cloudRestoreNow()">Restore / 鎭㈠浜戠鏁版嵁</button>
-      <button id="cloud-logout-btn" class="cloud-sync-btn danger" onclick="cloudLogout()">Sign Out / 閫€鍑虹櫥褰?/button>
+      <button id="cloud-upload-btn" class="cloud-sync-btn primary" onclick="cloudUploadNow()">Upload / 上传本机数据</button>
+      <button id="cloud-restore-btn" class="cloud-sync-btn" onclick="cloudRestoreNow()">Restore / 恢复云端数据</button>
+      <button id="cloud-logout-btn" class="cloud-sync-btn danger" onclick="cloudLogout()">Sign Out / 逢出登</button>
     </div>
   </div>
 </div>
 
   <!-- ================= SHEET: MODEL API (LLM) ================= -->
   <div class="sheet" id="sheet-datamgr">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('datamgr')">&#8249;</div><div class="t">Data Manager <small>鏁版嵁绠＄悊</small></div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('datamgr')">&#8249;</div><div class="t">Data Manager <small>数据管理</small></div></div>
     <div class="sheet-body data-manager-body">
-      <div class="settings-note">浜鸿銆佽亰澶┿€丄PI銆佹彃浠跺浘鐗囦細浼樺厛淇濆瓨鍦ㄦ湰鏈烘祻瑙堝櫒鏁版嵁搴撱€傛崲璁惧鏃惰閰嶅悎 Cloud Sync 鎴栧鍑烘湰鏈哄揩鐓с€?/div>
-      <div class="settings-section-title">Storage / 瀛樺偍缁熻</div>
+      <div class="settings-note">人设、聊天、API、插件图片会优先保存在本机浏览器数据库，换设备时请配合 Cloud Sync 或导出本机快照。</div>
+      <div class="settings-section-title">Storage / 存储统计</div>
       <div class="data-stat-grid">
-        <div class="data-stat"><b id="dm-api-count">0</b><small>API 閰嶇疆</small></div>
-        <div class="data-stat"><b id="dm-contact-count">0</b><small>浜鸿鑱旂郴浜?/small></div>
-        <div class="data-stat"><b id="dm-chat-count">0</b><small>鑱婂ぉ娑堟伅</small></div>
-        <div class="data-stat"><b id="dm-asset-size">0 KB</b><small>鍥剧墖涓庢彃浠?/small></div>
+        <div class="data-stat"><b id="dm-api-count">0</b><small>API 配置</small></div>
+        <div class="data-stat"><b id="dm-contact-count">0</b><small>人设联系</small></div>
+        <div class="data-stat"><b id="dm-chat-count">0</b><small>聊天消息</small></div>
+        <div class="data-stat"><b id="dm-asset-size">0 KB</b><small>图片与插</small></div>
       </div>
-      <div class="settings-section-title">Backup & Restore / 澶囦唤涓庢仮澶?/div>
-      <button type="button" class="data-action primary" onclick="dataManagerExportSnapshot()">Export Local Snapshot (.JSON) / 瀵煎嚭鏈満蹇収</button>
-      <button type="button" class="data-action" onclick="dataManagerSaveNow()">Save Current Device Now / 绔嬪嵆鍐欏叆鏈満</button>
-      <button type="button" class="data-action" onclick="dataManagerOpenCloud()">Open Cloud Sync / 鎵撳紑浜戠鍚屾</button>
-      <div class="settings-section-title">Health Check / 鏁版嵁浣撴</div>
-      <button type="button" class="data-action" onclick="dataManagerCheckStorage()">Check Local Storage / 妫€鏌ユ湰鏈轰繚瀛?/button>
-      <div class="data-manager-status" id="dm-status">绛夊緟妫€鏌ャ€?/div>
+      <div class="settings-section-title">Backup & Restore / 备份与恢</div>
+      <button type="button" class="data-action primary" onclick="dataManagerExportSnapshot()">Export Local Snapshot (.JSON) / 导出本机快照</button>
+      <button type="button" class="data-action" onclick="dataManagerSaveNow()">Save Current Device Now / 立即写入本机</button>
+      <button type="button" class="data-action" onclick="dataManagerOpenCloud()">Open Cloud Sync / 打开云端同步</button>
+      <div class="settings-section-title">Health Check / 数据体检</div>
+      <button type="button" class="data-action" onclick="dataManagerCheckStorage()">Check Local Storage / 棢查本机保</button>
+      <div class="data-manager-status" id="dm-status">等待棢查</div>
     </div>
   </div>
 
@@ -1004,14 +1000,14 @@
 
   <!-- ================= SHEET: TTS VOICE ================= -->
   <div class="sheet" id="sheet-ttscfg">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('ttscfg')">&#8249;</div><div class="t">TTS Voice <small>璇煶鎺ュ彛</small></div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('ttscfg')">&#8249;</div><div class="t">TTS Voice <small>语音接口</small></div></div>
     <div class="sheet-body">
-      <div class="cfg-sec">TTS / Voice API <small>瑙掕壊璇煶鏈嶅姟</small></div>
-      <div class="field-label">TTS / Voice 鏈嶅姟鍟?/div>
+      <div class="cfg-sec">TTS / Voice API <small>角色语音服务</small></div>
+      <div class="field-label">TTS / Voice 服务</div>
       <select class="field-input" id="cfg-tts-provider" onchange="cfgSwitchTTS()">
         <option value="elevenlabs">ElevenLabs</option>
         <option value="minimax">MiniMax</option>
-        <option value="custom">鑷畾涔変腑杞珯 (Custom Relay)</option>
+        <option value="custom">自定义中转站 (Custom Relay)</option>
       </select>
       <div id="cfg-tts-eleven">
         <input class="field-input" id="cfg-11l-key" placeholder="ElevenLabs API Key">
@@ -1023,8 +1019,8 @@
         <input class="field-input" id="cfg-mm-model" placeholder="Model ID" value="speech-01">
       </div>
       <div id="cfg-tts-custom" style="display:none;">
-        <div class="field-label" style="color:#FF9500;">鑷畾涔変腑杞珯 (鍥藉唴涓浆绔?</div>
-        <input class="field-input" id="cfg-tts-custom-endpoint" placeholder="TTS 涓浆绔欏湴鍧€ (https://your-tts-relay/...)">
+        <div class="field-label" style="color:#FF9500;">自定义中转站 (国内中转</div>
+        <input class="field-input" id="cfg-tts-custom-endpoint" placeholder="TTS 中转站地坢 (https://your-tts-relay/...)">
         <input class="field-input" id="cfg-tts-custom-key" placeholder="API Key">
         <input class="field-input" id="cfg-tts-custom-voice" placeholder="Voice ID / Speaker">
       </div>
@@ -1032,120 +1028,120 @@
             <button type="button" class="api-test-btn" onclick="cfgTestTTS()">&#27979;&#35797;&#35821;&#38899;&#36830;&#25509; / Test Voice</button>
       <div id="cfg-tts-test-status" style="text-align:center;font-size:11px;color:var(--ink-faint);margin:8px 0 10px;min-height:16px;">&#20445;&#23384;&#21518;&#23545;&#32842;&#22825;&#12289;&#30005;&#35805;&#21644; GO &#30452;&#25773;&#36830;&#40614;&#20840;&#23616;&#29983;&#25928;</div>
 
-<div class="field-label">Voice ID per Persona / 姣忎釜浜鸿鐨勮闊?ID</div>
+<div class="field-label">Voice ID per Persona / 每个人设的语ID</div>
       <div id="cfg-voice-ids"></div>
 
-      <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin:8px 0 4px;">宸蹭繚瀛樺湪鏈満 路 瀵规墍鏈夎鑹茬敓鏁?/div>
+      <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin:8px 0 4px;">已保存在本机 · 对所有角色生</div>
     </div>
     <div class="save-foot">
-      <div class="big-btn" onclick="cfgSaveAll()">淇濆瓨骞跺簲鐢?(Save &amp; Apply)</div>
+      <div class="big-btn" onclick="cfgSaveAll()">保存并应(Save &amp; Apply)</div>
     </div>
   </div>
 
   <!-- ================= SHEET: FONT & COLOR ================= -->
   <div class="sheet" id="sheet-fontcfg">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('fontcfg')">&#8249;</div><div class="t">Fonts &amp; Color <small>瀛椾綋涓庨鑹?/small></div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('fontcfg')">&#8249;</div><div class="t">Fonts &amp; Color <small>字体与颜</small></div></div>
     <div class="sheet-body">
-      <div class="cfg-sec">Fonts <small>瀛椾綋鏍峰紡</small></div>
-      <div class="field-label">瀛椾綋鏍峰紡</div>
+      <div class="cfg-sec">Fonts <small>字体样式</small></div>
+      <div class="field-label">字体样式</div>
       <select class="field-input" id="cfg-font-family" onchange="cfgFontPreview()">
-        <option value="">绯荤粺榛樿 (System)</option>
+        <option value="">系统默认 (System)</option>
         <option value="'Quicksand',sans-serif">Quicksand</option>
         <option value="'Nunito',sans-serif">Nunito</option>
         <option value="'Inter',sans-serif">Inter</option>
-        <option value="'PingFang SC','Microsoft YaHei',sans-serif">鑻规柟 / 闆呴粦</option>
-        <option value="__custom__">鑷畾涔変笂浼犲瓧浣撯€?/option>
+        <option value="'PingFang SC','Microsoft YaHei',sans-serif">苹方 / 雅黑</option>
+        <option value="__custom__">自定义上传字体</option>
       </select>
       <input type="file" id="cfg-font-upload" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="uploadFontFile(event)">
       <div id="cfg-font-name" style="font-size:11px;color:var(--ink-faint);margin:4px 2px 0;min-height:14px;"></div>
       <div style="margin-top:12px;padding:16px;border:1px solid var(--separator);border-radius:14px;background:#fff;color:var(--app-text-color);" id="cfg-font-preview">
-        <div style="font-size:18px;font-weight:800;font-family:var(--app-font);">Aa 瀛椾綋棰勮 Preview 123</div>
-        <div style="font-size:13px;margin-top:6px;font-family:var(--app-font);">杩欐槸涓€娈电ず渚嬫枃瀛楋紝鐢ㄦ潵棰勮褰撳墠瀛椾綋涓庨鑹叉晥鏋溿€?/div>
+        <div style="font-size:18px;font-weight:800;font-family:var(--app-font);">Aa 字体预览 Preview 123</div>
+        <div style="font-size:13px;margin-top:6px;font-family:var(--app-font);">这是丢段示例文字，用来预览当前字体与颜色效果</div>
       </div>
 
-      <div class="cfg-sec" style="margin-top:16px;">Text Color <small>瀛椾綋棰滆壊</small></div>
-      <div class="field-label">瀛椾綋棰滆壊</div>
+      <div class="cfg-sec" style="margin-top:16px;">Text Color <small>字体颜色</small></div>
+      <div class="field-label">字体颜色</div>
       <input type="color" id="cfg-font-color" style="width:100%;height:44px;border:1px solid var(--separator);border-radius:12px;background:#fff;cursor:pointer;" onchange="cfgFontPreview()">
-      <div style="font-size:11px;color:var(--ink-faint);margin:6px 2px 0;">鍏ㄥ眬鏂囧瓧棰滆壊绔嬪嵆鐢熸晥锛堟皵娉°€佸垪琛ㄣ€佽缃瓑锛?/div>
+      <div style="font-size:11px;color:var(--ink-faint);margin:6px 2px 0;">全局文字颜色立即生效（气泡?列表?设置等</div>
 
-      <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin:14px 0 4px;">宸蹭繚瀛樺湪鏈満 路 绔嬪嵆鐢熸晥</div>
+      <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin:14px 0 4px;">已保存在本机 · 立即生效</div>
     </div>
     <div class="save-foot">
-      <div class="big-btn" onclick="cfgSaveFont()">淇濆瓨骞跺簲鐢?(Save &amp; Apply)</div>
+      <div class="big-btn" onclick="cfgSaveFont()">保存并应(Save &amp; Apply)</div>
     </div>
   </div>
 
-  <!-- ================= SHEET: GAME SPACE (娓告垙绌洪棿) ================= -->
+  <!-- ================= SHEET: GAME SPACE (游戏空间) ================= -->
   <div class="sheet" id="sheet-game">
     <div class="sheet-top" style="background:transparent;border-color:rgba(255,255,255,0.08);color:#fff;">
-      <div class="back-btn" style="color:#fff;" onclick="closeSheet('game')">鈥?/div>
-      <div class="t" style="color:#fff;">娓告垙绌洪棿</div>
-      <div class="icobtn" style="color:#fff;" onclick="gameToggleVoice()">馃帣</div>
+      <div class="back-btn" style="color:#fff;" onclick="closeSheet('game')"></div>
+      <div class="t" style="color:#fff;">游戏空间</div>
+      <div class="icobtn" style="color:#fff;" onclick="gameToggleVoice()">🎙</div>
     </div>
     <div class="sheet-body" style="padding:0;overflow-y:auto;" class="game-bg">
       <!-- Permission cards -->
       <div class="game-perm" id="game-perms">
-        <div class="perm-card" id="perm-notif" onclick="gameReqNotif()"><div class="icon">馃敂</div><div class="label">閫氱煡鏉冮檺</div></div>
-        <div class="perm-card" id="perm-overlay" onclick="gameReqOverlay()"><div class="icon">馃獰</div><div class="label">娴獥鏉冮檺</div></div>
+        <div class="perm-card" id="perm-notif" onclick="gameReqNotif()"><div class="icon">🔔</div><div class="label">通知权限</div></div>
+        <div class="perm-card" id="perm-overlay" onclick="gameReqOverlay()"><div class="icon">🪟</div><div class="label">浮窗权限</div></div>
       </div>
       <!-- Game list -->
       <div class="game-grid-2">
-        <div class="game-tile" onclick="gameLaunch('鐜嬭€呰崳鑰€','wzry')"><div class="icon"><img src="app鍥炬爣/81776dbe5d1078f20187cfdcaa013da3.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">鐜嬭€呰崳鑰€</div><div class="size">3.2GB</div><div class="tag hot">鐑棬</div></div>
-        <div class="game-tile" onclick="gameLaunch('鍜屽钩绮捐嫳','hpjy')"><div class="icon"><img src="app鍥炬爣/31d250bab8b2b338233b212a08e1adb2.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">鍜屽钩绮捐嫳</div><div class="size">2.8GB</div><div class="tag hot">鐑棬</div></div>
-        <div class="game-tile" onclick="gameLaunch('绗簲浜烘牸','dwrg')"><div class="icon"><img src="app鍥炬爣/91f1f9bd51fde24096abce5821bf7782.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">绗簲浜烘牸</div><div class="size">1.8GB</div><div class="tag new">鏂拌禌瀛?/div></div>
-        <div class="game-tile" onclick="gameLaunch('璐悆铔?,'tss')"><div class="icon"><img src="app鍥炬爣/7d93036facb4f2c9560a4356fcb55903.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">璐悆铔囧ぇ浣滄垬</div><div class="size">380MB</div><div class="tag">浼戦棽</div></div>
-        <div class="game-tile" onclick="gameLaunch('閲戦摬閾蹭箣鎴?,'jcc')"><div class="icon"><img src="app鍥炬爣/227973c4e3fe745ddf14dba70342a637.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">閲戦摬閾蹭箣鎴?/div><div class="size">2.1GB</div><div class="tag hot">鑷蛋妫?/div></div>
-        <div class="game-tile" onclick="gameLaunch('鍘熺','ys')"><div class="icon"><img src="app鍥炬爣/804075b38202693cf7ce30d5f8f3612b.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">鍘熺</div><div class="size">18GB</div><div class="tag new">鏂扮増鏈?/div></div>
-        <div class="game-tile" onclick="gameLaunch('鍏夐亣','gy')"><div class="icon"><img src="app鍥炬爣/9b73662bb9c338e98d4a6e01fc6d8dae.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">鍏壜烽亣</div><div class="size">1.5GB</div><div class="tag">娌绘剤</div></div>
-        <div class="game-tile" onclick="gameStartTruth()" style="border-color:rgba(233,69,96,0.3);"><div class="icon">馃挊</div><div class="name">鐪熷績璇濆ぇ鍐掗櫓</div><div class="size">鈭?/div><div class="tag hot">浜掑姩</div></div>
-        <div class="game-tile" onclick="gameStartGomoku()" style="border-color:rgba(255,255,255,0.2);"><div class="icon">鈿?/div><div class="name">浜斿瓙妫?/div><div class="size">瀵规垬</div><div class="tag new">AI瀵规垬</div></div>
+        <div class="game-tile" onclick="gameLaunch('王?荣耢','wzry')"><div class="icon"><img src="app图标/81776dbe5d1078f20187cfdcaa013da3.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">王?荣耢</div><div class="size">3.2GB</div><div class="tag hot">热门</div></div>
+        <div class="game-tile" onclick="gameLaunch('和平精英','hpjy')"><div class="icon"><img src="app图标/31d250bab8b2b338233b212a08e1adb2.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">和平精英</div><div class="size">2.8GB</div><div class="tag hot">热门</div></div>
+        <div class="game-tile" onclick="gameLaunch('第五人格','dwrg')"><div class="icon"><img src="app图标/91f1f9bd51fde24096abce5821bf7782.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">第五人格</div><div class="size">1.8GB</div><div class="tag new">新赛</div></div>
+        <div class="game-tile" onclick="gameLaunch('贪吃,'tss')"><div class="icon"><img src="app图标/7d93036facb4f2c9560a4356fcb55903.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">贪吃蛇大作战</div><div class="size">380MB</div><div class="tag">休闲</div></div>
+        <div class="game-tile" onclick="gameLaunch('金铲铲之,'jcc')"><div class="icon"><img src="app图标/227973c4e3fe745ddf14dba70342a637.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">金铲铲之</div><div class="size">2.1GB</div><div class="tag hot">自走</div></div>
+        <div class="game-tile" onclick="gameLaunch('原神','ys')"><div class="icon"><img src="app图标/804075b38202693cf7ce30d5f8f3612b.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">原神</div><div class="size">18GB</div><div class="tag new">新版</div></div>
+        <div class="game-tile" onclick="gameLaunch('光遇','gy')"><div class="icon"><img src="app图标/9b73662bb9c338e98d4a6e01fc6d8dae.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;"></div><div class="name">光·遇</div><div class="size">1.5GB</div><div class="tag">治愈</div></div>
+        <div class="game-tile" onclick="gameStartTruth()" style="border-color:rgba(233,69,96,0.3);"><div class="icon">💘</div><div class="name">真心话大冒险</div><div class="size"></div><div class="tag hot">互动</div></div>
+        <div class="game-tile" onclick="gameStartGomoku()" style="border-color:rgba(255,255,255,0.2);"><div class="icon"></div><div class="name">五子</div><div class="size">对战</div><div class="tag new">AI对战</div></div>
       </div>
       <!-- Voice panel -->
       <div class="game-voice-panel" id="game-voice-panel" style="display:none;">
-        <div style="font-weight:700;font-size:14px;">馃帣 璇煶閫氳瘽涓?路 <span id="game-v-contact-name"></span></div>
-        <div class="v-status" id="game-v-status">杩炴帴涓€?/div>
+        <div style="font-weight:700;font-size:14px;">🎙 语音通话· <span id="game-v-contact-name"></span></div>
+        <div class="v-status" id="game-v-status">连接中</div>
         <div class="v-wave" id="game-v-wave"></div>
         <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
-          <div class="buy-btn" style="background:#e94560;" onclick="gameToggleVoice()">鎸傛柇</div>
-          <div class="buy-btn" style="background:rgba(255,255,255,0.1);" onclick="gameComplain()">馃挰 鍚愭Ы</div>
-          <div class="buy-btn" style="background:rgba(255,255,255,0.1);" onclick="gameMinimizeVoice()">馃斀 鍚庡彴閫氳瘽</div>
+          <div class="buy-btn" style="background:#e94560;" onclick="gameToggleVoice()">挂断</div>
+          <div class="buy-btn" style="background:rgba(255,255,255,0.1);" onclick="gameComplain()">💬 吐槽</div>
+          <div class="buy-btn" style="background:rgba(255,255,255,0.1);" onclick="gameMinimizeVoice()">🔽 后台通话</div>
         </div>
       </div>
       <!-- Chat log -->
       <div class="game-chat-log" id="game-chat-log"></div>
       <!-- Sub games -->
       <div id="game-subview" style="display:none;padding:0 16px 16px;">
-        <div style="padding:8px 0;display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="gameCloseSub()">鈥?<span style="font-size:13px;font-weight:700;">杩斿洖娓告垙鍒楄〃</span></div>
+        <div style="padding:8px 0;display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="gameCloseSub()"><span style="font-size:13px;font-weight:700;">返回游戏列表</span></div>
         <!-- Truth or Dare -->
         <div id="game-truth" class="truth-game" style="display:none;"></div>
         <!-- Gomoku -->
         <div id="game-gomoku" style="display:none;">
-          <div class="gomoku-score"><span>鈿?浣狅細<b id="gscore-black">0</b></span><span>鈿?AI锛?b id="gscore-white">0</b></span></div>
+          <div class="gomoku-score"><span>你：<b id="gscore-black">0</b></span><span>AIb id="gscore-white">0</b></span></div>
           <div class="gomoku-board" id="gomoku-board"></div>
-          <div style="text-align:center;font-size:12px;opacity:.6;margin-top:8px;" id="gomoku-status">浣犵殑鍥炲悎</div>
-          <div class="buy-btn" style="width:100%;margin-top:8px;text-align:center;" onclick="gameStartGomoku()">馃攧 閲嶆柊寮€濮?/div>
+          <div style="text-align:center;font-size:12px;opacity:.6;margin-top:8px;" id="gomoku-status">你的回合</div>
+          <div class="buy-btn" style="width:100%;margin-top:8px;text-align:center;" onclick="gameStartGomoku()">🔄 重新弢</div>
         </div>
       </div>
       <!-- TTS Config -->
       <div class="tts-config" id="game-tts-config">
-        <div style="font-weight:700;font-size:13px;margin-bottom:8px;">鈿欙笍 TTS 璇煶閰嶇疆</div>
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px;">⚙️ TTS 语音配置</div>
         <div class="field"><label>ElevenLabs API Key</label><input id="tts-api-key" placeholder="sk-..." value=""></div>
         <div class="field"><label>Voice ID</label><input id="tts-voice-id" placeholder="21m00Tcm4TlvDq8ikWAM" value=""></div>
         <div style="display:flex;gap:8px;">
-          <div class="buy-btn" style="background:#4ade80;flex:1;text-align:center;" onclick="gameSaveTTS()">馃捑 淇濆瓨閰嶇疆</div>
-          <div class="buy-btn" style="background:rgba(255,255,255,0.1);flex:1;text-align:center;" onclick="gameTestTTS()">馃攰 娴嬭瘯</div>
+          <div class="buy-btn" style="background:#4ade80;flex:1;text-align:center;" onclick="gameSaveTTS()">💾 保存配置</div>
+          <div class="buy-btn" style="background:rgba(255,255,255,0.1);flex:1;text-align:center;" onclick="gameTestTTS()">🔊 测试</div>
         </div>
       </div>
       <!-- Contact selector -->
       <div class="game-contact-row" style="cursor:pointer;" onclick="gamePickContact()">
-        <div class="av" id="game-contact-av" style="background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;">锛?/div>
-        <div style="flex:1;"><div style="font-size:13px;font-weight:700;" id="game-contact-name">閫夋嫨闃熷弸</div><div style="font-size:10px;opacity:.5;">鍜孴A涓€璧峰紑榛?/div></div>
-        <div style="font-size:11px;opacity:.4;">鈥?/div>
+        <div class="av" id="game-contact-av" style="background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;"></div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;" id="game-contact-name">选择队友</div><div style="font-size:10px;opacity:.5;">和TA丢起开</div></div>
+        <div style="font-size:11px;opacity:.4;"></div>
       </div>
     </div>
   </div>
 
-  <!-- ================= SHEET: COUPLE SPACE (鎯呬荆绌洪棿) v2 ================= -->
+  <!-- ================= SHEET: COUPLE SPACE (情侣空间) v2 ================= -->
   <div class="sheet" id="sheet-couple">
     <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('couple')">&#8249;</div><div class="t">Couple Space</div><div class="icobtn glass-strong" onclick="coupleCheckin()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 00-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 00-8-8z"/></svg></div></div>
     <div class="sheet-body" style="padding:0;overflow-y:auto;" id="couple-body">
@@ -1158,18 +1154,18 @@
           </div>
           <div style="font-size:18px;font-weight:700;" id="couple-names">You & Partner</div>
           <div style="font-size:12px;color:#888;margin-top:2px;" id="couple-days">Together 100 days</div>
-          <div style="margin-top:6px;font-size:11px;color:#e94560;cursor:pointer;font-weight:600;" onclick="coupleSwitchPartner()">鍒囨崲缁戝畾鑱旂郴浜?鈥?/div>
+          <div style="margin-top:6px;font-size:11px;color:#e94560;cursor:pointer;font-weight:600;" onclick="coupleSwitchPartner()">切换绑定联系</div>
         </div>
         <div style="padding:8px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleCheckin()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="checkin" style="width:40px;height:40px;border-radius:50%;background:#ff6b81;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">鏌ュ矖</div><div class="row-arrow">鈥?/div></div></div>
-          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleLocation()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="location" style="width:40px;height:40px;border-radius:50%;background:#34c759;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">瀹炴椂浣嶇疆</div><div class="row-arrow">鈥?/div></div></div>
-          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleViewDiary()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="diary" style="width:40px;height:40px;border-radius:50%;background:#ff9500;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">鎴戠殑鏃ヨ</div><div class="row-arrow">鈥?/div></div></div>
-          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleViewNotes()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="notes" style="width:40px;height:40px;border-radius:50%;background:#5856d6;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">鎴戠殑澶囧繕褰?/div><div class="row-arrow">鈥?/div></div></div>
-          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleShop()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="shop" style="width:40px;height:40px;border-radius:50%;background:#ff2d55;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">鎴戠殑璐墿杞?/div><div class="row-arrow">鈥?/div></div></div>
-          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleFood()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="food" style="width:40px;height:40px;border-radius:50%;background:#ffcc00;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">缁欏鏂圭偣澶栧崠</div><div class="row-arrow">鈥?/div></div></div>
-          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleScreenTime()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="screentime" style="width:40px;height:40px;border-radius:50%;background:#5ac8fa;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">灞忓箷浣跨敤鏃堕暱</div><div class="row-arrow">鈥?/div></div></div>
-          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleManageContacts()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="contacts" style="width:40px;height:40px;border-radius:50%;background:#007aff;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">绠＄悊鑱旂郴浜?/div><div class="row-arrow">鈥?/div></div></div>
-          <div class="ios-section" style="margin:0;cursor:pointer;grid-column:1 / span 2;" onclick="coupleIcons()"><div class="ios-row"><div class="row-icon" style="width:40px;height:40px;border-radius:50%;background:#8e8e93;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;">璁?/div><div class="row-label">鑷畾涔夊浘鏍?/div><div class="row-arrow">鈥?/div></div></div>
+          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleCheckin()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="checkin" style="width:40px;height:40px;border-radius:50%;background:#ff6b81;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">查岗</div><div class="row-arrow"></div></div></div>
+          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleLocation()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="location" style="width:40px;height:40px;border-radius:50%;background:#34c759;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">实时位置</div><div class="row-arrow"></div></div></div>
+          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleViewDiary()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="diary" style="width:40px;height:40px;border-radius:50%;background:#ff9500;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">我的日记</div><div class="row-arrow"></div></div></div>
+          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleViewNotes()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="notes" style="width:40px;height:40px;border-radius:50%;background:#5856d6;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">我的备忘</div><div class="row-arrow"></div></div></div>
+          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleShop()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="shop" style="width:40px;height:40px;border-radius:50%;background:#ff2d55;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">我的购物</div><div class="row-arrow"></div></div></div>
+          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleFood()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="food" style="width:40px;height:40px;border-radius:50%;background:#ffcc00;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">给对方点外卖</div><div class="row-arrow"></div></div></div>
+          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleScreenTime()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="screentime" style="width:40px;height:40px;border-radius:50%;background:#5ac8fa;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">屏幕使用时长</div><div class="row-arrow"></div></div></div>
+          <div class="ios-section" style="margin:0;cursor:pointer;" onclick="coupleManageContacts()"><div class="ios-row"><div class="row-icon cp-ico" data-mod="contacts" style="width:40px;height:40px;border-radius:50%;background:#007aff;display:flex;align-items:center;justify-content:center;"></div><div class="row-label">管理联系</div><div class="row-arrow"></div></div></div>
+          <div class="ios-section" style="margin:0;cursor:pointer;grid-column:1 / span 2;" onclick="coupleIcons()"><div class="ios-row"><div class="row-icon" style="width:40px;height:40px;border-radius:50%;background:#8e8e93;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;"></div><div class="row-label">自定义图</div><div class="row-arrow"></div></div></div>
         </div>
       </div>
       <div id="couple-subview" style="display:none;min-height:100%;background:#fafafa;">
@@ -1195,14 +1191,14 @@
     </div>
   </div>
 
-  <!-- ================= SHEET: FORUM (璁哄潧/鎷惧厜) ================= -->
+  <!-- ================= SHEET: FORUM (论坛/拾光) ================= -->
   <div class="sheet" id="sheet-forum">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('forum')">鈥?/div><div class="t">鎷惧厜 路 璁哄潧</div><div class="icobtn glass-strong" onclick="forumShowCompose()">鉁?/div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('forum')"></div><div class="t">拾光 · 论坛</div><div class="icobtn glass-strong" onclick="forumShowCompose()"></div></div>
     <div class="sheet-body" style="padding:0;display:flex;flex-direction:column;">
       <div class="forum-tabs">
-        <div class="forum-tab active" id="ft-reco" onclick="forumTab('reco')">鎺ㄨ崘</div>
-        <div class="forum-tab" id="ft-follow" onclick="forumTab('follow')">鍏虫敞</div>
-        <div class="forum-refresh" onclick="forumAIRefresh(true)">鎹竴鎵?/div>
+        <div class="forum-tab active" id="ft-reco" onclick="forumTab('reco')">推荐</div>
+        <div class="forum-tab" id="ft-follow" onclick="forumTab('follow')">关注</div>
+        <div class="forum-refresh" onclick="forumAIRefresh(true)">换一</div>
       </div>
       <!-- Feed view -->
       <div class="forum-feed" id="forum-feed"></div>
@@ -1210,117 +1206,117 @@
       <div class="forum-detail" id="forum-detail" style="display:none;"></div>
       <!-- Compose view -->
       <div class="forum-compose" id="forum-compose" style="display:none;">
-        <input id="fc-title" placeholder="鏍囬锛堝繀濉級">
-        <textarea id="fc-content" placeholder="鍐欎笅浣犳兂璇寸殑璇濃€?></textarea>
-        <input id="fc-tag" placeholder="鏍囩锛屽 鎯呮劅 鐢熸椿 涔﹁瘎">
-        <div class="big-btn" onclick="forumPost()">鍙戝竷</div>
-        <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;cursor:pointer;" onclick="forumShowFeed()">鍙栨秷</div>
+        <input id="fc-title" placeholder="标题（必填）">
+        <textarea id="fc-content" placeholder="写下你想说的话"></textarea>
+        <input id="fc-tag" placeholder="标签，如 情感 生活 书评">
+        <div class="big-btn" onclick="forumPost()">发布</div>
+        <div style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;cursor:pointer;" onclick="forumShowFeed()">取消</div>
       </div>
     </div>
   </div>
 
-  <!-- ================= SHEET: MUSIC PLAYER (缃戞槗浜戜竴璧峰惉) ================= -->
+  <!-- ================= SHEET: MUSIC PLAYER (网易云一起听) ================= -->
   <div class="sheet" id="sheet-music">
     <div class="sheet-top">
-      <div class="back-btn glass-strong" onclick="closeSheet('music')">鈥?/div>
-      <div class="t"><div class="main">涓€璧峰惉</div><div class="sub" id="music-status">姝ｅ湪鎾斁鈥?/div></div>
-      <div class="icobtn glass-strong" onclick="openMusicMenu()">鈰?/div>
+      <div class="back-btn glass-strong" onclick="closeSheet('music')"></div>
+      <div class="t"><div class="main">丢起听</div><div class="sub" id="music-status">正在播放</div></div>
+      <div class="icobtn glass-strong" onclick="openMusicMenu()"></div>
     </div>
     <div class="sheet-body" style="padding:0;overflow:hidden;display:flex;flex-direction:column;">
       <div class="music-player">
         <div class="music-bg" id="music-bg"></div>
         <div class="music-content">
-          <!-- 鍗曚竴鏍囬鏍忓凡绉昏嚦 sheet-top锛岄伩鍏嶄袱涓€滀竴璧峰惉鈥濋噸鍙?-->
+          <!-- 单一标题栏已移至 sheet-top，避免两个?一起听”重-->
           <div class="music-couple">
             <div class="music-couple-avatars">
               <div class="av" id="music-user-av"></div>
               <div class="av" id="music-partner-av"></div>
             </div>
-            <div class="music-couple-names"><span id="music-user-name">鎴?/span><span id="music-partner-name">閫夋嫨鐜╀即</span></div>
-            <div class="music-couple-meta" id="music-couple-meta">鐩歌窛鏈煡鍏噷锛屼竴璧峰惉浜?澶?/div>
+            <div class="music-couple-names"><span id="music-user-name"></span><span id="music-partner-name">选择玩伴</span></div>
+            <div class="music-couple-meta" id="music-couple-meta">相距未知公里，一起听</div>
           </div>
           <div class="music-disc-area">
             <div class="music-disc" id="music-disc">
               <div class="music-disc-inner" id="music-disc-inner">
-                <div class="music-disc-hole">鈾?/div>
+                <div class="music-disc-hole"></div>
               </div>
             </div>
-            <div class="music-lyrics" id="music-lyrics"><div class="line active">鐐瑰嚮 鈰?瀵煎叆鏈湴闊充箰鍜屾瓕璇?/div></div>
+            <div class="music-lyrics" id="music-lyrics"><div class="line active">点击 导入本地音乐和歌</div></div>
           </div>
           <div class="music-bottom">
             <div class="music-info">
-              <div class="title" id="music-title">鏆傛棤姝屾洸</div>
-              <div class="artist" id="music-artist">瀵煎叆鏈湴闊充箰寮€濮嬩竴璧峰惉</div>
-              <div class="rec" onclick="openMusicContact()">锛?鐐瑰嚮鎺ㄨ崘 / 閫夋嫨鐜╀即</div>
+              <div class="title" id="music-title">暂无歌曲</div>
+              <div class="artist" id="music-artist">导入本地音乐弢始一起听</div>
+              <div class="rec" onclick="openMusicContact()">点击推荐 / 选择玩伴</div>
             </div>
             <div class="music-progress">
               <div class="track" onclick="musicSeek(event)"><div class="fill" id="music-fill"></div></div>
               <div class="time-row"><span id="music-cur">0:00</span><span id="music-dur">0:00</span></div>
             </div>
             <div class="music-controls">
-              <div class="music-ctrl-btn" onclick="musicPrev()"><span class="skip">鈴?/span></div>
+              <div class="music-ctrl-btn" onclick="musicPrev()"><span class="skip"></span></div>
               <div class="music-ctrl-btn play" id="music-play-btn" onclick="musicToggle()"><div class="tri"></div></div>
-              <div class="music-ctrl-btn" onclick="musicNext()"><span class="skip">鈴?/span></div>
+              <div class="music-ctrl-btn" onclick="musicNext()"><span class="skip"></span></div>
             </div>
           </div>
           <div class="music-empty" id="music-empty" style="display:none;">
-            <div class="big">鈾?/div>
-            <div class="txt">杩欓噷杩樻病鏈夋瓕鏇?br>鐐瑰嚮鍙充笂瑙?鈰?瀵煎叆鏈湴闊充箰</div>
-            <div class="btn" onclick="openMusicMenu()">瀵煎叆闊充箰</div>
+            <div class="big"></div>
+            <div class="txt">这里还没有歌br>点击右上导入本地音乐</div>
+            <div class="btn" onclick="openMusicMenu()">导入音乐</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 瀵煎叆鐢ㄧ殑闅愯棌 file input -->
+    <!-- 导入用的隐藏 file input -->
     <input type="file" id="music-import-audio" accept="audio/*" style="display:none" onchange="musicImportAudio(this)">
     <input type="file" id="music-import-lrc" accept=".lrc" style="display:none" onchange="musicImportLrc(this)">
     <input type="file" id="music-import-bg" accept="image/*" style="display:none" onchange="musicImportBg(this)">
     <input type="file" id="music-import-cover" accept="image/*" style="display:none" onchange="musicImportCover(this)">
 
-    <!-- 鑿滃崟 -->
+    <!-- 菜单 -->
     <div class="music-menu-back" id="music-menu-back" onclick="closeMusicMenu()"></div>
     <div class="music-menu" id="music-menu">
-      <div class="item" onclick="musicTriggerImport('audio')">瀵煎叆鏈湴闊充箰</div>
-      <div class="item" onclick="musicTriggerImport('lrc')">瀵煎叆姝岃瘝 (.lrc)</div>
-      <div class="item" onclick="musicTriggerImport('cover')">瀵煎叆褰撳墠姝屾洸灏侀潰</div>
-      <div class="item" onclick="musicTriggerImport('bg')">鏇存崲鎾斁鍣ㄨ儗鏅?/div>
-      <div class="item" onclick="openMusicContact()">閫夋嫨涓€璧峰惉鐨勭帺浼?/div>
-      <div class="item" onclick="musicOpenNetease()">鎵撳紑缃戞槗浜戦煶涔?/div>
-      <div class="item" onclick="openMusicContact()">閫夋嫨涓€璧峰惉鐨勪汉</div>
-      <div class="item" onclick="toggleMusicPlaylist()">鏌ョ湅鎾斁鍒楄〃</div>
-      <div class="item danger" onclick="musicDeleteCurrent()">鍒犻櫎褰撳墠姝屾洸</div>
+      <div class="item" onclick="musicTriggerImport('audio')">导入本地音乐</div>
+      <div class="item" onclick="musicTriggerImport('lrc')">导入歌词 (.lrc)</div>
+      <div class="item" onclick="musicTriggerImport('cover')">导入当前歌曲封面</div>
+      <div class="item" onclick="musicTriggerImport('bg')">更换播放器背</div>
+      <div class="item" onclick="openMusicContact()">选择丢起听的玩</div>
+      <div class="item" onclick="musicOpenNetease()">打开网易云音</div>
+      <div class="item" onclick="openMusicContact()">选择丢起听的人</div>
+      <div class="item" onclick="toggleMusicPlaylist()">查看播放列表</div>
+      <div class="item danger" onclick="musicDeleteCurrent()">删除当前歌曲</div>
     </div>
 
-    <!-- 鎾斁鍒楄〃 -->
+    <!-- 播放列表 -->
     <div class="music-playlist" id="music-playlist">
-      <div class="head"><span>鎾斁鍒楄〃</span><span style="font-size:18px;cursor:pointer;" onclick="toggleMusicPlaylist()">脳</span></div>
+      <div class="head"><span>播放列表</span><span style="font-size:18px;cursor:pointer;" onclick="toggleMusicPlaylist()">×</span></div>
       <div id="music-playlist-rows" style="max-height:240px;overflow-y:auto;"></div>
-      <div class="add" onclick="musicTriggerImport('audio')">锛?瀵煎叆闊充箰</div>
+      <div class="add" onclick="musicTriggerImport('audio')">导入音乐</div>
     </div>
   </div>
 
-  <!-- ================= SHEET: NOVEL READER (灏忓湡璞嗗皬璇? ================= -->
+  <!-- ================= SHEET: NOVEL READER (小土豆小 ================= -->
   <div class="sheet" id="sheet-novel">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeNovel()">鈥?/div><div class="t">灏忓湡璞嗗皬璇?/div><div class="icobtn glass-strong" onclick="novelCall()" title="璇煶璁ㄨ"><div class="ico ico-call"></div></div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeNovel()"></div><div class="t">小土豆小</div><div class="icobtn glass-strong" onclick="novelCall()" title="语音讨论"><div class="ico ico-call"></div></div></div>
     <div class="sheet-body" style="display:flex;flex-direction:column;padding:0;overflow:hidden;">
       <!-- Step 1: Import -->
       <div id="novel-import" class="novel-import">
-        <div style="font-family:'Quicksand';font-weight:700;font-size:18px;">馃摉 瀵煎叆浣犵殑灏忚</div>
-        <div style="font-size:12px;color:var(--ink-soft);">鏀寔 .txt 鏂囦欢锛岄€夋嫨鍚庡紑濮嬮槄璇?/div>
+        <div style="font-family:'Quicksand';font-weight:700;font-size:18px;">📖 导入你的小说</div>
+        <div style="font-size:12px;color:var(--ink-soft);">支持 .txt 文件，?择后开始阅</div>
         <label class="drop">
           <input type="file" accept=".txt,text/plain" id="novel-file-input" style="display:none;" onchange="importNovel(event)">
-          <div style="font-size:40px;margin-bottom:8px;">锛?/div>
-          <div style="font-size:13px;font-weight:700;">鐐瑰嚮閫夋嫨 .txt 鏂囦欢</div>
+          <div style="font-size:40px;margin-bottom:8px;"></div>
+          <div style="font-size:13px;font-weight:700;">点击选择 .txt 文件</div>
         </label>
         <div id="novel-txt-preview" style="display:none;width:100%;max-height:200px;overflow-y:auto;font-size:12px;color:var(--ink-soft);line-height:1.8;padding:12px;background:rgba(0,0,0,0.02);border-radius:12px;"></div>
-        <div class="field-label" style="margin-top:12px;">閫夋嫨涓€璧烽槄璇荤殑 AI</div>
+        <div class="field-label" style="margin-top:12px;">选择丢起阅读的 AI</div>
         <div id="novel-contact-pick" class="novel-pick"></div>
-        <div class="big-btn" id="novel-start-btn" onclick="startReading()" style="display:none;">寮€濮嬮槄璇?/div>
+        <div class="big-btn" id="novel-start-btn" onclick="startReading()" style="display:none;">弢始阅</div>
       </div>
       <!-- Step 2: Reading -->
       <div id="novel-reader" class="novel-reader" style="display:none;">
-        <div class="novel-progress"><span id="novel-prog-text">绗?1 椤?/ 鍏?1 椤?/span> 路 <span id="novel-pct">0%</span></div>
+        <div class="novel-progress"><span id="novel-prog-text">1 </ 1 </span> · <span id="novel-pct">0%</span></div>
         <div style="position:relative;flex:1;min-height:0;">
           <div class="novel-text" id="novel-content" onclick="novelClick(event)"></div>
           <div style="position:absolute;left:6px;top:50%;margin-top:-16px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;font-weight:700;color:#888;" onclick="novelPrevPage()">&#8249;</div>
@@ -1329,8 +1325,8 @@
         <div class="novel-progress" id="novel-ai-msg" style="font-style:italic;">Ready to read...</div>
         <div class="novel-chat">
           <div class="icobtn glass-strong" onclick="novelCall()" title="Voice Call"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
-          <input id="novel-chat-input" placeholder="鍜?AI 鑱婅亰杩欐湰涔︹€? onkeydown="if(event.key==='Enter')novelSend()">
-          <div class="icobtn glass-strong" onclick="novelSend()">鈫?/div>
+          <input id="novel-chat-input" placeholder="AI 聊聊这本书 onkeydown="if(event.key==='Enter')novelSend()">
+          <div class="icobtn glass-strong" onclick="novelSend()"></div>
         </div>
       </div>
     </div>
@@ -1340,30 +1336,30 @@
 
 
 
-<!-- Word(.docx) 瑙ｆ瀽搴擄細浠呮柊寤轰汉璁惧鍏ユ枃妗ｆ椂浣跨敤锛涚绾挎椂鑷姩鎻愮ず鏀圭敤 .txt -->
+<!-- Word(.docx) 解析库：仅新建人设导入文档时使用；离线时自动提示改用 .txt -->
 
 
-<!-- 鎯呬荆绌洪棿 / 鍙屽悜鏌ュ矖 澶栭儴閫昏緫 -->
+<!-- 情侣空间 / 双向查岗 外部逻辑 -->
 
 
 
-  <!-- ================= SHEET: 鑱旂郴浜轰釜浜烘湅鍙嬪湀 ================= -->
+  <!-- ================= SHEET: 联系人个人朋友圈 ================= -->
   <div class="sheet" id="sheet-cp-moments">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('cp-moments')">鈥?/div><div class="t" id="cpm-title">鏈嬪弸鍦?/div><div class="icobtn glass-strong" onclick="openPostComposer('contact')" title="甯?TA 鍙戜竴鏉?><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('cp-moments')"></div><div class="t" id="cpm-title">朋友</div><div class="icobtn glass-strong" onclick="openPostComposer('contact')" title="TA 发一"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
     <div class="sheet-body cp-moments" style="padding:0;">
       <div class="cover" id="cpm-cover">
-        <div class="change" onclick="pickCpCover()">鏇存崲灏侀潰</div>
+        <div class="change" onclick="pickCpCover()">更换封面</div>
       </div>
       <div class="profile">
         <div class="row">
           <div class="avatar" id="cpm-avatar" onclick="pickProfileAvatar()"></div>
           <div class="name-row">
-            <div class="name" id="cpm-name">鑱旂郴浜?/div>
+            <div class="name" id="cpm-name">联系</div>
             <div class="wxid" id="cpm-wxid">WeChat ID: -</div>
           </div>
         </div>
       </div>
-      <div class="bio empty" id="cpm-bio" onclick="editContactBio()" style="cursor:pointer;">杩欎釜浜哄緢鎳掞紝杩樻病鏈夊啓涓€х鍚?/div>
+      <div class="bio empty" id="cpm-bio" onclick="editContactBio()" style="cursor:pointer;">这个人很懒，还没有写个?签</div>
       <div class="stat-bar">
         <div class="stat-item" onclick="openPostComposer('contact')"><div class="num" id="cpm-post-num">0</div><div class="lbl">post</div></div>
       </div>
@@ -1371,23 +1367,23 @@
     </div>
   </div>
 
-  <!-- ================= SHEET: 鎴戠殑鏈嬪弸鍦?================= -->
+  <!-- ================= SHEET: 我的朋友================= -->
   <div class="sheet" id="sheet-my-moments">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('my-moments')">鈥?/div><div class="t">鎴戠殑鏈嬪弸鍦?/div><div class="icobtn glass-strong" onclick="openPostComposer('me')" title="鍙戜竴鏉℃湅鍙嬪湀"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('my-moments')">&#8249;</div><div class="t">我的朋友圈</div><div class="icobtn glass-strong" onclick="openPostComposer('me')" title="发一条朋友圈"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
     <div class="sheet-body cp-moments" style="padding:0;">
       <div class="cover" id="mym-cover">
-        <div class="change" onclick="pickMyCover()">鏇存崲灏侀潰</div>
+        <div class="change" onclick="pickMyCover()">更换封面</div>
       </div>
       <div class="profile">
         <div class="row">
           <div class="avatar" id="mym-avatar" onclick="pickUserAvatar()"></div>
           <div class="name-row">
-            <div class="name" id="mym-name">鎴?/div>
+            <div class="name" id="mym-name"></div>
             <div class="wxid" id="mym-wxid">WeChat ID: -</div>
           </div>
         </div>
       </div>
-      <div class="bio empty" id="mym-bio" onclick="editMyBio()" style="cursor:pointer;">杩欎釜浜哄緢鎳掞紝杩樻病鏈夊啓涓€х鍚?/div>
+      <div class="bio empty" id="mym-bio" onclick="editMyBio()" style="cursor:pointer;">这个人很懒，还没有写个?签</div>
       <div class="stat-bar">
         <div class="stat-item" onclick="openPostComposer('me')"><div class="num" id="mym-post-num">0</div><div class="lbl">post</div></div>
       </div>
@@ -1395,30 +1391,30 @@
     </div>
   </div>
 
-  <!-- ================= SHEET: 鏈嬪弸鍦?Post 璇︽儏 ================= -->
+  <!-- ================= SHEET: 朋友Post 详情 ================= -->
   <div class="sheet" id="sheet-post-detail">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('post-detail')">鈥?/div><div class="t">鏈嬪弸鍦堣鎯?/div><div style="width:32px;"></div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('post-detail')">&#8249;</div><div class="t">朋友圈详情</div><div style="width:32px;"></div></div>
     <div class="sheet-body post-detail" style="padding:0;">
       <div id="pd-content"></div>
     </div>
   </div>
 
-  <!-- ================= SHEET: 鍙戞湅鍙嬪湀锛堣嚜宸?/ 甯仈绯讳汉鍙戯級 ================= -->
+  <!-- ================= SHEET: 发朋友圈（自</ 帮联系人发） ================= -->
   <div class="sheet" id="sheet-post-compose">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('post-compose')">鈥?/div><div class="t" id="pc-title">鍙戞湅鍙嬪湀</div><div class="big-btn" style="margin:0;padding:8px 16px;font-size:12px;" onclick="submitPost()">鍙戝竷</div></div>
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('post-compose')">&#8249;</div><div class="t" id="pc-title">发朋友圈</div><div class="big-btn" style="margin:0;padding:8px 16px;font-size:12px;" onclick="submitPost()">发布</div></div>
     <div class="sheet-body" style="padding:16px;">
-      <textarea id="pc-text" placeholder="璇寸偣浠€涔堚€? style="width:100%;min-height:120px;padding:12px;border:1px solid #eee;border-radius:12px;font-size:14px;line-height:1.6;background:#fff;"></textarea>
-      <div class="field-label">鍥剧墖锛堝彲閫夛紝鏈€澶?1 寮狅級</div>
+      <textarea id="pc-text" placeholder="说点仢么" style="width:100%;min-height:120px;padding:12px;border:1px solid #eee;border-radius:12px;font-size:14px;line-height:1.6;background:#fff;"></textarea>
+      <div class="field-label">图片（可选，朢1 张）</div>
       <input type="file" accept="image/*" id="pc-img" style="font-size:12px;">
       <div id="pc-img-preview" style="margin-top:8px;"></div>
-      <div class="field-label">浣嶇疆锛堝彲閫夛級</div>
-      <input id="pc-place" placeholder="濡傦細涓婃捣路寰愭眹" class="field-input">
-      <div class="field-label">鍙鑼冨洿</div>
-      <select id="pc-vis" class="field-input"><option value="鍏紑">鍏紑</option><option value="鏈嬪弸鍙">鏈嬪弸鍙</option><option value="浠呰嚜宸卞彲瑙?>浠呰嚜宸卞彲瑙?/option><option value="浠卽ser鍙">浠卽ser鍙</option><option value="浠卽ser涓嶅彲瑙?>浠卽ser涓嶅彲瑙?/option></select>
+      <div class="field-label">位置（可选）</div>
+      <input id="pc-place" placeholder="如：上海·徐汇" class="field-input">
+      <div class="field-label">可见范围</div>
+      <select id="pc-vis" class="field-input"><option value="公开">公开</option><option value="朋友可见">朋友可见</option><option value="仅自己可见">仅自己可见</option><option value="仅user可见">仅user可见</option><option value="仅user不可见">仅user不可见</option></select>
     </div>
   </div>
 
-<!-- ==================== 姊搱 SUOHA APP ==================== -->
+<!-- ==================== 梭哈 SUOHA APP ==================== -->
 <div class="sheet" id="sheet-suoha">
   <div class="sheet-body">
 
@@ -1426,106 +1422,106 @@
   <div class="suoha-page active" id="suoha-page-soul">
     <div class="suoha-header">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button class="suoha-back" onclick="closeSheet('suoha')" title="杩斿洖涓诲睆骞?>鈥?/button>
-        <div style="width:36px;height:36px;border-radius:50%;background:#1e1e1e;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;">姊?/div>
-        <span class="t">姊搱</span>
+        <button class="suoha-back" onclick="closeSheet('suoha')" title="返回主屏"></button>
+        <div style="width:36px;height:36px;border-radius:50%;background:#1e1e1e;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;"></div>
+        <span class="t">梭哈</span>
       </div>
-      <span class="wb" id="suoha-header-wallet">楼0.00</span>
+      <span class="wb" id="suoha-header-wallet">¥0.00</span>
     </div>
     <div class="suoha-main">
       <!-- WeChat Balance -->
       <div style="margin-bottom:16px;">
-        <div class="suoha-label">WeChat 浣欓</div>
-        <div class="suoha-balance"><span class="cur">楼</span><span id="suoha-wechat-balance">0.00</span></div>
+        <div class="suoha-label">WeChat 余额</div>
+        <div class="suoha-balance"><span class="cur">¥</span><span id="suoha-wechat-balance">0.00</span></div>
       </div>
       <!-- Withdraw -->
       <div class="suoha-card" style="margin-bottom:12px;">
-        <div class="suoha-label">鎻愮幇鍒版鍝堥挶鍖?/div>
+        <div class="suoha-label">提现到梭哈钱</div>
         <input id="suoha-withdraw-input" class="suoha-input" type="number" min="1" placeholder="0.00" oninput="suohaClampWithdraw()">
         <div class="suoha-quick">
-          <button onclick="suohaQuickAmount(1000)">楼1,000</button>
-          <button onclick="suohaQuickAmount(3000)">楼3,000</button>
-          <button onclick="suohaQuickAmount(5000)">楼5,000</button>
-          <button onclick="suohaQuickAmount(-1)">鍏ㄩ儴</button>
+          <button onclick="suohaQuickAmount(1000)">¥1,000</button>
+          <button onclick="suohaQuickAmount(3000)">¥3,000</button>
+          <button onclick="suohaQuickAmount(5000)">¥5,000</button>
+          <button onclick="suohaQuickAmount(-1)">全部</button>
         </div>
-        <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaWithdraw()">鎻愮幇鍒版鍝堥挶鍖?/button>
-        <button class="suoha-btn ghost" style="margin-top:8px;" onclick="suohaCashOut()">鎻愬洖 WeChat 浣欓</button>
+        <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaWithdraw()">提现到梭哈钱</button>
+        <button class="suoha-btn ghost" style="margin-top:8px;" onclick="suohaCashOut()">提回 WeChat 余额</button>
       </div>
       <!-- Boss -->
       <div class="suoha-boss" onclick="suohaOpenBoss()" style="margin-bottom:12px;">
         <div class="suoha-boss-inner">
-          <div class="emoji">馃帺</div>
-          <div class="t">鐐规垜寮€灞€</div>
-          <div class="s">o(>蠅<)o</div>
+          <div class="emoji">🎩</div>
+          <div class="t">点我弢屢</div>
+          <div class="s">o(>ω<)o</div>
         </div>
       </div>
       <!-- Active Loans -->
       <div id="suoha-loan-status" class="suoha-card suoha-hidden" style="border-color:rgba(186,26,26,0.2);background:rgba(186,26,26,0.05);margin-bottom:12px;">
-        <div class="suoha-label" style="color:#ba1a1a;">寰呰繕璐锋</div>
+        <div class="suoha-label" style="color:#ba1a1a;">待还贷款</div>
         <div id="suoha-loan-list"></div>
       </div>
       <!-- Cooldown -->
       <div id="suoha-cooldown" class="suoha-card suoha-hidden" style="text-align:center;margin-bottom:12px;">
-        <div style="font-size:24px;color:#ba1a1a;">嗖燺嗖?/div>
+        <div style="font-size:24px;color:#ba1a1a;">ಠ_</div>
         <div id="suoha-cooldown-text" style="font-size:13px;color:#666;margin-top:4px;"></div>
       </div>
-      <!-- 鏋侀€熻捶 -->
+      <!-- 极?贷 -->
       <div id="suoha-loan-section" class="suoha-card suoha-hidden" style="margin-bottom:12px;">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div class="suoha-label">鏋侀€熻捶</div>
-          <span id="suoha-loan-badge" style="font-size:11px;color:#22c55e;font-weight:600;">鍙敵璇?/span>
+          <div class="suoha-label">极?贷</div>
+          <span id="suoha-loan-badge" style="font-size:11px;color:#22c55e;font-weight:600;">可申</span>
         </div>
-        <p style="font-size:13px;color:#666;margin:6px 0;">WeChat 浣欓涓洪浂锛熷彲鐢宠涓存椂鍛ㄨ浆銆?/p>
+        <p style="font-size:13px;color:#666;margin:6px 0;">WeChat 余额为零？可申请临时周转</p>
         <div style="padding:8px;border:1px dashed rgba(186,26,26,0.3);border-radius:6px;margin:6px 0;">
-          <span style="font-size:11px;color:#ba1a1a;font-weight:600;">3 澶╁唴杩樻竻</span>
-          <p style="font-size:10px;color:#999;font-style:italic;margin-top:2px;">閫炬湡瑙﹀彂 72h 鍐峰嵈銆傕矤_嗖?/p>
+          <span style="font-size:11px;color:#ba1a1a;font-weight:600;">3 天内还清</span>
+          <p style="font-size:10px;color:#999;font-style:italic;margin-top:2px;">逾期触发 72h 冷却。ಠ_</p>
         </div>
-        <button class="suoha-btn primary" style="margin-top:8px;" onclick="suohaOpenLoan()">鐢宠鍊熸</button>
+        <button class="suoha-btn primary" style="margin-top:8px;" onclick="suohaOpenLoan()">申请借款</button>
       </div>
-      <!-- 鏋侀€熷€?(Boss high-interest) -->
+      <!-- 极?(Boss high-interest) -->
       <div id="suoha-bossloan-section" class="suoha-card" style="margin-bottom:12px;border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.05);">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div class="suoha-label" style="color:#92400e;">鏋侀€熷€?(鑰佹澘)</div>
-          <span id="suoha-bossloan-badge" style="font-size:11px;color:#92400e;font-weight:600;">鍙€?/span>
+          <div class="suoha-label" style="color:#92400e;">极?(老板)</div>
+          <span id="suoha-bossloan-badge" style="font-size:11px;color:#92400e;font-weight:600;">可</span>
         </div>
-        <p style="font-size:13px;color:#666;margin:6px 0;">鎵捐€佹澘鍊熼珮鍒╄捶锛屾棩鎭?10%锛? 澶╄繕娓呫€?/p>
+        <p style="font-size:13px;color:#666;margin:6px 0;">找?板借高利贷，日10% 天还清</p>
         <div style="padding:8px;border:1px dashed rgba(146,64,14,0.3);border-radius:6px;margin:6px 0;">
-          <span style="font-size:11px;color:#92400e;font-weight:600;">鈿?楂樺埄鎭?路 閫炬湡鍐峰嵈 72h</span>
-          <p style="font-size:10px;color:#999;font-style:italic;margin-top:2px;">瓒呰繃 楼1,000,000 绱浜忔崯涔熶細瑙﹀彂鍐峰嵈锛屾瘡 5 灏忔椂鑰佹澘寮圭獥璀﹀憡銆?/p>
+          <span style="font-size:11px;color:#92400e;font-weight:600;">高利· 逾期冷却 72h</span>
+          <p style="font-size:10px;color:#999;font-style:italic;margin-top:2px;">超过 ¥1,000,000 累计亏损也会触发冷却，每 5 小时老板弹窗警告</p>
         </div>
-        <button class="suoha-btn" style="margin-top:8px;border-color:#92400e;color:#92400e;" onclick="suohaOpenBossLoan()">鎵捐€佹澘鍊熼挶</button>
+        <button class="suoha-btn" style="margin-top:8px;border-color:#92400e;color:#92400e;" onclick="suohaOpenBossLoan()">找?板借钱</button>
       </div>
-      <!-- 鎼爾 -->
+      <!-- 搬砖 -->
       <div class="suoha-card" style="margin-bottom:12px;">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div class="suoha-label">鎼爾璧氶挶</div>
-          <span id="suoha-work-status" style="font-size:11px;color:rgba(68,71,72,0.5);">鍙惉鐮?/span>
+          <div class="suoha-label">搬砖赚钱</div>
+          <span id="suoha-work-status" style="font-size:11px;color:rgba(68,71,72,0.5);">可搬</span>
         </div>
-        <p style="font-size:13px;color:#666;margin:6px 0;">鐜╀縿缃楁柉鏂瑰潡锛屽畬缇庢嫾涓夎璧?楼200銆?/p>
-        <button class="suoha-btn" style="margin-top:8px;" onclick="suohaOpenTetris()">鍘绘惉鐮?/button>
+        <p style="font-size:13px;color:#666;margin:6px 0;">玩俄罗斯方块，完美拼三行¥200</p>
+        <button class="suoha-btn" style="margin-top:8px;" onclick="suohaOpenTetris()">去搬</button>
       </div>
-      <!-- 鍚戣仈绯讳汉鍊熸 -->
+      <!-- 向联系人借款 -->
       <div class="suoha-card" style="margin-bottom:12px;">
-        <div class="suoha-label">鍚戣仈绯讳汉鍊熸</div>
-        <p style="font-size:13px;color:#666;margin:6px 0;">姣忎釜鑱旂郴浜烘瘡澶╁彲鍊熶竴娆★紝鏈夊€熸湁杩樺啀鍊熶笉闅俱€?/p>
-        <button class="suoha-btn ghost" style="margin-top:8px;" onclick="suohaOpenContacts()">鏌ョ湅鑱旂郴浜?/button>
+        <div class="suoha-label">向联系人借款</div>
+        <p style="font-size:13px;color:#666;margin:6px 0;">每个联系人每天可借一次，有?有还再借不难</p>
+        <button class="suoha-btn ghost" style="margin-top:8px;" onclick="suohaOpenContacts()">查看联系</button>
       </div>
-      <!-- 杩樻 -->
+      <!-- 还款 -->
       <div class="suoha-card" style="margin-bottom:12px;">
-        <div class="suoha-label">杩樻</div>
-        <p style="font-size:13px;color:#666;margin:6px 0;">杩樻竻娆犳锛屾仮澶嶄俊瑾夈€?/p>
+        <div class="suoha-label">还款</div>
+        <p style="font-size:13px;color:#666;margin:6px 0;">还清欠款，恢复信誉</p>
         <div id="suoha-repay-list"></div>
       </div>
       <div style="text-align:center;padding:8px 0;">
-        <button style="font-size:11px;color:rgba(68,71,72,0.3);text-decoration:underline;background:none;border:none;cursor:pointer;" onclick="suohaReset()">閲嶇疆鍏ㄩ儴鏁版嵁</button>
+        <button style="font-size:11px;color:rgba(68,71,72,0.3);text-decoration:underline;background:none;border:none;cursor:pointer;" onclick="suohaReset()">重置全部数据</button>
       </div>
     </div>
     <div class="suoha-nav">
       <div class="suoha-nav-item active" id="suoha-nav-soul" onclick="suohaShow('soul')">
-        <span class="ico">馃挵</span><span>Soul</span>
+        <span class="ico">💰</span><span>Soul</span>
       </div>
       <div class="suoha-nav-item" id="suoha-nav-shop" onclick="suohaShow('shop')">
-        <span class="ico">馃彧</span><span>Shop</span>
+        <span class="ico">🏪</span><span>Shop</span>
       </div>
     </div>
   </div>
@@ -1534,51 +1530,51 @@
   <div class="suoha-page" id="suoha-page-shop">
     <div class="suoha-header">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button class="suoha-back" onclick="suohaShow('soul')">鈥?/button>
-        <span class="t">姊搱灏忛摵</span>
+        <button class="suoha-back" onclick="suohaShow('soul')"></button>
+        <span class="t">梭哈小铺</span>
       </div>
-      <span class="wb" id="suoha-shop-wallet">楼0.00</span>
+      <span class="wb" id="suoha-shop-wallet">¥0.00</span>
     </div>
     <div class="suoha-main">
       <div class="suoha-card dark" style="text-align:center;margin-bottom:12px;">
-        <div class="suoha-label" style="color:rgba(251,191,36,0.7);">褰撳墠搴曟敞</div>
-        <div style="font-size:28px;font-weight:300;color:#fbbf24;margin-top:4px;" id="suoha-current-bet">楼1,000</div>
-        <div style="font-size:11px;color:rgba(251,191,36,0.5);margin-top:2px;" id="suoha-bet-round">绗?1 杞?路 姣忚疆鍔犵爜 楼500</div>
+        <div class="suoha-label" style="color:rgba(251,191,36,0.7);">当前底注</div>
+        <div style="font-size:28px;font-weight:300;color:#fbbf24;margin-top:4px;" id="suoha-current-bet">¥1,000</div>
+        <div style="font-size:11px;color:rgba(251,191,36,0.5);margin-top:2px;" id="suoha-bet-round">1 · 每轮加码 ¥500</div>
       </div>
       <div class="suoha-grid2" style="margin-bottom:12px;">
-        <div class="suoha-game-card" onclick="suohaOpenGame('stone')"><div class="emoji">馃拵</div><div class="t">璧岀煶</div><div class="s">閫夊棰滆壊璧㈠弻鍊?/div></div>
-        <div class="suoha-game-card" onclick="suohaOpenGame('dice')"><div class="emoji">馃幉</div><div class="t">鎽囪壊瀛?/div><div class="s">澶у皬閫氬悆鐪嬭繍姘?/div></div>
-        <div class="suoha-game-card" onclick="suohaOpenGame('cards')"><div class="emoji">馃儚</div><div class="t">鎶藉崱鐗?/div><div class="s">椋熺墿閾惧鍐?/div></div>
-        <div class="suoha-game-card" onclick="suohaOpenGame('water')"><div class="emoji">馃尯</div><div class="t">杞祦娴囨按</div><div class="s">鍏堝紑鑺辫€呰耽</div></div>
+        <div class="suoha-game-card" onclick="suohaOpenGame('stone')"><div class="emoji">💎</div><div class="t">赌石</div><div class="s">选对颜色赢双</div></div>
+        <div class="suoha-game-card" onclick="suohaOpenGame('dice')"><div class="emoji">🎲</div><div class="t">摇色</div><div class="s">大小通吃看运</div></div>
+        <div class="suoha-game-card" onclick="suohaOpenGame('cards')"><div class="emoji">🃏</div><div class="t">抽卡</div><div class="s">食物链对</div></div>
+        <div class="suoha-game-card" onclick="suohaOpenGame('water')"><div class="emoji">🌺</div><div class="t">轮流浇水</div><div class="s">先开花?赢</div></div>
       </div>
       <div class="suoha-card" style="margin-bottom:12px;">
-        <div class="suoha-label">鎴樼哗</div>
+        <div class="suoha-label">战绩</div>
         <div class="suoha-stats" style="margin-top:8px;">
-          <div><div class="v" style="color:#22c55e;" id="suoha-stat-wins">0</div><div class="l">璧?/div></div>
-          <div><div class="v" style="color:#ba1a1a;" id="suoha-stat-losses">0</div><div class="l">杈?/div></div>
-          <div><div class="v" style="color:#666;" id="suoha-stat-ties">0</div><div class="l">骞?/div></div>
+          <div><div class="v" style="color:#22c55e;" id="suoha-stat-wins">0</div><div class="l"></div></div>
+          <div><div class="v" style="color:#ba1a1a;" id="suoha-stat-losses">0</div><div class="l"></div></div>
+          <div><div class="v" style="color:#666;" id="suoha-stat-ties">0</div><div class="l"></div></div>
         </div>
         <div style="margin-top:8px;font-size:11px;color:rgba(68,71,72,0.5);text-align:center;">
-          绱浜忔崯: <span id="suoha-total-loss" style="color:#ba1a1a;font-weight:600;">楼0</span> / 楼1,000,000
+          累计亏损: <span id="suoha-total-loss" style="color:#ba1a1a;font-weight:600;">¥0</span> / ¥1,000,000
         </div>
       </div>
       <div class="suoha-card">
-        <div class="suoha-label">瑙勫垯</div>
+        <div class="suoha-label">规则</div>
         <ul style="font-size:11px;color:#666;line-height:1.6;margin:6px 0 0;padding-left:16px;">
-          <li>姣忓眬搴曟敞 楼1,000 璧凤紝姣忚疆鑷姩鍔犵爜 楼500</li>
-          <li>璧簡鎷块挶锛岃緭浜嗘帍閽?/li>
-          <li>閽卞寘绌轰簡鍥?Soul 椤垫彁鐜版垨鍊熸</li>
-          <li>浣欓涓嶈冻鏃跺彲鍏ㄦ娂鍓╀綑閲戦</li>
-          <li>绱浜忔崯瓒?楼1,000,000 瑙﹀彂鍐峰嵈 + 鑰佹澘璀﹀憡</li>
+          <li>每局底注 ¥1,000 起，每轮自动加码 ¥500</li>
+          <li>赢了拿钱，输了掏</li>
+          <li>钱包空了Soul 页提现或借款</li>
+          <li>余额不足时可全押剩余金额</li>
+          <li>累计亏损¥1,000,000 触发冷却 + 老板警告</li>
         </ul>
       </div>
     </div>
     <div class="suoha-nav">
       <div class="suoha-nav-item" id="suoha-nav-soul2" onclick="suohaShow('soul')">
-        <span class="ico">馃挵</span><span>Soul</span>
+        <span class="ico">💰</span><span>Soul</span>
       </div>
       <div class="suoha-nav-item active" id="suoha-nav-shop2" onclick="suohaShow('shop')">
-        <span class="ico">馃彧</span><span>Shop</span>
+        <span class="ico">🏪</span><span>Shop</span>
       </div>
     </div>
   </div>
@@ -1592,18 +1588,18 @@
   <div class="suoha-modal-bg" onclick="suohaCloseModal('suoha-m-boss')"></div>
   <div class="suoha-modal-box suoha-anim-slide">
     <div id="suoha-boss-main" style="text-align:center;">
-      <div style="font-size:56px;">馃帺</div>
-      <div style="font-size:22px;font-family:monospace;color:#1e1e1e;margin-top:8px;">蠄(锝€鈭嚶?蠄</div>
-      <p style="font-size:20px;font-weight:300;margin-top:12px;">浣犲噯澶囧ソ姊搱浜嗗悧锛?/p>
+      <div style="font-size:56px;">🎩</div>
+      <div style="font-size:22px;font-family:monospace;color:#1e1e1e;margin-top:8px;">ψ(｢∇ψ</div>
+      <p style="font-size:20px;font-weight:300;margin-top:12px;">你准备好梭哈了吗</p>
     </div>
     <div id="suoha-boss-actions" style="margin-top:20px;">
-      <button class="suoha-btn" style="margin-bottom:10px;" onclick="suohaBossRespond(true)">鍑嗗濂戒簡</button>
-      <button class="suoha-btn ghost" onclick="suohaBossRespond(false)">鍐嶆兂鎯?/button>
+      <button class="suoha-btn" style="margin-bottom:10px;" onclick="suohaBossRespond(true)">准备好了</button>
+      <button class="suoha-btn ghost" onclick="suohaBossRespond(false)">再想</button>
     </div>
     <div id="suoha-boss-result" class="suoha-hidden" style="text-align:center;margin-top:16px;">
       <div id="suoha-boss-result-emoji" style="font-size:40px;"></div>
       <p id="suoha-boss-result-text" style="font-size:16px;font-family:monospace;margin-top:8px;"></p>
-      <button class="suoha-btn primary" style="margin-top:16px;" id="suoha-boss-result-btn" onclick="">杩涘叆姊搱灏忛摵</button>
+      <button class="suoha-btn primary" style="margin-top:16px;" id="suoha-boss-result-btn" onclick="">进入梭哈小铺</button>
     </div>
   </div>
 </div>
@@ -1613,22 +1609,22 @@
   <div class="suoha-modal-bg" onclick="suohaCloseGame('stone')"></div>
   <div class="suoha-modal-box suoha-anim-slide">
     <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3 style="font-size:20px;font-weight:600;">馃拵 璧岀煶</h3>
-      <span class="suoha-bet-badge" id="suoha-stone-bet">楼1,000</span>
+      <h3 style="font-size:20px;font-weight:600;">💎 赌石</h3>
+      <span class="suoha-bet-badge" id="suoha-stone-bet">¥1,000</span>
     </div>
-    <p id="suoha-stone-hint" style="text-align:center;font-size:13px;color:#666;margin:10px 0;">閫変竴涓鑹诧紝寮€鐭宠鐪熺珷</p>
+    <p id="suoha-stone-hint" style="text-align:center;font-size:13px;color:#666;margin:10px 0;">选一个颜色，弢石见真章</p>
     <div class="suoha-grid2" id="suoha-stone-buttons">
-      <button class="suoha-color-btn" style="border-color:rgba(251,191,36,0.3);" onclick="suohaPlayStone(0)"><span class="e">馃煛</span><span class="n">榛勮壊</span></button>
-      <button class="suoha-color-btn" style="border-color:rgba(34,197,94,0.3);" onclick="suohaPlayStone(1)"><span class="e">馃煝</span><span class="n">缁胯壊</span></button>
-      <button class="suoha-color-btn" style="border-color:rgba(249,115,22,0.3);" onclick="suohaPlayStone(2)"><span class="e">馃煚</span><span class="n">姗欒壊</span></button>
-      <button class="suoha-color-btn" style="border-color:rgba(59,130,246,0.3);" onclick="suohaPlayStone(3)"><span class="e">馃數</span><span class="n">钃濊壊</span></button>
+      <button class="suoha-color-btn" style="border-color:rgba(251,191,36,0.3);" onclick="suohaPlayStone(0)"><span class="e">🟡</span><span class="n">黄色</span></button>
+      <button class="suoha-color-btn" style="border-color:rgba(34,197,94,0.3);" onclick="suohaPlayStone(1)"><span class="e">🟢</span><span class="n">绿色</span></button>
+      <button class="suoha-color-btn" style="border-color:rgba(249,115,22,0.3);" onclick="suohaPlayStone(2)"><span class="e">🟠</span><span class="n">橙色</span></button>
+      <button class="suoha-color-btn" style="border-color:rgba(59,130,246,0.3);" onclick="suohaPlayStone(3)"><span class="e">🔵</span><span class="n">蓝色</span></button>
     </div>
     <div id="suoha-stone-result" class="suoha-hidden" style="text-align:center;margin-top:12px;">
-      <div class="suoha-anim-pop" id="suoha-stone-result-emoji" style="font-size:48px;">馃拵</div>
+      <div class="suoha-anim-pop" id="suoha-stone-result-emoji" style="font-size:48px;">💎</div>
       <p id="suoha-stone-result-text" style="font-size:18px;font-weight:600;margin-top:6px;"></p>
       <p id="suoha-stone-result-detail" style="font-size:13px;color:#666;"></p>
-      <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaNextRound('stone')">鍐嶆潵涓€杞?(+楼500)</button>
-      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseGame('stone')">閫€鍑?/button>
+      <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaNextRound('stone')">再来丢(+¥500)</button>
+      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseGame('stone')">逢</button>
     </div>
   </div>
 </div>
@@ -1638,24 +1634,24 @@
   <div class="suoha-modal-bg" onclick="suohaCloseGame('dice')"></div>
   <div class="suoha-modal-box suoha-anim-slide">
     <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3 style="font-size:20px;font-weight:600;">馃幉 鎽囪壊瀛?/h3>
-      <span class="suoha-bet-badge" id="suoha-dice-bet">楼1,000</span>
+      <h3 style="font-size:20px;font-weight:600;">🎲 摇色</h3>
+      <span class="suoha-bet-badge" id="suoha-dice-bet">¥1,000</span>
     </div>
-    <p id="suoha-dice-hint" style="text-align:center;font-size:13px;color:#666;margin:10px 0;">鐚滃ぇ (11-18) 杩樻槸灏?(3-10)锛?/p>
+    <p id="suoha-dice-hint" style="text-align:center;font-size:13px;color:#666;margin:10px 0;">猜大 (11-18) 还是(3-10)</p>
     <div id="suoha-dice-display" class="suoha-hidden" style="text-align:center;margin:12px 0;">
-      <span class="suoha-dice" id="suoha-dice-1">鈿€</span>
-      <span class="suoha-dice" id="suoha-dice-2">鈿?/span>
-      <span class="suoha-dice" id="suoha-dice-3">鈿?/span>
+      <span class="suoha-dice" id="suoha-dice-1">⚢</span>
+      <span class="suoha-dice" id="suoha-dice-2"></span>
+      <span class="suoha-dice" id="suoha-dice-3"></span>
     </div>
     <div class="suoha-grid2" id="suoha-dice-buttons">
-      <button class="suoha-btn" style="border-color:rgba(0,0,0,0.2);flex-direction:column;" onclick="suohaPlayDice('small')"><span style="font-size:28px;">馃敾</span><span>灏?(3-10)</span></button>
-      <button class="suoha-btn" style="border-color:rgba(0,0,0,0.2);flex-direction:column;" onclick="suohaPlayDice('big')"><span style="font-size:28px;">馃敽</span><span>澶?(11-18)</span></button>
+      <button class="suoha-btn" style="border-color:rgba(0,0,0,0.2);flex-direction:column;" onclick="suohaPlayDice('small')"><span style="font-size:28px;">🔻</span><span>(3-10)</span></button>
+      <button class="suoha-btn" style="border-color:rgba(0,0,0,0.2);flex-direction:column;" onclick="suohaPlayDice('big')"><span style="font-size:28px;">🔺</span><span>(11-18)</span></button>
     </div>
     <div id="suoha-dice-result" class="suoha-hidden" style="text-align:center;margin-top:12px;">
       <p id="suoha-dice-result-text" style="font-size:18px;font-weight:600;"></p>
       <p id="suoha-dice-result-detail" style="font-size:13px;color:#666;"></p>
-      <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaNextRound('dice')">鍐嶆潵涓€杞?(+楼500)</button>
-      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseGame('dice')">閫€鍑?/button>
+      <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaNextRound('dice')">再来丢(+¥500)</button>
+      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseGame('dice')">逢</button>
     </div>
   </div>
 </div>
@@ -1665,28 +1661,28 @@
   <div class="suoha-modal-bg" onclick="suohaCloseGame('cards')"></div>
   <div class="suoha-modal-box suoha-anim-slide">
     <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3 style="font-size:20px;font-weight:600;">馃儚 鎶藉崱鐗?/h3>
-      <span class="suoha-bet-badge" id="suoha-cards-bet">楼1,000</span>
+      <h3 style="font-size:20px;font-weight:600;">🃏 抽卡</h3>
+      <span class="suoha-bet-badge" id="suoha-cards-bet">¥1,000</span>
     </div>
-    <p id="suoha-cards-hint" style="text-align:center;font-size:13px;color:#666;margin:10px 0;">鍔ㄧ墿鍚冮鐗╋紝鑰佽檸鍚冧竴鍒囷紝鍚屽崱骞冲眬</p>
+    <p id="suoha-cards-hint" style="text-align:center;font-size:13px;color:#666;margin:10px 0;">动物吃食物，老虎吃一切，同卡平局</p>
     <div id="suoha-cards-display" class="suoha-hidden suoha-grid2" style="margin:12px 0;">
       <div style="text-align:center;padding:12px;border:2px solid rgba(0,0,0,0.1);border-radius:10px;">
-        <p style="font-size:11px;color:#999;">浣?/p>
-        <div class="suoha-anim-card" id="suoha-card-player" style="font-size:42px;">鉂?/div>
+        <p style="font-size:11px;color:#999;"></p>
+        <div class="suoha-anim-card" id="suoha-card-player" style="font-size:42px;"></div>
         <p id="suoha-card-player-name" style="font-size:13px;margin-top:4px;">?</p>
       </div>
       <div style="text-align:center;padding:12px;border:2px solid rgba(0,0,0,0.1);border-radius:10px;">
-        <p style="font-size:11px;color:#999;">鑰佹澘</p>
-        <div class="suoha-anim-card" id="suoha-card-ai" style="font-size:42px;">鉂?/div>
+        <p style="font-size:11px;color:#999;">老板</p>
+        <div class="suoha-anim-card" id="suoha-card-ai" style="font-size:42px;"></div>
         <p id="suoha-card-ai-name" style="font-size:13px;margin-top:4px;">?</p>
       </div>
     </div>
-    <button class="suoha-btn primary" id="suoha-cards-draw-btn" onclick="suohaPlayCards()">鎶界墝锛?/button>
+    <button class="suoha-btn primary" id="suoha-cards-draw-btn" onclick="suohaPlayCards()">抽牌</button>
     <div id="suoha-cards-result" class="suoha-hidden" style="text-align:center;margin-top:12px;">
       <p id="suoha-cards-result-text" style="font-size:18px;font-weight:600;"></p>
       <p id="suoha-cards-result-detail" style="font-size:13px;color:#666;"></p>
-      <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaNextRound('cards')">鍐嶆潵涓€杞?(+楼500)</button>
-      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseGame('cards')">閫€鍑?/button>
+      <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaNextRound('cards')">再来丢(+¥500)</button>
+      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseGame('cards')">逢</button>
     </div>
   </div>
 </div>
@@ -1696,109 +1692,109 @@
   <div class="suoha-modal-bg" onclick="suohaCloseGame('water')"></div>
   <div class="suoha-modal-box suoha-anim-slide">
     <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3 style="font-size:20px;font-weight:600;">馃尯 杞祦娴囨按</h3>
-      <span class="suoha-bet-badge" id="suoha-water-bet">楼1,000</span>
+      <h3 style="font-size:20px;font-weight:600;">🌺 轮流浇水</h3>
+      <span class="suoha-bet-badge" id="suoha-water-bet">¥1,000</span>
     </div>
-    <p style="text-align:center;font-size:13px;color:#666;margin:10px 0;">璋佺殑鑺卞厛寮€璋佽耽锛屼綘鍏堟祰姘?/p>
+    <p style="text-align:center;font-size:13px;color:#666;margin:10px 0;">谁的花先弢谁赢，你先浇</p>
     <div class="suoha-grid2" style="margin:12px 0;">
       <div style="text-align:center;padding:12px;border:2px solid rgba(0,0,0,0.1);border-radius:10px;">
-        <p style="font-size:11px;color:#999;">浣犵殑鑺?/p>
-        <div class="suoha-plant" id="suoha-plant-player">馃尠</div>
-        <p id="suoha-plant-player-stage" style="font-size:11px;margin-top:4px;">绉嶅瓙</p>
+        <p style="font-size:11px;color:#999;">你的</p>
+        <div class="suoha-plant" id="suoha-plant-player">🌰</div>
+        <p id="suoha-plant-player-stage" style="font-size:11px;margin-top:4px;">种子</p>
       </div>
       <div style="text-align:center;padding:12px;border:2px solid rgba(0,0,0,0.1);border-radius:10px;">
-        <p style="font-size:11px;color:#999;">鑰佹澘鐨勮姳</p>
-        <div class="suoha-plant" id="suoha-plant-ai">馃尠</div>
-        <p id="suoha-plant-ai-stage" style="font-size:11px;margin-top:4px;">绉嶅瓙</p>
+        <p style="font-size:11px;color:#999;">老板的花</p>
+        <div class="suoha-plant" id="suoha-plant-ai">🌰</div>
+        <p id="suoha-plant-ai-stage" style="font-size:11px;margin-top:4px;">种子</p>
       </div>
     </div>
-    <p id="suoha-water-turn" style="text-align:center;font-size:12px;color:#666;">杞埌浣犱簡</p>
-    <button class="suoha-btn primary" id="suoha-water-btn" onclick="suohaWaterPlant()">娴囨按 馃挧</button>
+    <p id="suoha-water-turn" style="text-align:center;font-size:12px;color:#666;">轮到你了</p>
+    <button class="suoha-btn primary" id="suoha-water-btn" onclick="suohaWaterPlant()">浇水 💧</button>
     <div id="suoha-water-result" class="suoha-hidden" style="text-align:center;margin-top:12px;">
       <p id="suoha-water-result-text" style="font-size:18px;font-weight:600;"></p>
       <p id="suoha-water-result-detail" style="font-size:13px;color:#666;"></p>
-      <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaNextRound('water')">鍐嶆潵涓€杞?(+楼500)</button>
-      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseGame('water')">閫€鍑?/button>
+      <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaNextRound('water')">再来丢(+¥500)</button>
+      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseGame('water')">逢</button>
     </div>
   </div>
 </div>
 
-<!-- Tetris Modal (鎼爾) -->
+<!-- Tetris Modal (搬砖) -->
 <div class="suoha-modal" id="suoha-m-tetris">
   <div class="suoha-modal-bg" onclick="suohaCloseTetris()"></div>
   <div class="suoha-modal-box suoha-anim-slide" style="max-width:340px;">
     <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3 style="font-size:20px;font-weight:600;">馃П 鎼爾 路 淇勭綏鏂柟鍧?/h3>
-      <span class="suoha-bet-badge" id="suoha-tetris-lines">娑堥櫎 0 琛?/span>
+      <h3 style="font-size:20px;font-weight:600;">🧱 搬砖 · 俄罗斯方</h3>
+      <span class="suoha-bet-badge" id="suoha-tetris-lines">消除 0 </span>
     </div>
-    <p style="text-align:center;font-size:13px;color:#666;margin:8px 0;">瀹岀編鎷间笁琛岃禋 楼200锛佸彲閲嶅鎼爾</p>
+    <p style="text-align:center;font-size:13px;color:#666;margin:8px 0;">完美拼三行赚 ¥200！可重复搬砖</p>
     <div style="display:flex;justify-content:center;gap:8px;margin:8px 0;">
       <canvas id="suoha-tetris-canvas" width="200" height="400" style="border:2px solid #333;border-radius:6px;background:#111;"></canvas>
       <div style="display:flex;flex-direction:column;gap:6px;justify-content:center;">
-        <div style="font-size:11px;color:#666;text-align:center;">涓嬩竴涓?/div>
+        <div style="font-size:11px;color:#666;text-align:center;">下一</div>
         <canvas id="suoha-tetris-next" width="80" height="80" style="border:1px solid #333;border-radius:4px;background:#111;"></canvas>
-        <div style="font-size:11px;color:#666;text-align:center;margin-top:4px;">寰楀垎</div>
+        <div style="font-size:11px;color:#666;text-align:center;margin-top:4px;">得分</div>
         <div id="suoha-tetris-score" style="font-size:18px;font-weight:700;text-align:center;color:#fbbf24;">0</div>
       </div>
     </div>
     <div style="display:flex;gap:6px;justify-content:center;margin:8px 0;">
-      <button class="suoha-btn" style="width:auto;padding:8px 16px;font-size:18px;" onclick="suohaTetrisLeft()">鈼€</button>
-      <button class="suoha-btn" style="width:auto;padding:8px 16px;font-size:18px;" onclick="suohaTetrisRotate()">鉄?/button>
-      <button class="suoha-btn" style="width:auto;padding:8px 16px;font-size:18px;" onclick="suohaTetrisRight()">鈻?/button>
-      <button class="suoha-btn" style="width:auto;padding:8px 16px;font-size:18px;" onclick="suohaTetrisDown()">鈻?/button>
+      <button class="suoha-btn" style="width:auto;padding:8px 16px;font-size:18px;" onclick="suohaTetrisLeft()">◢</button>
+      <button class="suoha-btn" style="width:auto;padding:8px 16px;font-size:18px;" onclick="suohaTetrisRotate()"></button>
+      <button class="suoha-btn" style="width:auto;padding:8px 16px;font-size:18px;" onclick="suohaTetrisRight()"></button>
+      <button class="suoha-btn" style="width:auto;padding:8px 16px;font-size:18px;" onclick="suohaTetrisDown()"></button>
     </div>
     <div id="suoha-tetris-result" class="suoha-hidden" style="text-align:center;margin-top:8px;">
       <p id="suoha-tetris-result-text" style="font-size:16px;font-weight:600;"></p>
-      <button class="suoha-btn primary" style="margin-top:8px;" onclick="suohaStartTetris()">鍐嶆惉涓€娆?/button>
-      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseTetris()">閫€鍑?/button>
+      <button class="suoha-btn primary" style="margin-top:8px;" onclick="suohaStartTetris()">再搬丢</button>
+      <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseTetris()">逢</button>
     </div>
-    <button class="suoha-btn ghost" style="margin-top:6px;" id="suoha-tetris-start-btn" onclick="suohaStartTetris()">寮€濮嬫惉鐮?/button>
+    <button class="suoha-btn ghost" style="margin-top:6px;" id="suoha-tetris-start-btn" onclick="suohaStartTetris()">弢始搬</button>
   </div>
 </div>
 
-<!-- Loan Modal (鏋侀€熻捶) -->
+<!-- Loan Modal (极?贷) -->
 <div class="suoha-modal" id="suoha-m-loan">
   <div class="suoha-modal-bg" onclick="suohaCloseModal('suoha-m-loan')"></div>
   <div class="suoha-modal-box suoha-anim-slide">
-    <h3 style="font-size:20px;font-weight:600;">鏋侀€熻捶</h3>
+    <h3 style="font-size:20px;font-weight:600;">极?贷</h3>
     <div style="margin-top:12px;">
-      <label class="suoha-label">鍊熸閲戦 (楼500 - 楼5,000)</label>
+      <label class="suoha-label">借款金额 (¥500 - ¥5,000)</label>
       <input id="suoha-loan-input" type="number" min="500" max="5000" value="2000" class="suoha-input" style="border-bottom:1.5px solid #1e1e1e;">
       <div class="suoha-quick">
-        <button onclick="document.getElementById('suoha-loan-input').value=1000">楼1,000</button>
-        <button onclick="document.getElementById('suoha-loan-input').value=3000">楼3,000</button>
-        <button onclick="document.getElementById('suoha-loan-input').value=5000">楼5,000</button>
+        <button onclick="document.getElementById('suoha-loan-input').value=1000">¥1,000</button>
+        <button onclick="document.getElementById('suoha-loan-input').value=3000">¥3,000</button>
+        <button onclick="document.getElementById('suoha-loan-input').value=5000">¥5,000</button>
       </div>
     </div>
     <div style="padding:8px;border:1px dashed rgba(186,26,26,0.3);border-radius:6px;margin:10px 0;">
-      <span style="font-size:11px;color:#ba1a1a;font-weight:600;">鈿?3 澶╁唴杩樻竻</span>
-      <p style="font-size:10px;color:#999;font-style:italic;margin-top:2px;">閫炬湡瑙﹀彂 72h 鍐峰嵈銆傝繕娆炬柟寮忥細璧㈠洖銆佽仈绯讳汉杞处銆佹惉鐮栥€?/p>
+      <span style="font-size:11px;color:#ba1a1a;font-weight:600;">3 天内还清</span>
+      <p style="font-size:10px;color:#999;font-style:italic;margin-top:2px;">逾期触发 72h 冷却。还款方式：赢回、联系人转账、搬砖</p>
     </div>
-    <button class="suoha-btn primary" onclick="suohaApplyLoan()">纭鍊熸</button>
-    <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseModal('suoha-m-loan')">鍙栨秷</button>
+    <button class="suoha-btn primary" onclick="suohaApplyLoan()">确认借款</button>
+    <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseModal('suoha-m-loan')">取消</button>
   </div>
 </div>
 
-<!-- Boss Loan Modal (鏋侀€熷€? -->
+<!-- Boss Loan Modal (极? -->
 <div class="suoha-modal" id="suoha-m-bossloan">
   <div class="suoha-modal-bg" onclick="suohaCloseModal('suoha-m-bossloan')"></div>
   <div class="suoha-modal-box suoha-anim-slide">
-    <h3 style="font-size:20px;font-weight:600;">馃帺 鏋侀€熷€?(鑰佹澘)</h3>
+    <h3 style="font-size:20px;font-weight:600;">🎩 极?(老板)</h3>
     <div style="margin-top:12px;">
-      <label class="suoha-label">鍊熸閲戦 (楼1,000 - 楼50,000)</label>
+      <label class="suoha-label">借款金额 (¥1,000 - ¥50,000)</label>
       <input id="suoha-bossloan-input" type="number" min="1000" max="50000" value="5000" class="suoha-input" style="border-bottom:1.5px solid #92400e;">
       <div class="suoha-quick">
-        <button onclick="document.getElementById('suoha-bossloan-input').value=2000">楼2,000</button>
-        <button onclick="document.getElementById('suoha-bossloan-input').value=10000">楼10,000</button>
-        <button onclick="document.getElementById('suoha-bossloan-input').value=50000">楼50,000</button>
+        <button onclick="document.getElementById('suoha-bossloan-input').value=2000">¥2,000</button>
+        <button onclick="document.getElementById('suoha-bossloan-input').value=10000">¥10,000</button>
+        <button onclick="document.getElementById('suoha-bossloan-input').value=50000">¥50,000</button>
       </div>
     </div>
     <div style="padding:8px;border:1px dashed rgba(146,64,14,0.3);border-radius:6px;margin:10px 0;background:rgba(251,191,36,0.05);">
-      <span style="font-size:11px;color:#92400e;font-weight:600;">鈿?鏃ユ伅 10% 路 3 澶╄繕娓?/span>
-      <p style="font-size:10px;color:#999;font-style:italic;margin-top:2px;">鍒╂伅 = 鏈噾 脳 10% 脳 澶╂暟銆傞€炬湡 72h 鍐峰嵈 + 鑰佹澘姣?5 灏忔椂鍌€恒€?/p>
+      <span style="font-size:11px;color:#92400e;font-weight:600;">日息 10% · 3 天还</span>
+      <p style="font-size:10px;color:#999;font-style:italic;margin-top:2px;">利息 = 本金 × 10% × 天数。?期 72h 冷却 + 老板5 小时催?</p>
     </div>
-    <button class="suoha-btn" style="border-color:#92400e;color:#92400e;" onclick="suohaApplyBossLoan()">纭鍊熸</button>
-    <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseModal('suoha-m-bossloan')">鍐嶆兂鎯?/button>
+    <button class="suoha-btn" style="border-color:#92400e;color:#92400e;" onclick="suohaApplyBossLoan()">确认借款</button>
+    <button class="suoha-btn ghost" style="margin-top:6px;" onclick="suohaCloseModal('suoha-m-bossloan')">再想</button>
   </div>
 </div>
 
@@ -1806,10 +1802,10 @@
 <div class="suoha-modal" id="suoha-m-contacts">
   <div class="suoha-modal-bg" onclick="suohaCloseModal('suoha-m-contacts')"></div>
   <div class="suoha-modal-box suoha-anim-slide" style="max-height:80vh;overflow-y:auto;">
-    <h3 style="font-size:20px;font-weight:600;">鍚戣仈绯讳汉鍊熸</h3>
-    <p style="font-size:13px;color:#666;margin:6px 0 12px;">姣忎釜鑱旂郴浜烘瘡澶╁彲鍊熶竴娆★紝閽辫浆鍏?WeChat 浣欓銆?/p>
+    <h3 style="font-size:20px;font-weight:600;">向联系人借款</h3>
+    <p style="font-size:13px;color:#666;margin:6px 0 12px;">每个联系人每天可借一次，钱转WeChat 余额</p>
     <div id="suoha-contacts-list"></div>
-    <button class="suoha-btn ghost" style="margin-top:8px;" onclick="suohaCloseModal('suoha-m-contacts')">鍏抽棴</button>
+    <button class="suoha-btn ghost" style="margin-top:8px;" onclick="suohaCloseModal('suoha-m-contacts')">关闭</button>
   </div>
 </div>
 
@@ -1817,12 +1813,12 @@
 <div class="suoha-modal" id="suoha-m-result">
   <div class="suoha-modal-bg"></div>
   <div class="suoha-modal-box suoha-anim-slide" style="text-align:center;max-width:320px;">
-    <div class="suoha-anim-pop" id="suoha-result-emoji" style="font-size:48px;">馃帀</div>
+    <div class="suoha-anim-pop" id="suoha-result-emoji" style="font-size:48px;">🎉</div>
     <p id="suoha-result-title" style="font-size:20px;font-weight:600;margin-top:6px;"></p>
     <p id="suoha-result-kaomoji" style="font-size:16px;font-family:monospace;margin-top:4px;"></p>
     <p id="suoha-result-amount" style="font-size:18px;font-weight:600;margin-top:6px;"></p>
     <p id="suoha-result-wallet" style="font-size:13px;color:#666;"></p>
-    <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaCloseModal('suoha-m-result')">缁х画</button>
+    <button class="suoha-btn primary" style="margin-top:12px;" onclick="suohaCloseModal('suoha-m-result')">继续</button>
   </div>
 </div>
 
@@ -1830,11 +1826,11 @@
 <div class="suoha-modal" id="suoha-m-bosswarning">
   <div class="suoha-modal-bg"></div>
   <div class="suoha-modal-box suoha-anim-slide" style="text-align:center;max-width:340px;border-color:#ba1a1a;">
-    <div style="font-size:48px;">馃帺</div>
-    <div style="font-size:20px;font-family:monospace;color:#ba1a1a;margin-top:6px;">蠄(锝€鈭嚶?蠄</div>
+    <div style="font-size:48px;">🎩</div>
+    <div style="font-size:20px;font-family:monospace;color:#ba1a1a;margin-top:6px;">ψ(｢∇ψ</div>
     <p id="suoha-warning-text" style="font-size:16px;font-weight:600;margin-top:10px;line-height:1.5;"></p>
-    <p style="font-size:13px;color:#666;margin-top:6px;">绱浜忔崯宸茶秴杩?楼1,000,000</p>
-    <button class="suoha-btn danger" style="margin-top:14px;" onclick="suohaCloseModal('suoha-m-bosswarning')">鐭ラ亾浜?/button>
+    <p style="font-size:13px;color:#666;margin-top:6px;">累计亏损已超¥1,000,000</p>
+    <button class="suoha-btn danger" style="margin-top:14px;" onclick="suohaCloseModal('suoha-m-bosswarning')">知道</button>
   </div>
 </div>
 
@@ -1883,25 +1879,25 @@
       <div class="go-header">
         <button class="go-back" onclick="closeSheet('go')">&#8249;</button>
         <div class="t">GO Live</div>
-        <div class="wb" id="go-balance-display">閽卞寘 楼0.00</div>
+        <div class="wb" id="go-balance-display">钱包 ¥0.00</div>
       </div>
       <div class="go-main">
-        <div class="go-hero"><div><div class="go-kicker">Creator Studio</div><div class="go-hero-title">鐩存挱浠诲姟涓績</div><div class="go-hero-sub">寮瑰箷銆佹儏渚ｉ棶绛斻€佽瘎鍒嗗拰瑙備紬鍙嶉缁熶竴璇诲彇璁剧疆閲岀殑 API銆?/div></div><div class="go-live-pulse"><span></span>AI</div></div>
-        <div class="go-api-card" id="go-api-status"><b>AI 鐘舵€佹娴嬩腑</b><small>GO 涓嶅崟鐙厤缃?API</small></div>
-        <div class="go-card"><div class="go-label">閫夋嫨鐩存挱绫诲瀷</div><div class="go-type-grid" id="go-type-grid"></div></div>
-        <div class="go-card go-card-split"><label><span class="go-label">鐩存挱ID</span><input class="go-input" id="go-live-id" placeholder="杈撳叆浣犵殑鐩存挱ID" maxlength="20"></label><div><div class="go-label">鐩存挱澶村儚</div><div class="go-avatar-row"><div id="go-avatar-preview" class="go-avatar-preview"></div><button class="go-btn sm ghost" onclick="goPickAvatar()">閫夋嫨澶村儚</button></div></div></div>
-        <div class="go-card"><div class="go-label">寮瑰箷椋庢牸</div><div class="go-chip-row" id="go-dm-cats"></div><div class="go-label" style="margin-top:12px;">鑷畾涔夊脊骞曡瀹?/div><input class="go-input" id="go-dm-custom" placeholder="鍙€夛紝渚嬪锛氭瘨鑸屼絾涓嶆敾鍑讳汉 / 娓╂煍闄即 / 涓撲笟鐐硅瘎"><div class="go-label" style="margin-top:12px;">缁戝畾涓栫晫涔?/div><select id="go-wb-bind" class="go-select"><option value="">涓嶇粦瀹?/option></select></div>
-        <div class="go-insight-grid"><div><b>WeChat</b><small>杩為害濂藉弸鏉ヨ嚜鑱旂郴浜?/small></div><div><b>閽卞寘</b><small>宸ヨ祫鑷姩鍏ヨ处</small></div><div><b>鍘婚噸</b><small>姣忚疆闂瓟涓嶉噸澶?/small></div></div>
-        <button class="go-btn primary go-start-btn" onclick="goStartLive()">纭寮€鎾?/button>
+        <div class="go-hero"><div><div class="go-kicker">Creator Studio</div><div class="go-hero-title">直播任务中心</div><div class="go-hero-sub">弹幕、情侣问答?评分和观众反馈统一读取设置里的 API</div></div><div class="go-live-pulse"><span></span>AI</div></div>
+        <div class="go-api-card" id="go-api-status"><b>AI 状?检测中</b><small>GO 不单独配API</small></div>
+        <div class="go-card"><div class="go-label">选择直播类型</div><div class="go-type-grid" id="go-type-grid"></div></div>
+        <div class="go-card go-card-split"><label><span class="go-label">直播ID</span><input class="go-input" id="go-live-id" placeholder="输入你的直播ID" maxlength="20"></label><div><div class="go-label">直播头像</div><div class="go-avatar-row"><div id="go-avatar-preview" class="go-avatar-preview"></div><button class="go-btn sm ghost" onclick="goPickAvatar()">选择头像</button></div></div></div>
+        <div class="go-card"><div class="go-label">弹幕风格</div><div class="go-chip-row" id="go-dm-cats"></div><div class="go-label" style="margin-top:12px;">自定义弹幕设</div><input class="go-input" id="go-dm-custom" placeholder="可?，例如：毒舌但不攻击人 / 温柔陪伴 / 专业点评"><div class="go-label" style="margin-top:12px;">绑定世界</div><select id="go-wb-bind" class="go-select"><option value="">不绑</option></select></div>
+        <div class="go-insight-grid"><div><b>WeChat</b><small>连麦好友来自联系</small></div><div><b>钱包</b><small>工资自动入账</small></div><div><b>去重</b><small>每轮问答不重</small></div></div>
+        <button class="go-btn primary go-start-btn" onclick="goStartLive()">确认弢</button>
         <div id="go-history-list" style="margin-top:16px;"></div>
       </div>
     </div>
-    <div class="go-page" id="go-page-live"><div class="go-header"><button class="go-back" onclick="goEndLive(false,0)">&#8249;</button><div class="t" id="go-live-title">鐩存挱涓?/div><div class="wb" id="go-live-timer">00:00</div></div><div class="go-main" id="go-live-content"></div></div>
+    <div class="go-page" id="go-page-live"><div class="go-header"><button class="go-back" onclick="goEndLive(false,0)">&#8249;</button><div class="t" id="go-live-title">直播</div><div class="wb" id="go-live-timer">00:00</div></div><div class="go-main" id="go-live-content"></div></div>
   </div>
 </div>
 <div class="go-toast" id="go-toast"></div>
-<div class="go-modal" id="go-modal-cart"><div class="go-modal-bg" onclick="goCloseModal('go-modal-cart')"></div><div class="go-modal-box"><div class="go-label" style="margin-bottom:12px;">灏忛粍杞?- 娣诲姞浜у搧</div><div id="go-product-list"></div><div class="go-card soft" style="margin-top:12px;"><input class="go-input" id="go-prod-name" placeholder="浜у搧鍚嶇О"><input class="go-input" id="go-prod-price" placeholder="浠锋牸" type="number" style="margin-top:8px;"><div style="display:flex;gap:8px;margin-top:10px;align-items:center;"><button class="go-btn sm ghost" onclick="goUploadProductImg()">涓婁紶鍥剧墖</button><button class="go-btn sm ghost" onclick="goVoiceInput('product')">璇煶杈撳叆</button><button class="go-btn sm primary" onclick="goAddProduct()">娣诲姞</button></div></div><button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-cart')">瀹屾垚</button></div></div>
-<div class="go-modal" id="go-modal-partner"><div class="go-modal-bg" onclick="goCloseModal('go-modal-partner')"></div><div class="go-modal-box"><div class="go-label" style="margin-bottom:12px;">閫夋嫨 WeChat 杩為害瀵硅薄</div><div id="go-partner-list"></div><button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-partner')">鍙栨秷</button></div></div>
+<div class="go-modal" id="go-modal-cart"><div class="go-modal-bg" onclick="goCloseModal('go-modal-cart')"></div><div class="go-modal-box"><div class="go-label" style="margin-bottom:12px;">小黄- 添加产品</div><div id="go-product-list"></div><div class="go-card soft" style="margin-top:12px;"><input class="go-input" id="go-prod-name" placeholder="产品名称"><input class="go-input" id="go-prod-price" placeholder="价格" type="number" style="margin-top:8px;"><div style="display:flex;gap:8px;margin-top:10px;align-items:center;"><button class="go-btn sm ghost" onclick="goUploadProductImg()">上传图片</button><button class="go-btn sm ghost" onclick="goVoiceInput('product')">语音输入</button><button class="go-btn sm primary" onclick="goAddProduct()">添加</button></div></div><button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-cart')">完成</button></div></div>
+<div class="go-modal" id="go-modal-partner"><div class="go-modal-bg" onclick="goCloseModal('go-modal-partner')"></div><div class="go-modal-box"><div class="go-label" style="margin-bottom:12px;">选择 WeChat 连麦对象</div><div id="go-partner-list"></div><button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-partner')">取消</button></div></div>
 <input type="file" id="go-file-input" accept="image/*" style="display:none;">
 <script src="js/main/00-boot-state.js"></script>
 <script src="js/main/01-system-shell.js?v=20260802-plugin-assets"></script>
