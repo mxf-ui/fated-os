@@ -77,21 +77,34 @@ export async function sha256Base64(value) {
   return bytesToBase64(new Uint8Array(digest));
 }
 
+async function hashPasswordFallback(password, saltBase64) {
+  let value = String(password || '') + ':' + String(saltBase64 || '');
+  for (let i = 0; i < 4096; i++) {
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+    value = bytesToBase64(new Uint8Array(digest));
+  }
+  return 's256$' + value;
+}
+
 export async function hashPassword(password, saltBase64) {
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(password),
-    'PBKDF2',
-    false,
-    ['deriveBits']
-  );
-  const bits = await crypto.subtle.deriveBits({
-    name: 'PBKDF2',
-    salt: base64ToBytes(saltBase64),
-    iterations: PASSWORD_ITERATIONS,
-    hash: 'SHA-256',
-  }, keyMaterial, 256);
-  return bytesToBase64(new Uint8Array(bits));
+  try {
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(password),
+      'PBKDF2',
+      false,
+      ['deriveBits']
+    );
+    const bits = await crypto.subtle.deriveBits({
+      name: 'PBKDF2',
+      salt: base64ToBytes(saltBase64),
+      iterations: PASSWORD_ITERATIONS,
+      hash: 'SHA-256',
+    }, keyMaterial, 256);
+    return bytesToBase64(new Uint8Array(bits));
+  } catch (e) {
+    return hashPasswordFallback(password, saltBase64);
+  }
 }
 
 export function sessionCookie(token, now = Date.now()) {
