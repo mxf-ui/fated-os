@@ -88,6 +88,10 @@ async function cloudApi(path, options){
   }
   return data;
 }
+function cloudClonePlain(value, fallback){
+  try{ return JSON.parse(JSON.stringify(value)); }
+  catch(e){ return fallback; }
+}
 function cloudReadInputs(){
   return {
     email:((document.getElementById('cloud-email')||{}).value||'').trim(),
@@ -287,11 +291,11 @@ async function cloudBuildLocalSnapshot(){
       moments:buildMomentsAssets(),
       contacts:buildContactAssets(),
       font:buildFontAssets(),
-      widgetCustom:widgetCustom,
-      appIconImgs:appIcons.map(function(a){ return {id:a.id, img:a.img}; }),
-      lockWp:lockWp,
-      homeWp:homeWp,
-      stickers:stickers
+      widgetCustom:cloudClonePlain(widgetCustom, {}),
+      appIconImgs:cloudClonePlain(appIcons.map(function(a){ return {id:a.id, img:a.img}; }), []),
+      lockWp:cloudClonePlain(lockWp, {}),
+      homeWp:cloudClonePlain(homeWp, {}),
+      stickers:cloudClonePlain(stickers, [])
     },
     chats:cloudCollectChats()
   };
@@ -479,3 +483,4 @@ document.addEventListener('visibilitychange', function(){ if(document.hidden && 
 
 
 window.addEventListener('load', function(){ cloudBootAuthGate(); });
+

@@ -426,6 +426,15 @@ function addPlugin(type, opts){
   closeSheet('pluginlib');
   if(!opts.skipSave && (typeof isPersistenceBooting!=='function' || !isPersistenceBooting())) saveState();
 }
+function remountPluginsFromSavedState(){
+  if(typeof document==='undefined' || !document.querySelectorAll) return;
+  var saved = (typeof getSavedPluginTypes==='function') ? getSavedPluginTypes() : null;
+  var current = (typeof buildActivePluginsSnapshot==='function') ? buildActivePluginsSnapshot() : [];
+  var list = Array.isArray(saved) && saved.length ? saved : current;
+  if(!list.length) return;
+  document.querySelectorAll('[data-wc-type]').forEach(function(n){ n.remove(); });
+  list.forEach(function(t){ if(removedPlugins.indexOf(t)<0) addPlugin(t, {skipSave:true}); });
+}
 function removePlugin(type){
   document.querySelectorAll('[data-wc-type="'+type+'"]').forEach(function(n){ n.remove(); });
   if(removedPlugins.indexOf(type)<0) removedPlugins.push(type);
@@ -762,3 +771,4 @@ function bootHashRoute(){
   }catch(e){}
 }
 window.addEventListener('load', bootHashRoute);
+

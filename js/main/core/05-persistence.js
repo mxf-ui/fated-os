@@ -345,6 +345,7 @@ function repaintPersistentAssets(){
   if(chatBg){ applyChatBgToDOM(chatBg); }
   paintWallpaper(document.getElementById('lock-wallpaper'), lockWp);
   paintWallpaper(document.getElementById('home-wallpaper'), homeWp);
+  if(typeof remountPluginsFromSavedState==='function') remountPluginsFromSavedState();
   if(typeof syncRenderedContactRows==='function') syncRenderedContactRows();
   renderThread(); renderChatList(); renderDesktopIcons(); renderIconGrid(); applyBubbleColors(); applyFontConfig();
 }
@@ -405,4 +406,6 @@ function saveChatThread(contactId){
   fatedDBSaveChat(id);
 }
 function saveStickersDB(){ fatedDBSaveStickers(); }
+
+
 
