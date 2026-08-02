@@ -3,10 +3,13 @@ var bubbleMineColor = '#1a1a1a', bubbleTheirsColor = '#ffffff';
 var widgetCustom = {}; var removedPlugins = [];
 var lastPersistenceWarningAt = 0;
 var persistenceBooting = true;
+var localPersistenceHadSavedData = false;
 var savedPluginTypes = null;
 
 function isPersistenceBooting(){ return !!persistenceBooting; }
 function markPersistenceReady(){ persistenceBooting = false; }
+function markLocalPersistenceHadSavedData(){ localPersistenceHadSavedData = true; }
+function localPersistenceHasSavedData(){ return !!localPersistenceHadSavedData; }
 function buildActivePluginsSnapshot(){
   var list = [], seen = {};
   if(typeof document==='undefined' || !document.querySelectorAll) return list;
@@ -251,6 +254,7 @@ function applyFontSnapshot(saved){
 }
 function applyStateSnapshot(s){
   if(!s || typeof s!=='object') return false;
+  markLocalPersistenceHadSavedData();
   if(s.userName) userName=s.userName;
   if(s.userWxid) userWxid=s.userWxid;
   if(typeof s.userBio==='string') userBio=s.userBio;
@@ -353,7 +357,9 @@ function loadState(){
   try{
     var raw = localStorage.getItem('fated_state');
     if(!raw) return false;
-    return applyStateSnapshot(JSON.parse(raw));
+    var ok = applyStateSnapshot(JSON.parse(raw));
+    if(ok) markLocalPersistenceHadSavedData();
+    return ok;
   }catch(e){
     try{ console.warn('[Fated persistence] localStorage load failed', e); }catch(_e){}
     return false;
@@ -406,6 +412,7 @@ function saveChatThread(contactId){
   fatedDBSaveChat(id);
 }
 function saveStickersDB(){ fatedDBSaveStickers(); }
+
 
 
 
