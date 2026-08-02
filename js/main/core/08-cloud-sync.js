@@ -1,4 +1,4 @@
-﻿/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
+/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
 var cloudSyncState = {
   user:null,
   key:null,
@@ -134,12 +134,12 @@ function cloudSetEntryBusy(on){ cloudSetBusy(on); }
 async function cloudEntryLogin(){
   var input=cloudReadEntryInputs();
   cloudFillAuthInputsFromEntry(input);
-  return cloudLogin({fromEntry:true});
+  return cloudLogin({fromEntry:true, input:input});
 }
 async function cloudEntryRegister(){
   var input=cloudReadEntryInputs();
   cloudFillAuthInputsFromEntry(input);
-  return cloudRegister({fromEntry:true});
+  return cloudRegister({fromEntry:true, input:input});
 }
 async function cloudBootAuthGate(){
   cloudShowEntryGate(CLOUD_MSG.CHECKING);
@@ -189,7 +189,7 @@ async function cloudSyncInit(){
 }
 async function cloudLogin(opts){
   opts=opts||{};
-  var input=cloudReadInputs();
+  var input=opts.input||cloudReadInputs();
   if(!input.email || !input.password){ cloudShowEntryGate(CLOUD_MSG.EMAIL_PASSWORD_REQUIRED, 'warn'); return cloudSetStatus(CLOUD_MSG.EMAIL_PASSWORD_REQUIRED, 'warn'); }
   if(!input.inviteCode){ cloudShowEntryGate(CLOUD_MSG.INVITE_REQUIRED, 'warn'); return cloudSetStatus(CLOUD_MSG.INVITE_REQUIRED, 'warn'); }
   cloudSetBusy(true); cloudSetStatus('Signing in...', ''); cloudShowEntryGate(CLOUD_MSG.SIGNING_IN);
@@ -206,7 +206,7 @@ async function cloudLogin(opts){
 }
 async function cloudRegister(opts){
   opts=opts||{};
-  var input=cloudReadInputs();
+  var input=opts.input||cloudReadInputs();
   if(!input.email || !input.password){ cloudShowEntryGate(CLOUD_MSG.EMAIL_PASSWORD_REQUIRED, 'warn'); return cloudSetStatus(CLOUD_MSG.EMAIL_PASSWORD_REQUIRED, 'warn'); }
   if(!input.inviteCode){ cloudShowEntryGate(CLOUD_MSG.INVITE_REQUIRED, 'warn'); return cloudSetStatus(CLOUD_MSG.INVITE_REQUIRED, 'warn'); }
   if(input.password.length<8){ cloudShowEntryGate(CLOUD_MSG.PASSWORD_LENGTH, 'warn'); return cloudSetStatus(CLOUD_MSG.PASSWORD_LENGTH, 'warn'); }
