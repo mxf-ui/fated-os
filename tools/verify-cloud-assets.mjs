@@ -19,7 +19,7 @@ const migration = readFileSync(migrationPath, 'utf8');
 const checks = [
   ['assets migration creates asset table', /CREATE TABLE IF NOT EXISTS asset_objects/.test(migration)],
   ['assets api requires user', /requireUser/.test(assetApi)],
-  ['assets api checks R2 binding', /context\.env\s*&&\s*context\.env\.ASSETS/.test(assetApi)],
+  ['assets api checks usable R2 binding', /function getAssetBucket\(env\)/.test(assetApi) && /typeof bucket\.put === 'function'/.test(assetApi)],
   ['assets api supports post upload', /export async function onRequestPost/.test(assetApi)],
   ['assets api supports get download', /export async function onRequestGet/.test(assetApi)],
   ['assets api stores metadata', /INSERT INTO asset_objects/.test(assetApi)],
@@ -35,3 +35,4 @@ if (failed.length) {
   process.exit(1);
 }
 console.log('Cloud asset storage structure verified.');
+
