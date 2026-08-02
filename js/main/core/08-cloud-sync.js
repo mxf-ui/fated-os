@@ -18,12 +18,12 @@ var CLOUD_MSG = {
   SIGN_IN_UNLOCK:'Sign in to unlock cloud save. / \u8bf7\u767b\u5f55\u540e\u540c\u6b65\u5b58\u6863\u3002',
   CHECKING:'Checking account... / \u6b63\u5728\u68c0\u67e5\u8d26\u53f7\u3002',
   ENTER_UNLOCK:'Enter password and invite code to unlock encrypted cloud save. / \u8bf7\u8f93\u5165\u5bc6\u7801\u548c\u9080\u8bf7\u7801\u89e3\u9501\u4e91\u5b58\u6863\u3002',
-  SIGN_IN_CREATE_ENTER:'Sign in or create an account to enter Fated OS. / \u767b\u5f55\u6216\u6ce8\u518c\u540e\u8fdb\u5165 Fated OS\u3002',
+  SIGN_IN_CREATE_ENTER:'New users tap Register first; existing users tap Login. / 新用户请先点注册，老用户直接登录。',
   SIGN_IN_ENTER:'Sign in to enter. / \u8bf7\u767b\u5f55\u540e\u8fdb\u5165\u3002',
   SYNC_UNLOCKED:'Cloud sync is unlocked. / \u4e91\u7aef\u540c\u6b65\u5df2\u89e3\u9501\u3002',
   SIGNED_IN_UNLOCK:'Signed in. Enter password and invite code once to unlock encrypted sync. / \u5df2\u767b\u5f55\uff0c\u8bf7\u8f93\u5165\u5bc6\u7801\u548c\u9080\u8bf7\u7801\u89e3\u9501\u52a0\u5bc6\u540c\u6b65\u3002',
   D1_MISSING:'Cloud database is not configured yet. / \u4e91\u7aef\u6570\u636e\u5e93\u8fd8\u672a\u914d\u7f6e\u3002',
-  SIGN_IN_CREATE_SYNC:'Sign in or create an account to enable cloud save. / \u767b\u5f55\u6216\u6ce8\u518c\u540e\u542f\u7528\u4e91\u5b58\u6863\u3002',
+  SIGN_IN_CREATE_SYNC:'New users tap Register first; existing users tap Login. / 新用户请先点注册，老用户直接登录。',
   EMAIL_PASSWORD_REQUIRED:'Email and password are required. / \u8bf7\u586b\u5199\u90ae\u7bb1\u548c\u5bc6\u7801\u3002',
   INVITE_REQUIRED:'Invite code is required. / \u8bf7\u586b\u5199\u9080\u8bf7\u7801\u3002',
   SIGNING_IN:'Signing in... / \u6b63\u5728\u767b\u5f55\u3002',
@@ -137,10 +137,35 @@ function cloudSupabaseClient(){
   }
   return cloudSupabaseClientCache;
 }
+function cloudFriendlyAuthMessage(error, fallback){
+  var raw=String((error && (error.message || error.error_description || error.code)) || fallback || 'Supabase request failed');
+  var lower=raw.toLowerCase();
+  if(lower.indexOf('invalid login credentials')>=0 || lower.indexOf('invalid credentials')>=0){
+    return 'Account not found or password is wrong. New users must tap Register first. / 账号不存在或密码错误。新用户请先点注册。';
+  }
+  if(lower.indexOf('email not confirmed')>=0 || lower.indexOf('confirm')>=0){
+    return 'Email is not confirmed. Please open the confirmation email, or turn off Supabase email confirmation for invite-only testing. / 邮箱还没有确认。请先点确认邮件，或在 Supabase 里关闭邮箱确认后再内测。';
+  }
+  if(lower.indexOf('user already registered')>=0 || lower.indexOf('already registered')>=0 || lower.indexOf('already exists')>=0){
+    return 'This email is already registered. Please tap Login instead. / 这个邮箱已经注册过了，请直接点登录。';
+  }
+  if(lower.indexOf('password')>=0 && lower.indexOf('6')>=0){
+    return CLOUD_MSG.PASSWORD_LENGTH;
+  }
+  if(lower.indexOf('invite_invalid')>=0 || lower.indexOf('invite code invalid')>=0){
+    return 'Invite code is invalid. / 邀请码无效。';
+  }
+  if(lower.indexOf('invite_exhausted')>=0){
+    return 'Invite code has been used up. / 邀请码次数已用完。';
+  }
+  if(lower.indexOf('not_authenticated')>=0){
+    return 'Please log in or register first, then the invite code can be verified. / 请先登录或注册，邀请码才能完成验证。';
+  }
+  return raw;
+}
 function cloudThrowSupabase(error, fallback){
   if(!error) return;
-  var msg=error.message||fallback||'Supabase request failed';
-  var err=new Error(msg);
+  var err=new Error(cloudFriendlyAuthMessage(error, fallback));
   err.data=error;
   throw err;
 }
