@@ -14,6 +14,7 @@ assert(/var\s+localPersistenceHadSavedData\s*=\s*false/.test(persistence), 'pers
 assert(/function\s+markLocalPersistenceHadSavedData\s*\(/.test(persistence), 'persistence must expose a marker for restored local data');
 assert(/function\s+localPersistenceHasSavedData\s*\(/.test(persistence), 'persistence must expose local saved-data status');
 assert(/markLocalPersistenceHadSavedData\(\)/.test(persistence), 'loadState/apply restore path must mark real saved data');
+assert(/saveChatThread[\s\S]*cloudNotifyLocalSave[\s\S]*chat/.test(persistence), 'chat thread saves must schedule cloud autosave');
 assert(/function\s+cloudLocalHasRealSave\s*\(/.test(cloud), 'cloud sync must distinguish default boot data from a real local save');
 assert(/function\s+cloudShouldRestoreRemote\s*\(/.test(cloud), 'cloud sync must centralize restore-vs-upload decision');
 assert(/function\s+cloudUserDataWeight\s*\(/.test(cloud), 'cloud sync must score real user data separately from default seed data');
