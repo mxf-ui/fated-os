@@ -1,4 +1,4 @@
-import { jsonResponse, optionsResponse, requireUser, randomId } from './_lib/auth.js';
+﻿import { jsonResponse, optionsResponse, requireUser, randomId } from './_lib/auth.js';
 
 const MAX_ASSET_BYTES = 8 * 1024 * 1024;
 const ALLOWED_MIME = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg+xml', 'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/webm']);
@@ -37,6 +37,11 @@ function bytesToHex(bytes) {
   return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+function getAssetBucket(env) {
+  const bucket = env && env.ASSETS;
+  return bucket && typeof bucket.put === 'function' && typeof bucket.get === 'function' ? bucket : null;
+}
+
 async function sha256Hex(bytes) {
   const digest = await crypto.subtle.digest('SHA-256', bytes);
   return bytesToHex(new Uint8Array(digest));
@@ -63,7 +68,7 @@ export async function onRequestOptions() { return optionsResponse(); }
 export async function onRequestPost(context) {
   const auth = await requireUser(context);
   if (auth.response) return auth.response;
-  const bucket = context.env && context.env.ASSETS;
+  const bucket = getAssetBucket(context.env);
 
   let body;
   try { body = await context.request.json(); }
@@ -102,7 +107,7 @@ export async function onRequestPost(context) {
 export async function onRequestGet(context) {
   const auth = await requireUser(context);
   if (auth.response) return auth.response;
-  const bucket = context.env && context.env.ASSETS;
+  const bucket = getAssetBucket(context.env);
   await ensureAssetTable(auth.db);
 
   const url = new URL(context.request.url);
@@ -135,3 +140,4 @@ export async function onRequestGet(context) {
     },
   });
 }
+
