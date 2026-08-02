@@ -173,6 +173,22 @@ function cloudHasSession(){ return !!(cloudSyncState.user && cloudSyncState.key)
 function cloudTouchStatus(text, tone){
   if(document.getElementById('sheet-cloudsync') && document.getElementById('cloud-sync-status')) cloudSetStatus(text, tone);
 }
+
+function cloudWaitForPersistenceReady(opts){
+  opts=opts||{};
+  var timeout=Number(opts.timeout||15000);
+  var started=Date.now();
+  if(typeof isPersistenceBooting!=='function' || !isPersistenceBooting()) return Promise.resolve(true);
+  if(opts.status!==false) cloudSetStatus('Local data is still loading... / \u672c\u5730\u6570\u636e\u8fd8\u5728\u6062\u590d\uff0c\u7a0d\u7b49\u540e\u518d\u540c\u6b65\u3002', '');
+  return new Promise(function(resolve, reject){
+    function tick(){
+      if(typeof isPersistenceBooting!=='function' || !isPersistenceBooting()) return resolve(true);
+      if(Date.now()-started>timeout) return reject(new Error('Local data is still loading. Please wait a few seconds and try again. / \u672c\u5730\u6570\u636e\u8fd8\u6ca1\u6062\u590d\u5b8c\u6210\uff0c\u8bf7\u7a0d\u7b49\u51e0\u79d2\u540e\u91cd\u8bd5\u3002'));
+      setTimeout(tick, 120);
+    }
+    tick();
+  });
+}
 async function cloudSyncInit(){
   cloudRenderAuthState();
   cloudSetStatus('Checking account...', '');
@@ -276,6 +292,7 @@ function cloudSaveStickers(){
   return new Promise(function(resolve){ if(typeof fatedDBSaveStickers==='function') fatedDBSaveStickers(resolve); else resolve(); });
 }
 async function cloudBuildLocalSnapshot(){
+  await cloudWaitForPersistenceReady({status:false});
   var oldSuppress=cloudSyncState.suppressAutosave;
   cloudSyncState.suppressAutosave=true;
   try{ if(typeof saveState==='function') saveState(); }
@@ -400,6 +417,7 @@ async function cloudRestoreSnapshotPayload(payload){
 async function cloudUploadSnapshot(opts){
   opts=opts||{};
   if(!cloudSyncState.user || !cloudSyncState.key) return null;
+  await cloudWaitForPersistenceReady({status:opts.manual!==false});
   if(opts.manual) cloudSetStatus('Encrypting local save... / 正在加密本机存档...', '');
   var snapshot=await cloudBuildLocalSnapshot();
   await cloudExternalizeSnapshotAssets(snapshot);
@@ -459,6 +477,7 @@ async function cloudRunAutosave(){
 async function cloudAutoSyncAfterUnlock(reason){
   if(!cloudHasSession()) return;
   try{
+    await cloudWaitForPersistenceReady({status:true});
     var remote=await cloudApi('/api/sync');
     var local=await cloudBuildLocalSnapshot();
     var localWeight=cloudSnapshotWeight(local);
