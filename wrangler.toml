@@ -1,3 +1,11 @@
 name = "fated-os"
 compatibility_date = "2024-09-23"
 pages_build_output_dir = "."
+
+[vars]
+INVITE_CODE = "123456"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fated-os-db"
+database_id = "824ca3b4-d70d-4eb6-af2f-01a95aa50b94"
