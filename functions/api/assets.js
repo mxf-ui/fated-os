@@ -66,6 +66,14 @@ async function ensureAssetTable(db) {
 export async function onRequestOptions() { return optionsResponse(); }
 
 export async function onRequestPost(context) {
+  try {
+    return await handleAssetPost(context);
+  } catch (e) {
+    return jsonResponse({ error: 'Asset upload failed', detail: String(e && e.message || e) }, 500);
+  }
+}
+
+async function handleAssetPost(context) {
   const auth = await requireUser(context);
   if (auth.response) return auth.response;
   const bucket = getAssetBucket(context.env);
@@ -140,4 +148,5 @@ export async function onRequestGet(context) {
     },
   });
 }
+
 
