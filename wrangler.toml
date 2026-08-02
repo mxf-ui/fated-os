@@ -9,3 +9,8 @@ INVITE_CODE = "123456"
 binding = "DB"
 database_name = "fated-os-db"
 database_id = "824ca3b4-d70d-4eb6-af2f-01a95aa50b94"
+
+[[r2_buckets]]
+binding = "ASSET_BUCKET"
+bucket_name = "fated-os-assets"
+
