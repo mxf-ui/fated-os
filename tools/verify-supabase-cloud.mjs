@@ -17,8 +17,8 @@ const config = read('js/main/core/08a-supabase-config.js');
 const sql = read('supabase_fated_cloud.sql');
 
 assert(/@supabase\/supabase-js@2/.test(html), 'index.html must load Supabase SDK');
-assert(/08a-supabase-config\.js\?v=20260802-auth-help/.test(html), 'index.html must load Supabase config before cloud sync');
-assert(/08-cloud-sync\.js\?v=20260802-auth-help/.test(html), 'index.html must cache-bust Supabase cloud sync');
+assert(/08a-supabase-config\.js\?v=20260802-rate-clean/.test(html), 'index.html must load Supabase config before cloud sync');
+assert(/08-cloud-sync\.js\?v=20260802-rate-clean/.test(html), 'index.html must cache-bust Supabase cloud sync');
 assert(/FATED_SUPABASE_CONFIG/.test(config), 'Supabase config file must expose FATED_SUPABASE_CONFIG');
 assert(/function cloudSupabaseClient\(/.test(cloud), 'cloud sync must create Supabase client');
 assert(/auth\.getSession\(/.test(cloud), 'cloud sync must read long-lived Supabase session');

@@ -146,6 +146,9 @@ function cloudFriendlyAuthMessage(error, fallback){
   if(lower.indexOf('email not confirmed')>=0 || lower.indexOf('confirm')>=0){
     return 'Email is not confirmed. Please open the confirmation email, or turn off Supabase email confirmation for invite-only testing. / 邮箱还没有确认。请先点确认邮件，或在 Supabase 里关闭邮箱确认后再内测。';
   }
+  if(lower.indexOf('email rate limit exceeded')>=0 || (lower.indexOf('rate limit')>=0 && lower.indexOf('email')>=0)){
+    return 'Email registration is temporarily rate-limited. Wait a few minutes, change another email, or turn off Supabase email confirmation for invite-only testing. / 邮件注册触发频率限制。请等几分钟、换一个邮箱，或在 Supabase 里关闭邮箱确认后再内测。';
+  }
   if(lower.indexOf('user already registered')>=0 || lower.indexOf('already registered')>=0 || lower.indexOf('already exists')>=0){
     return 'This email is already registered. Please tap Login instead. / 这个邮箱已经注册过了，请直接点登录。';
   }
