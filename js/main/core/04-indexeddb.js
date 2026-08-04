@@ -17,6 +17,7 @@ function fatedDBOpen(cb){
 }
 /* 保存单个联系人的聊天记录到 IndexedDB */
 function fatedDBSaveChat(contactId, cb){
+  if(typeof fatedIsLegacyDefaultContactId==='function' && fatedIsLegacyDefaultContactId(contactId)) return cb&&cb();
   var c = contacts[contactId]; if(!c) return cb&&cb();
   fatedDBOpen(function(db){
     if(!db) return cb&&cb();
@@ -79,6 +80,7 @@ function fatedDBLoadAllChats(cb){
         var rows = e.target.result||[];
         rows.forEach(function(row){
           if(!row || !row.id) return;
+          if(typeof fatedIsLegacyDefaultContactId==='function' && fatedIsLegacyDefaultContactId(row.id)){ fatedDBDeleteChat(row.id); return; }
           var c = (typeof ensureRestoredContact==='function') ? ensureRestoredContact(row.id, row) : contacts[row.id];
           if(!c) return;
           ['name','displayName','tone','persona','userPrompt','wxid','bio','cover','groupUserPrompt','userProfile','taDeletedBy'].forEach(function(k){ if(typeof row[k]==='string') c[k]=row[k]; });

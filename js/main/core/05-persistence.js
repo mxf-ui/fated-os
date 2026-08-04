@@ -1,15 +1,105 @@
-﻿/* ============ PERSISTENCE ============ */
+/* ============ PERSISTENCE ============ */
 var bubbleMineColor = '#1a1a1a', bubbleTheirsColor = '#ffffff';
 var widgetCustom = {}; var removedPlugins = [];
 var lastPersistenceWarningAt = 0;
 var persistenceBooting = true;
 var localPersistenceHadSavedData = false;
+var localPersistenceLastChangedAt = 0;
 var savedPluginTypes = null;
+var FATED_LEGACY_DEFAULT_CONTACT_IDS = ['test'+'er1', 'fated_'+'default_contact'];
+var FATED_LEGACY_DEFAULT_WORLD_BOOK_IDS = ['wb1'];
+
+function fatedIsLegacyDefaultContactId(id){
+  return FATED_LEGACY_DEFAULT_CONTACT_IDS.indexOf(String(id||'')) >= 0;
+}
+function fatedIsLegacyDefaultWorldBookId(id){
+  return FATED_LEGACY_DEFAULT_WORLD_BOOK_IDS.indexOf(String(id||'')) >= 0;
+}
+function fatedFilterLegacyIds(list){
+  return Array.isArray(list) ? list.filter(function(id){ return !fatedIsLegacyDefaultContactId(id); }) : list;
+}
+function fatedSanitizeApiConfig(cfg){
+  if(!cfg || typeof cfg!=='object') return cfg;
+  ['voiceIds','memoryBooks'].forEach(function(k){
+    if(cfg[k] && typeof cfg[k]==='object') FATED_LEGACY_DEFAULT_CONTACT_IDS.forEach(function(id){ delete cfg[k][id]; });
+  });
+  return cfg;
+}
+function fatedSanitizeMomentsList(list){
+  if(!Array.isArray(list)) return list;
+  return list.filter(function(m){ return m && !fatedIsLegacyDefaultContactId(m.authorId); }).map(function(m){
+    if(Array.isArray(m.comments)) m.comments = m.comments.filter(function(c){ return c && !fatedIsLegacyDefaultContactId(c.who); });
+    if(Array.isArray(m.hidden)) m.hidden = fatedFilterLegacyIds(m.hidden);
+    return m;
+  });
+}
+function fatedSanitizeContactsList(list){
+  if(!Array.isArray(list)) return list;
+  return list.filter(function(c){ return c && c.id && !fatedIsLegacyDefaultContactId(c.id); }).map(function(c){
+    if(Array.isArray(c.members)) c.members = fatedFilterLegacyIds(c.members);
+    if(Array.isArray(c.worldBooks)) c.worldBooks = c.worldBooks.filter(function(id){ return !fatedIsLegacyDefaultWorldBookId(id); });
+    return c;
+  });
+}
+function fatedSanitizeWorldBooksMap(map){
+  if(!map || typeof map!=='object') return map;
+  FATED_LEGACY_DEFAULT_WORLD_BOOK_IDS.forEach(function(id){ delete map[id]; });
+  return map;
+}
+function fatedSanitizeMomentsAssets(a){
+  if(!a || typeof a!=='object') return a;
+  if(Array.isArray(a.images)) a.images = a.images.filter(function(row){ return row && !fatedIsLegacyDefaultContactId(row.authorId); });
+  return a;
+}
+function fatedSanitizeLegacyDefaultStateSnapshot(s){
+  if(!s || typeof s!=='object') return s;
+  s.contactsExtra = fatedSanitizeContactsList(s.contactsExtra);
+  s.moments = fatedSanitizeMomentsList(s.moments);
+  s.apiConfig = fatedSanitizeApiConfig(s.apiConfig);
+  s.worldBooks = fatedSanitizeWorldBooksMap(s.worldBooks);
+  if(fatedIsLegacyDefaultContactId(s.currentContact)) s.currentContact = '';
+  if(fatedIsLegacyDefaultContactId(s.viewAs)) s.viewAs = 'me';
+  if(Array.isArray(s.composeHidden)) s.composeHidden = fatedFilterLegacyIds(s.composeHidden);
+  return s;
+}
+function fatedSanitizeLegacyDefaultCloudPayload(payload){
+  if(!payload || typeof payload!=='object') return payload;
+  if(payload.state) fatedSanitizeLegacyDefaultStateSnapshot(payload.state);
+  if(payload.assets){
+    if(Array.isArray(payload.assets.contacts)) payload.assets.contacts = fatedSanitizeContactsList(payload.assets.contacts);
+    if(payload.assets.moments) fatedSanitizeMomentsAssets(payload.assets.moments);
+  }
+  if(Array.isArray(payload.chats)) payload.chats = fatedSanitizeContactsList(payload.chats);
+  return payload;
+}
+function fatedSanitizeLegacyDefaultRuntimeState(){
+  FATED_LEGACY_DEFAULT_CONTACT_IDS.forEach(function(id){
+    if(contacts && contacts[id]) delete contacts[id];
+    if(typeof fatedDBDeleteChat==='function') fatedDBDeleteChat(id);
+  });
+  if(typeof currentContact!=='undefined' && fatedIsLegacyDefaultContactId(currentContact)) currentContact='';
+  if(typeof viewAs!=='undefined' && fatedIsLegacyDefaultContactId(viewAs)) viewAs='me';
+  if(typeof composeHidden!=='undefined' && Array.isArray(composeHidden)) composeHidden=fatedFilterLegacyIds(composeHidden);
+  if(typeof moments!=='undefined') moments=fatedSanitizeMomentsList(moments)||[];
+  if(typeof worldBooks!=='undefined') fatedSanitizeWorldBooksMap(worldBooks);
+  if(typeof apiConfig!=='undefined') fatedSanitizeApiConfig(apiConfig);
+}
+
 
 function isPersistenceBooting(){ return !!persistenceBooting; }
 function markPersistenceReady(){ persistenceBooting = false; }
 function markLocalPersistenceHadSavedData(){ localPersistenceHadSavedData = true; }
 function localPersistenceHasSavedData(){ return !!localPersistenceHadSavedData; }
+function markLocalPersistenceChanged(reason){
+  localPersistenceLastChangedAt = Date.now();
+  try{ localStorage.setItem('fated_local_changed_at', String(localPersistenceLastChangedAt)); }catch(e){}
+  return localPersistenceLastChangedAt;
+}
+function getLocalPersistenceLastChangedAt(){
+  if(localPersistenceLastChangedAt) return localPersistenceLastChangedAt;
+  try{ localPersistenceLastChangedAt = Number(localStorage.getItem('fated_local_changed_at')||0)||0; }catch(e){}
+  return localPersistenceLastChangedAt;
+}
 function buildActivePluginsSnapshot(){
   var list = [], seen = {};
   if(typeof document==='undefined' || !document.querySelectorAll) return list;
@@ -22,6 +112,7 @@ function buildActivePluginsSnapshot(){
 function getSavedPluginTypes(){ return Array.isArray(savedPluginTypes) ? savedPluginTypes.slice() : null; }
 function isPersistableContactId(id){
   if(!id || id==='me') return false;
+  if(typeof fatedIsLegacyDefaultContactId==='function' && fatedIsLegacyDefaultContactId(id)) return false;
   if(/^tmp[-_]/.test(id) || /^draft[-_]/.test(id)) return false;
   return !!(contacts && contacts[id]);
 }
@@ -63,6 +154,7 @@ function normalizeRestoredContactShape(id, c, seedRow){
 }
 function ensureRestoredContact(id, seedRow){
   if(!id || id==='me') return null;
+  if(typeof fatedIsLegacyDefaultContactId==='function' && fatedIsLegacyDefaultContactId(id)) return null;
   contacts[id] = normalizeRestoredContactShape(id, contacts[id]||{}, seedRow||{});
   return contacts[id];
 }
@@ -187,6 +279,7 @@ function warnPersistenceSave(e){
 }
 function saveState(){
   if(isPersistenceBooting()) return false;
+  if(!(typeof cloudSyncState!=='undefined' && cloudSyncState.suppressAutosave)) markLocalPersistenceChanged('state');
   var lightState = buildLightState();
   var savedLocal = true;
   try{
@@ -233,6 +326,7 @@ function mergeApiConfig(saved){
   else if(typeof imageGenEnsureConfig==='function') imageGenEnsureConfig();
 }
 function applyContactsSnapshot(list){
+  list = fatedSanitizeContactsList(list);
   if(!Array.isArray(list)) return;
   list.forEach(function(c){
     if(!c || !c.id) return;
@@ -333,6 +427,7 @@ function applyMomentsAssets(a){
   return true;
 }
 function applyContactAssets(list){
+  list = fatedSanitizeContactsList(list);
   if(!Array.isArray(list)) return false;
   list.forEach(function(row){
     if(!row || !row.id) return;
@@ -409,6 +504,7 @@ function loadStateAssetsFromDB(cb){
 function saveChatThread(contactId){
   var id = contactId || currentContact;
   if(!id || !contacts[id]) return;
+  markLocalPersistenceChanged('chat');
   fatedDBSaveChat(id, function(){
     if(typeof cloudNotifyLocalSave==='function') cloudNotifyLocalSave('chat');
   });

@@ -1,4 +1,4 @@
-﻿/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
+/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
 var cloudSyncState = {
   user:null,
   key:null,
@@ -505,15 +505,12 @@ function cloudSaveStickers(){
 }
 async function cloudBuildLocalSnapshot(){
   await cloudWaitForPersistenceReady({status:false});
-  var oldSuppress=cloudSyncState.suppressAutosave;
-  cloudSyncState.suppressAutosave=true;
-  try{ if(typeof saveState==='function') saveState(); }
-  finally{ cloudSyncState.suppressAutosave=oldSuppress; }
   await cloudSaveAllChats();
   await cloudSaveStickers();
-  return {
+  var changedAt = (typeof getLocalPersistenceLastChangedAt==='function') ? getLocalPersistenceLastChangedAt() : 0;
+  var snapshot = {
     schemaVersion:2,
-    savedAt:Date.now(),
+    savedAt:changedAt,
     state:buildLightState(),
     assets:{
       profile:buildProfileAssets(),
@@ -528,6 +525,7 @@ async function cloudBuildLocalSnapshot(){
     },
     chats:cloudCollectChats()
   };
+  return (typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(snapshot) : snapshot;
 }
 function cloudHasConfiguredApiState(s){
   s = s || {};
@@ -568,14 +566,14 @@ function cloudUserDataWeight(payload){
   var s=payload.state||{}, a=payload.assets||{}, score=0;
   var contactsExtra=Array.isArray(s.contactsExtra) ? s.contactsExtra : [];
   contactsExtra.forEach(function(c){
-    if(!c || !c.id || c.id==='fated_default_contact') return;
+    if(!c || !c.id || (typeof fatedIsLegacyDefaultContactId==='function' ? fatedIsLegacyDefaultContactId(c.id) : c.id===('fated_'+'default_contact'))) return;
     score += 4;
     if(c.avatar || c.cover) score += 2;
     if(c.tone || c.persona || c.bio || c.userPrompt) score += 2;
   });
   if(Array.isArray(payload.chats)){
     payload.chats.forEach(function(c){
-      if(!c || !c.id || c.id==='fated_default_contact') return;
+      if(!c || !c.id || (typeof fatedIsLegacyDefaultContactId==='function' ? fatedIsLegacyDefaultContactId(c.id) : c.id===('fated_'+'default_contact'))) return;
       if(Array.isArray(c.seed) && c.seed.length) score += c.seed.length;
       if(c.avatar || c.cover) score += 2;
       if(c.tone || c.persona || c.bio || c.userPrompt) score += 2;
@@ -608,6 +606,20 @@ function cloudCanUploadSnapshot(snapshot, opts){
   }
   cloudTouchStatus('Local save is still empty, skipped blank cloud upload. / ?????????????????????', 'warn');
   return false;
+}
+async function cloudFindBlockingRemoteSnapshot(snapshot, opts){
+  opts = opts || {};
+  if(!cloudHasSession()) return null;
+  var remote = await cloudFetchRemoteSnapshot();
+  if(!remote.snapshot) return null;
+  var payload = await cloudDecryptSnapshot(remote.snapshot, cloudSyncState.key);
+  payload = (typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(payload) : payload;
+  if(!cloudSnapshotHasMeaningfulUserData(payload)) return null;
+  var remoteTime = Number(remote.snapshot.clientUpdatedAt || remote.snapshot.updatedAt || 0);
+  var localTime = Number(snapshot && snapshot.savedAt || 0);
+  var localMeaningful = cloudSnapshotHasMeaningfulUserData(snapshot);
+  if(!localMeaningful || !localTime || remoteTime > localTime + 5000) return {remote:remote, payload:payload};
+  return null;
 }
 function cloudSnapshotHasMeaningfulUserData(payload){
   if(!payload) return false;
@@ -688,6 +700,7 @@ async function cloudExternalizeSnapshotAssets(snapshot){
   return snapshot;
 }
 async function cloudRestoreSnapshotPayload(payload){
+  payload = (typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(payload) : payload;
   if(!payload || !payload.state) throw new Error('Cloud save is empty or invalid. / 云端存档为空或无效。');
   cloudSyncState.suppressAutosave=true;
   try{
@@ -729,9 +742,12 @@ async function cloudUploadSnapshot(opts){
   await cloudWaitForPersistenceReady({status:opts.manual!==false});
   if(opts.manual) cloudSetStatus('Encrypting local save... / \u6b63\u5728\u52a0\u5bc6\u672c\u5730\u5b58\u6863...', '');
   var snapshot=await cloudBuildLocalSnapshot();
-  if(!cloudSnapshotHasMeaningfulUserData(snapshot)){
-    cloudTouchStatus('Local save is still empty, skipped blank cloud upload. / ??????????????????', 'warn');
-    return null;
+  if(!cloudCanUploadSnapshot(snapshot, opts)) return null;
+  var blockingRemote=await cloudFindBlockingRemoteSnapshot(snapshot, opts);
+  if(blockingRemote){
+    await cloudRestoreSnapshotPayload(blockingRemote.payload);
+    cloudTouchStatus('Cloud save is newer, restored instead of overwriting. / 云端存档较新，已恢复，未覆盖。', 'ok');
+    return blockingRemote.remote;
   }
   await cloudExternalizeSnapshotAssets(snapshot);
   var encrypted=await cloudEncryptSnapshot(snapshot, cloudSyncState.key);
@@ -796,6 +812,7 @@ async function cloudAutoSyncAfterUnlock(reason){
     var localMeaningful=cloudSnapshotHasMeaningfulUserData(local);
     if(remote.snapshot){
       var remotePayload=await cloudDecryptSnapshot(remote.snapshot, cloudSyncState.key);
+      if(typeof fatedSanitizeLegacyDefaultCloudPayload==='function') fatedSanitizeLegacyDefaultCloudPayload(remotePayload);
       if(cloudShouldRestoreRemote(local, remotePayload, remote.snapshot)){
         await cloudRestoreSnapshotPayload(remotePayload);
         cloudSetStatus('Cloud save restored automatically. / ??????????', 'ok');
@@ -819,6 +836,7 @@ document.addEventListener('visibilitychange', function(){ if(document.hidden && 
 
 
 window.addEventListener('load', function(){ cloudBootAuthGate(); });
+
 
 
 

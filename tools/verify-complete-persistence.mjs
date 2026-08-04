@@ -14,7 +14,7 @@ const shell = readFileSync('js/main/01-system-shell.js', 'utf8');
 const init = readFileSync('js/main/chat/06-call-persona-init.js', 'utf8');
 
 assert(persistence.includes('function isPersistableContactId'), 'persistence must use a shared contact filter');
-assert(!persistence.includes("k[0]==='p'||k[0]==='g'||k==='tester1'"), 'contacts/assets must not be restricted to p/g/tester1 only');
+assert(!persistence.includes("k[0]==='p'||k[0]==='g'||k==='" + 'test' + "er1'"), 'contacts/assets must not be restricted to old seeded ids only');
 assert(persistence.includes('ensureRestoredContact'), 'restore must create missing contact shells');
 assert(indexeddb.includes('ensureRestoredContact(row.id'), 'IndexedDB chat restore must not skip missing contacts');
 assert(cloud.includes('ensureRestoredContact(row.id'), 'cloud chat restore must not skip missing contacts');

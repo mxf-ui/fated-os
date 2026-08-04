@@ -95,7 +95,7 @@ function forumAIRefresh(manual){
   forumState.loading=true;
   var feed=document.getElementById('forum-feed');
   if(feed && !document.getElementById('forum-loading-tip')) feed.insertAdjacentHTML('afterbegin','<div class="forum-loading" id="forum-loading-tip">正在从全网搬运今日新帖…</div>');
-  var pname='测试员1';
+  var pname=userName||'???';
   try{ if(window.coupleState&&window.coupleState.partner&&contacts[window.coupleState.partner]) pname=contacts[window.coupleState.partner].name; }catch(e){}
   var sys='你是一个中文论坛的内容搬运工，每天在微博、豆瓣、贴吧、虎扑、晋江、B站评论区闲逛，把看到的帖子搬运到一个小论坛。写作铁律：口语化、有网感，像真人随手敲出来的；每条帖子的句式、长短、语气必须各不相同；绝对禁止使用任何emoji和颜文字；绝对禁止AI腔和模板腔（不许出现"首先/其次/总之/不得不说"这类结构，不许排比堆砌，不许小编腔）。只输出JSON数组，不输出其他任何文字。';
   var up='今天是'+forumDayKey()+'。搬运15条帖子，输出严格JSON数组，元素格式：{"author":"发帖人网名","title":"标题","content":"正文100到260字","tag":"分类词","likes":37到4800的整数,"comments":[{"name":"评论人网名","text":"评论"}]}。每帖配3到6条评论，评论要像真实网友：有抬杠的、有吃瓜追问的、有歪楼的、有只回两三个字的。\n内容分配：其中5条必须围绕「'+userName+'」展开——论坛路人视角的八卦，比如有人偶遇'+userName+'和'+pname+'、讨论两人的关系、关于'+userName+'的传闻、被夸或被议论等，口吻是不认识本人的吃瓜网友；其余10条从这些方向混着来：娱乐圈八卦和塌房吃瓜、小说安利或吐槽（言情、原耽、网文）、电竞赛事和选手讨论、游戏版本吐槽、综艺、生活牢骚。网名要多样自然，不要都是四字文艺风。';
@@ -178,7 +178,6 @@ function forumLocalSeed(){
     // Generate 20-30 comments
     var commentCount = 20 + Math.floor(Math.random()*11);
     // 1-3 comments from WeChat contacts
-    if(Math.random()<0.7) post.comments.push({who:'tester1',text:netizenComments[Math.floor(Math.random()*netizenComments.length)],ts:post.ts+3600000});
     if(Math.random()<0.5) post.comments.push({who:'me',text:netizenComments[Math.floor(Math.random()*netizenComments.length)],ts:post.ts+7200000});
     // Rest from netizens
     for(var j=post.comments.length; j<commentCount; j++){
@@ -187,21 +186,19 @@ function forumLocalSeed(){
     }
     posts.push(post);
   }
-  // 2-3 posts from WeChat contacts
-  var contactPosts = [
-    {who:'tester1',title:'今天处理了一整天的危机公关',content:'累是真的累，但只要想到她还在等我，就觉得一切都值得了。工作再忙也不能忘了重要的人。',tag:'日常'},
-    {who:'me',title:'嘴硬的人也会心软',content:'嘴上说着不在乎，其实每次看到她的时候都会紧张。不是不想表现出来，只是不习惯。最近在学着改变。',tag:'心情'},
-    {who:'tester1',title:'夜晚的碎碎念',content:'其实每个人都有脆弱的一面。我也有。只是不想让她看到。想让自己在她面前一直是强大的样子。',tag:'情感'}
-  ];
-  contactPosts.forEach(function(cp,i){
-    var c = contacts[cp.who];
+  // Optional posts from real imported WeChat contacts only.
+  var realContactIds = Object.keys(contacts||{}).filter(function(id){
+    return id !== 'me' && !(typeof fatedIsLegacyDefaultContactId==='function' && fatedIsLegacyDefaultContactId(id)) && contacts[id] && !contacts[id].isGroup;
+  }).slice(0,2);
+  realContactIds.forEach(function(id,i){
+    var c = contacts[id];
     posts.push({
       id:'fp-contact-'+i,
-      author:c?c.name:cp.who,
+      author:c.name||id,
       authorType:'contact',
-      title:cp.title,
-      content:cp.content,
-      tag:cp.tag,
+      title:c.name ? c.name + '???' : '??????',
+      content:(c.bio || c.persona || c.tone || '??????????????????').slice(0,180),
+      tag:'??',
       likes:Math.floor(Math.random()*500)+100,
       comments:genComments(22+Math.floor(Math.random()*8)),
       ts:Date.now()-Math.floor(Math.random()*86400000*2)

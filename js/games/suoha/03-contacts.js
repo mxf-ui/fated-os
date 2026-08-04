@@ -1,7 +1,7 @@
 /* ===== CONTACTS ===== */
 function suohaGetTodayStr(){ return new Date().toDateString(); }
 function suohaGetContactCap(id){
-  var caps = { 'p1':2000, 'p2':1000, 'p3':500, 'p4':3000, 'p5':1500, 'tester1':1000 };
+  var caps = { 'p1':2000, 'p2':1000, 'p3':500, 'p4':3000, 'p5':1500 };
   return caps[id] || 1000;
 }
 function suohaGetContactLine(c){
@@ -31,10 +31,8 @@ function suohaOpenContacts(){
   var today = suohaGetTodayStr();
   var html = '';
   Object.keys(contacts).forEach(function(k){
-    if(k === 'me' || k === 'tester1') {
-      /* include tester1 but skip 'me' */
-      if(k === 'me') return;
-    }
+    if(k === 'me') return;
+    if(typeof fatedIsLegacyDefaultContactId==='function' && fatedIsLegacyDefaultContactId(k)) return;
     var c = contacts[k];
     if(!c || c.isGroup) return;
     var cap = suohaGetContactCap(k);
