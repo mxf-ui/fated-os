@@ -48,6 +48,7 @@ function disbandCurrentGroup(){
   var id=currentContact; var c=contacts[id]; if(!c || !c.isGroup) return;
   if(!confirm('确定解散群聊 '+esc(c.name)+'？')) return;
   closeSheet('group-info'); closeSheet('thread');
+  if(typeof fatedMarkDeleted==='function') fatedMarkDeleted('contacts', id);
   delete contacts[id]; renderChatList(); saveState(); fatedDBDeleteChat(id); showToast('群聊已解散',1400);
 }
 function removeGroupMember(mid){

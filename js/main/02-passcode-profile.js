@@ -371,7 +371,10 @@ avatarInput.addEventListener('change', e=>{
   const file = e.target.files[0]; if(!file) return;
   compressImage(file, 512, 0.85, function(res){
     if(!res) return;
-    userAvatar = res; updateUserAvatarEl(); renderThread(); renderMoments(); saveState();
+    var ts=Date.now();
+    userAvatar = res;
+    if(typeof fatedClearDeleted==='function') fatedClearDeleted('images', 'profile:userAvatar', ts);
+    updateUserAvatarEl(); renderThread(); renderMoments(); saveState();
   });
   e.target.value='';
 });
@@ -397,7 +400,13 @@ contactAvatarInput.addEventListener('change', function(e){
     if(!res) return;
     var targetId = _contactAvatarTarget || currentContact;
     var c=contacts[targetId]; if(!c) return;
-    c.avatar=res; saveState();
+    var ts=Date.now();
+    c.avatar=res; c.updatedAt=ts;
+    if(typeof fatedClearDeleted==='function'){
+      fatedClearDeleted('contacts', targetId, ts);
+      fatedClearDeleted('images', 'contact:'+targetId+':avatar', ts);
+    }
+    saveState();
     renderThread(); renderChatList();
     // 更新联系人列表中的头像
     var cr=document.querySelector('#contact-items [data-cid="'+targetId+'"] .av');
@@ -431,7 +440,10 @@ function saveMine(){
   var bioEl=document.getElementById('mine-bio');
   if(bioEl) userBio=bioEl.value;
   var cv=document.getElementById('mine-cover-preview');
-  if(cv && cv.dataset.src) userCover=cv.dataset.src;
+  if(cv && cv.dataset.src){
+    userCover=cv.dataset.src;
+    if(typeof fatedClearDeleted==='function') fatedClearDeleted('images', 'profile:userCover', Date.now());
+  }
   applyUserName(); applyUserPrefs();
   updateUserAvatarEl(); populateViewAs(); renderMoments();
   saveState();

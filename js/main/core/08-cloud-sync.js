@@ -22,7 +22,7 @@ var CLOUD_MSG = {
   SIGN_IN_ENTER:'Sign in to enter. / \u8bf7\u767b\u5f55\u540e\u8fdb\u5165\u3002',
   SYNC_UNLOCKED:'Cloud sync is unlocked. / \u4e91\u7aef\u540c\u6b65\u5df2\u89e3\u9501\u3002',
   SIGNED_IN_UNLOCK:'Signed in. Enter password and invite code once to unlock encrypted sync. / \u5df2\u767b\u5f55\uff0c\u8bf7\u8f93\u5165\u5bc6\u7801\u548c\u9080\u8bf7\u7801\u89e3\u9501\u52a0\u5bc6\u540c\u6b65\u3002',
-  D1_MISSING:'Cloud database is not configured yet. / \u4e91\u7aef\u6570\u636e\u5e93\u8fd8\u672a\u914d\u7f6e\u3002',
+  CLOUD_DB_MISSING:'Cloud database is not configured yet. / \u4e91\u7aef\u6570\u636e\u5e93\u8fd8\u672a\u914d\u7f6e\u3002',
     SIGN_IN_CREATE_SYNC:'New users tap Register first; existing users tap Login. / \u65b0\u7528\u6237\u8bf7\u5148\u70b9\u6ce8\u518c\uff0c\u8001\u7528\u6237\u76f4\u63a5\u767b\u5f55\u3002',
   EMAIL_PASSWORD_REQUIRED:'Email and password are required. / \u8bf7\u586b\u5199\u90ae\u7bb1\u548c\u5bc6\u7801\u3002',
   INVITE_REQUIRED:'Invite code is required. / \u8bf7\u586b\u5199\u9080\u8bf7\u7801\u3002',
@@ -469,13 +469,14 @@ function cloudCollectChats(){
   var ids=Object.keys(contacts||{}).filter(function(id){ return typeof isPersistableContactId==='function' ? isPersistableContactId(id) : id!=='me'; });
   return ids.map(function(id){
     var c=contacts[id]||{};
-    return { id:id, name:c.name||id, displayName:c.displayName||'', tone:c.tone||'', persona:c.persona||'', userPrompt:c.userPrompt||'', isGroup:!!c.isGroup, members:c.members||null, avatarColor:c.avatarColor||null, avatar:c.avatar||null, cover:c.cover||'', wxid:c.wxid||id, bio:c.bio||'', relations:c.relations||[], proactive:c.proactive!==false, imageGenEnabled:c.imageGenEnabled===true, seed:c.seed||[], pendingCount:c.pendingCount||0, blocked:!!c.blocked, unread:c.unread||0, memory:c.memory||null, worldBooks:c.worldBooks||[], groupUserPrompt:c.groupUserPrompt||'', userProfile:c.userProfile||'', userProfileUpdatedAt:c.userProfileUpdatedAt||0, userProfileLastMsgCount:c.userProfileLastMsgCount||0, taDeletedByPartner:!!c.taDeletedByPartner, taDeletedBy:c.taDeletedBy||'', taDeletedAt:c.taDeletedAt||0, taDeletedPrevBlocked:!!c.taDeletedPrevBlocked };
+    return { id:id, updatedAt:c.updatedAt||c.createdAt||0, deletedAt:(typeof fatedDeletedTombstones!=='undefined' && fatedDeletedTombstones.contacts ? fatedDeletedTombstones.contacts[id] : 0)||c.deletedAt||0, name:c.name||id, displayName:c.displayName||'', tone:c.tone||'', persona:c.persona||'', userPrompt:c.userPrompt||'', isGroup:!!c.isGroup, members:c.members||null, avatarColor:c.avatarColor||null, avatar:c.avatar||null, cover:c.cover||'', wxid:c.wxid||id, bio:c.bio||'', relations:c.relations||[], proactive:c.proactive!==false, imageGenEnabled:c.imageGenEnabled===true, seed:c.seed||[], pendingCount:c.pendingCount||0, blocked:!!c.blocked, unread:c.unread||0, memory:c.memory||null, worldBooks:c.worldBooks||[], groupUserPrompt:c.groupUserPrompt||'', userProfile:c.userProfile||'', userProfileUpdatedAt:c.userProfileUpdatedAt||0, userProfileLastMsgCount:c.userProfileLastMsgCount||0, taDeletedByPartner:!!c.taDeletedByPartner, taDeletedBy:c.taDeletedBy||'', taDeletedAt:c.taDeletedAt||0, taDeletedPrevBlocked:!!c.taDeletedPrevBlocked };
   });
 }
 function cloudApplyChats(rows){
   if(!Array.isArray(rows)) return;
   rows.forEach(function(row){
     if(!row || !row.id) return;
+    if(typeof fatedIsDeleted==='function' && fatedIsDeleted('contacts', row.id, row.updatedAt || row.createdAt || 0)) return;
     var c=(typeof ensureRestoredContact==='function') ? ensureRestoredContact(row.id, row) : contacts[row.id];
     if(!c) return;
     ['name','displayName','tone','persona','userPrompt','wxid','bio','cover','groupUserPrompt','userProfile','taDeletedBy'].forEach(function(k){ if(typeof row[k]==='string') c[k]=row[k]; });
@@ -517,13 +518,14 @@ async function cloudBuildLocalSnapshot(){
     schemaVersion:2,
     savedAt:changedAt,
     state:buildLightState(),
+    deletedTombstones:(typeof fatedCloneTombstones==='function') ? fatedCloneTombstones() : {},
     assets:{
       profile:buildProfileAssets(),
       moments:buildMomentsAssets(),
       contacts:buildContactAssets(),
       font:buildFontAssets(),
       widgetCustom:cloudClonePlain(widgetCustom, {}),
-      appIconImgs:cloudClonePlain(appIcons.map(function(a){ return {id:a.id, img:a.img}; }), []),
+      appIconImgs:cloudClonePlain(appIcons.map(function(a){ return {id:a.id, img:a.img, updatedAt:a.updatedAt||0, deletedAt:(typeof fatedDeletedTombstones!=='undefined' && fatedDeletedTombstones.images ? fatedDeletedTombstones.images['appIcon:'+a.id] : 0)||0}; }), []),
       lockWp:cloudClonePlain(lockWp, {}),
       homeWp:cloudClonePlain(homeWp, {}),
       stickers:cloudClonePlain(stickers, [])
@@ -771,9 +773,12 @@ function cloudMergeSnapshotPayloads(localPayload, remotePayload, opts){
   var local=cloudClonePlain(localPayload||{}, {});
   var remote=cloudClonePlain(remotePayload||{}, {});
   var merged=cloudMergeDeep(local, remote, {preferLocal:preferLocal});
+  var mergedTombstones=(typeof fatedMergeTombstones==='function') ? fatedMergeTombstones({}, local.deletedTombstones, remote.deletedTombstones, local.state&&local.state.deletedTombstones, remote.state&&remote.state.deletedTombstones) : {};
   merged.schemaVersion=Math.max(Number(local.schemaVersion)||2, Number(remote.schemaVersion)||2, 2);
   merged.savedAt=Math.max(Number(local.savedAt)||0, Number(remote.savedAt)||0, Date.now());
   merged.state=merged.state||{};
+  merged.deletedTombstones=mergedTombstones;
+  merged.state.deletedTombstones=mergedTombstones;
   var localState=local.state||{}, remoteState=remote.state||{};
   merged.state.contactsExtra=cloudMergeContacts(localState.contactsExtra||[], remoteState.contactsExtra||[], {preferLocal:preferLocal});
   merged.state.apiConfig=cloudMergeApiConfig(localState.apiConfig||{}, remoteState.apiConfig||{}, {preferLocal:preferLocal});
@@ -790,6 +795,7 @@ function cloudMergeSnapshotPayloads(localPayload, remotePayload, opts){
   merged.assets.homeWp=cloudMergeDeep(localAssets.homeWp||{}, remoteAssets.homeWp||{}, {preferLocal:preferLocal});
   merged.assets.stickers=cloudMergeArrayValues(localAssets.stickers||[], remoteAssets.stickers||[], {preferLocal:preferLocal});
   merged.chats=cloudMergeChatRows(local.chats||[], remote.chats||[], {preferLocal:preferLocal});
+  if(typeof fatedApplyTombstonesToPayload==='function') merged=fatedApplyTombstonesToPayload(merged);
   return (typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(merged) : merged;
 }
 function cloudSnapshotsEqual(a, b){ return cloudStableJson(a)===cloudStableJson(b); }
@@ -857,7 +863,8 @@ async function cloudExternalizeSnapshotAssets(snapshot){
 }
 async function cloudRestoreSnapshotPayload(payload){
   payload = (typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(payload) : payload;
-    if(!payload || !payload.state) throw new Error('Cloud save is empty or invalid. / \u4e91\u7aef\u5b58\u6863\u4e3a\u7a7a\u6216\u65e0\u6548\u3002');
+    if(typeof fatedApplyTombstonesToPayload==='function') payload=fatedApplyTombstonesToPayload(payload);
+  if(!payload || !payload.state) throw new Error('Cloud save is empty or invalid. / \u4e91\u7aef\u5b58\u6863\u4e3a\u7a7a\u6216\u65e0\u6548\u3002');
   cloudSyncState.suppressAutosave=true;
   try{
     applyStateSnapshot(payload.state);

@@ -1,6 +1,6 @@
 # Fated OS Supabase cloud save setup
 
-This replaces the old Cloudflare D1/R2 save path. Cloudflare Pages can still host the frontend.
+This replaces the old Cloudflare D1/R2 save path. Cloudflare Pages can still host the frontend. Supabase is the only cloud data/storage path.
 
 ## 1. Create Supabase project
 
@@ -48,3 +48,7 @@ Push the repo to GitHub and redeploy Cloudflare Pages. The frontend will call Su
 - Every local save triggers encrypted cloud autosave.
 - Images are uploaded to Storage and replaced with stable public URLs before the encrypted snapshot is saved.
 - Next visit: local cache loads first, then cloud snapshot restores if it is newer or if local data is empty.
+
+## Cloud path decision
+
+Supabase is the only cloud data/storage path. Old Cloudflare D1 auth, D1 snapshot sync, and R2 asset APIs are disabled with HTTP 410. Cloudflare Pages may still host the static frontend and non-storage proxy APIs.

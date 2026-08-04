@@ -1,13 +1,17 @@
-﻿import { clearSessionCookie, jsonResponse, optionsResponse, readCookie, sha256Base64 } from '../_lib/auth.js';
-
-export async function onRequestOptions() { return optionsResponse(); }
-
-export async function onRequestPost(context) {
-  const db = context.env && context.env.DB;
-  const token = readCookie(context.request, 'fated_session');
-  if (db && token) {
-    const tokenHash = await sha256Base64(token);
-    await db.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(tokenHash).run();
-  }
-  return jsonResponse({ ok: true }, 200, { 'Set-Cookie': clearSessionCookie() });
+function disabledResponse() {
+  return new Response(JSON.stringify({
+    error: 'Cloudflare D1 auth disabled. Supabase Auth is the only account path.'
+  }), {
+    status: 410,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+    }
+  });
 }
+
+export async function onRequestOptions() { return disabledResponse(); }
+export async function onRequestGet() { return disabledResponse(); }
+export async function onRequestPost() { return disabledResponse(); }

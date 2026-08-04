@@ -14,19 +14,19 @@ function addContactRow(id, isGroup){
   const box = document.getElementById('contact-items');
   if(box) box.appendChild(row);
 }
-function deleteContact(id){var nm = contacts[id] ? contacts[id].name : id;
-  // 清除空闲计时器
-  if(contacts[id] && contacts[id].idleTimer){ clearTimeout(contacts[id].idleTimer); }
-  // 彻底删除联系人数据
+function deleteContact(id){
+  var nm = contacts[id] ? contacts[id].name : id;
+  if(typeof fatedMarkDeleted==='function'){
+    fatedMarkDeleted('contacts', id);
+    fatedMarkDeleted('images', 'contact:'+id+':avatar');
+    fatedMarkDeleted('images', 'contact:'+id+':cover');
+  }
+  if(contacts[id] && contacts[id].idleTimer) clearTimeout(contacts[id].idleTimer);
   delete contacts[id];
-  // 清理API配置
   if(apiConfig.voiceIds) delete apiConfig.voiceIds[id];
   if(apiConfig.memoryBooks) delete apiConfig.memoryBooks[id];
-  // 从 IndexedDB 删除聊天记录
   fatedDBDeleteChat(id);
-  // 从联系人列表DOM中移除
   var cr=document.querySelector('#contact-items [data-cid="'+id+'"]'); if(cr) cr.remove();
-  // 重建聊天列表（会自动排除已删除的联系人）
   renderChatList();
   if(currentContact===id){
     currentContact='';
@@ -34,7 +34,7 @@ function deleteContact(id){var nm = contacts[id] ? contacts[id].name : id;
     if(typeof renderEmptyThread==='function') renderEmptyThread();
   }
   saveState();
-  showToast('已删除「'+nm+'」及其所有聊天记录', 1600);
+  showToast('????'+nm+'???????', 1600);
 }
 function openGroupSheet(){
   const list = document.getElementById('group-picker');
@@ -355,6 +355,7 @@ function uploadChatBg(e){
   compressImage(file, 800, 0.85, function(res){
     if(!res) return;
     chatBg='url('+res+') center/cover no-repeat';
+    if(typeof fatedClearDeleted==='function') fatedClearDeleted('images', 'profile:chatBg', Date.now());
     applyChatBgToDOM(chatBg);
     document.querySelectorAll('#chat-bg-swatches .swatch').forEach(function(s){s.style.border='2px solid transparent';});
     saveState();

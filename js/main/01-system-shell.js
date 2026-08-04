@@ -63,12 +63,13 @@ iconInput.addEventListener('change', e=>{
   compressImage(file, 256, 0.85, function(res){
     if(!res) return;
     const def = appIcons.find(a=>a.id===activeIconId);
-    def.img = res;
+    def.img = res; def.updatedAt = Date.now();
+    if(typeof fatedClearDeleted==='function') fatedClearDeleted('images', 'appIcon:'+activeIconId, def.updatedAt);
     renderDesktopIcons(); renderIconGrid(); saveState();
   });
 });
 function pickIcon(id){ activeIconId=id; iconInput.click(); }
-function resetIcon(e, id){ e.stopPropagation(); const def=appIcons.find(a=>a.id===id); def.img=null; renderDesktopIcons(); renderIconGrid(); }
+function resetIcon(e, id){ e.stopPropagation(); const def=appIcons.find(a=>a.id===id); if(def){ def.img=null; def.updatedAt=Date.now(); } if(typeof fatedMarkDeleted==='function') fatedMarkDeleted('images', 'appIcon:'+id); renderDesktopIcons(); renderIconGrid(); saveState(); }
 var TA_APP_LOCK_MS = window.TA_APP_LOCK_MS || 15*60*1000;
 function couplePersistAppLocks(){
   if(typeof saveCoupleState==='function') saveCoupleState();
@@ -168,22 +169,25 @@ function openDesktopApp(id, opts){
 }
 function renderDesktopIcons(){
   var board=document.getElementById('desktop-board');
+  if(!board) return;
   board.innerHTML=appIcons.map(function(a){
     var bg=a.img?' style="background-image:url('+a.img+');background-size:cover;"':'';
-    var inner=a.img?'':'<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">'+a.ico+'</div>';
+    var inner=a.img?'':'<div class="d-icon-glyph">'+a.ico+'</div>';
     var locked=coupleAppLockRemaining(a.id);
-    var badge=locked?'<span style="position:absolute;right:4px;top:4px;background:rgba(18,40,30,.82);color:#fff;border-radius:999px;padding:2px 5px;font-size:8px;font-weight:800;">'+Math.ceil(locked/60000)+'m</span>':'';
-    return '<div class="d-tile" data-ta-app-id="'+a.id+'"'+bg+' onclick="openDesktopApp(\''+a.id+'\')" style="position:relative;'+(locked?'filter:saturate(.55);opacity:.72;':'')+'">'+inner+badge+'</div>';
+    var lockedStyle=locked?'filter:saturate(.55);opacity:.72;':'';
+    var badge=locked?'<span class="d-lock-badge">'+Math.ceil(locked/60000)+'m</span>':'';
+    return '<div class="d-app" data-ta-app-id="'+a.id+'" onclick="openDesktopApp(\''+a.id+'\')" style="'+lockedStyle+'"><div class="d-tile"'+bg+'>'+inner+badge+'</div><div class="d-label">'+a.name+'</div></div>';
   }).join('');
-  board.innerHTML+='<div style="text-align:center;font-size:9px;color:#bbb;letter-spacing:1px;margin-top:4px;">'+appIcons.map(function(a){return a.name;}).join(' &middot; ')+'</div>';
   var dock=document.getElementById('desktop-dock');
+  if(!dock) return;
   var dockIds=['wechat','couple','settings'];
   dock.innerHTML=dockIds.map(function(id){
     var a=appIcons.find(function(x){return x.id===id;});
+    if(!a) return '';
     var bg=a.img?' style="background-image:url('+a.img+');background-size:cover;"':'';
-    var inner=a.img?'':'<div style="display:flex;align-items:center;justify-content:center;">'+a.ico+'</div>';
+    var inner=a.img?'':'<div class="d-icon-glyph">'+a.ico+'</div>';
     var locked=coupleAppLockRemaining(a.id);
-    var badge=locked?'<span style="position:absolute;right:2px;top:2px;background:rgba(18,40,30,.82);color:#fff;border-radius:999px;padding:2px 5px;font-size:8px;font-weight:800;">'+Math.ceil(locked/60000)+'m</span>':'';
+    var badge=locked?'<span class="d-lock-badge dock">'+Math.ceil(locked/60000)+'m</span>':'';
     return '<div class="tile" data-ta-app-id="'+a.id+'"'+bg+' onclick="openDesktopApp(\''+a.id+'\')" style="position:relative;'+(locked?'filter:saturate(.55);opacity:.72;':'')+'">'+inner+badge+'</div>';
   }).join('');
 }
@@ -215,9 +219,13 @@ slotInput.addEventListener('change', e=>{
       if(idx!==null && isFinite(idx)){
         widgetCustom[wt].imgs=Array.isArray(widgetCustom[wt].imgs) ? widgetCustom[wt].imgs : [];
         widgetCustom[wt].imgs[idx]=res;
+        widgetCustom[wt].updatedAt=Date.now();
+        if(typeof fatedClearDeleted==='function') fatedClearDeleted('images', 'widget:'+wt+':img:'+idx, widgetCustom[wt].updatedAt);
         if(idx===0) widgetCustom[wt].img=res;
       } else {
         widgetCustom[wt].img=res;
+        widgetCustom[wt].updatedAt=Date.now();
+        if(typeof fatedClearDeleted==='function') fatedClearDeleted('images', 'widget:'+wt+':img', widgetCustom[wt].updatedAt);
       }
       saveState();
     }
@@ -306,8 +314,9 @@ function paintWallpaper(el, wp){
   } else { el.innerHTML=''; }
 }
 function applyWallpaper(target, type, url){
-  if(target==='lock'||target==='both'){ lockWp={type:type, url:url||''}; paintWallpaper(document.getElementById('lock-wallpaper'), lockWp); }
-  if(target==='home'||target==='both'){ homeWp={type:type, url:url||''}; paintWallpaper(document.getElementById('home-wallpaper'), homeWp); }
+  var ts=Date.now();
+  if(target==='lock'||target==='both'){ if(typeof fatedMarkDeleted==='function') fatedMarkDeleted('appearance', 'wallpaper:lock', ts); lockWp={type:type, url:url||'', updatedAt:ts, deletedAt:fatedDeletedTombstones.appearance['wallpaper:lock']||0}; if(type==='custom' && typeof fatedClearDeleted==='function') fatedClearDeleted('appearance', 'wallpaper:lock', ts); paintWallpaper(document.getElementById('lock-wallpaper'), lockWp); }
+  if(target==='home'||target==='both'){ if(typeof fatedMarkDeleted==='function') fatedMarkDeleted('appearance', 'wallpaper:home', ts); homeWp={type:type, url:url||'', updatedAt:ts, deletedAt:fatedDeletedTombstones.appearance['wallpaper:home']||0}; if(type==='custom' && typeof fatedClearDeleted==='function') fatedClearDeleted('appearance', 'wallpaper:home', ts); paintWallpaper(document.getElementById('home-wallpaper'), homeWp); }
   saveState();
 }
 function pickWallpaper(el,type){
@@ -378,6 +387,7 @@ function addPlugin(type, opts){
   // ???????????????????????????????
   document.querySelectorAll('[data-wc-type="'+type+'"]').forEach(function(n){ n.remove(); });
   var ri = removedPlugins.indexOf(type); if(ri>-1) removedPlugins.splice(ri,1);
+  if(typeof fatedClearDeleted==='function') fatedClearDeleted('plugins', type, Date.now());
   let el;
   if(def.surface==='lock'){
     const stack = document.getElementById('widget-stack');
@@ -433,11 +443,16 @@ function remountPluginsFromSavedState(){
   var list = Array.isArray(saved) && saved.length ? saved : current;
   if(!list.length) return;
   document.querySelectorAll('[data-wc-type]').forEach(function(n){ n.remove(); });
-  list.forEach(function(t){ if(removedPlugins.indexOf(t)<0) addPlugin(t, {skipSave:true}); });
+  list.forEach(function(t){ if(removedPlugins.indexOf(t)<0 && !(typeof fatedIsDeleted==='function' && fatedIsDeleted('plugins', t, 0))) addPlugin(t, {skipSave:true}); });
 }
 function removePlugin(type){
   document.querySelectorAll('[data-wc-type="'+type+'"]').forEach(function(n){ n.remove(); });
   if(removedPlugins.indexOf(type)<0) removedPlugins.push(type);
+  if(typeof fatedMarkDeleted==='function') fatedMarkDeleted('plugins', type);
+  if(typeof fatedMarkDeleted==='function'){
+    fatedMarkDeleted('images', 'widget:'+type+':img');
+    for(var i=0;i<12;i++) fatedMarkDeleted('images', 'widget:'+type+':img:'+i);
+  }
   renderPluginLibrary();
   saveState();
 }

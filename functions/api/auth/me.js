@@ -1,12 +1,17 @@
-﻿import { optionsResponse, publicUser, requireUser } from '../_lib/auth.js';
-
-export async function onRequestOptions() { return optionsResponse(); }
-
-export async function onRequestGet(context) {
-  const auth = await requireUser(context);
-  if (auth.response) return auth.response;
-  return new Response(JSON.stringify({ ok: true, user: publicUser(auth.user) }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+function disabledResponse() {
+  return new Response(JSON.stringify({
+    error: 'Cloudflare D1 auth disabled. Supabase Auth is the only account path.'
+  }), {
+    status: 410,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+    }
   });
 }
+
+export async function onRequestOptions() { return disabledResponse(); }
+export async function onRequestGet() { return disabledResponse(); }
+export async function onRequestPost() { return disabledResponse(); }

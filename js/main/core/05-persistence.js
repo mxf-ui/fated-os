@@ -6,8 +6,114 @@ var persistenceBooting = true;
 var localPersistenceHadSavedData = false;
 var localPersistenceLastChangedAt = 0;
 var savedPluginTypes = null;
+var fatedDeletedTombstones = {contacts:{}, plugins:{}, images:{}, appearance:{}};
 var FATED_LEGACY_DEFAULT_CONTACT_IDS = ['test'+'er1', 'fated_'+'default_contact'];
 var FATED_LEGACY_DEFAULT_WORLD_BOOK_IDS = ['wb1'];
+
+function fatedNowDeletedAt(){ return Date.now(); }
+function fatedNormalizeDeletedAt(value){
+  if(value && typeof value==='object') value = value.deletedAt || value.ts || value.updatedAt || 0;
+  if(typeof value==='string'){ var parsed=Date.parse(value); if(isFinite(parsed)) return parsed; }
+  value=Number(value)||0;
+  return value>0 ? value : 0;
+}
+function fatedEnsureTombstones(map){
+  map = map && typeof map==='object' ? map : {};
+  ['contacts','plugins','images','appearance'].forEach(function(kind){
+    if(!map[kind] || typeof map[kind]!=='object' || Array.isArray(map[kind])) map[kind]={};
+  });
+  return map;
+}
+function fatedCloneTombstones(){
+  var src=fatedEnsureTombstones(fatedDeletedTombstones), out={contacts:{}, plugins:{}, images:{}, appearance:{}};
+  ['contacts','plugins','images','appearance'].forEach(function(kind){
+    Object.keys(src[kind]||{}).forEach(function(id){ var ts=fatedNormalizeDeletedAt(src[kind][id]); if(ts) out[kind][id]=ts; });
+  });
+  return out;
+}
+function fatedMergeTombstones(){
+  var merged=fatedEnsureTombstones({});
+  Array.prototype.slice.call(arguments).forEach(function(src){
+    src=fatedEnsureTombstones(src);
+    ['contacts','plugins','images','appearance'].forEach(function(kind){
+      Object.keys(src[kind]||{}).forEach(function(id){ var ts=fatedNormalizeDeletedAt(src[kind][id]); if(ts && ts>(merged[kind][id]||0)) merged[kind][id]=ts; });
+    });
+  });
+  fatedDeletedTombstones=merged;
+  return fatedCloneTombstones();
+}
+function fatedMarkDeleted(kind, id, ts){
+  kind=String(kind||''); id=String(id||'');
+  if(!kind || !id) return 0;
+  fatedEnsureTombstones(fatedDeletedTombstones);
+  if(!fatedDeletedTombstones[kind]) fatedDeletedTombstones[kind]={};
+  ts=fatedNormalizeDeletedAt(ts)||fatedNowDeletedAt();
+  fatedDeletedTombstones[kind][id]=Math.max(fatedDeletedTombstones[kind][id]||0, ts);
+  return fatedDeletedTombstones[kind][id];
+}
+function fatedClearDeleted(kind, id, updatedAt){
+  kind=String(kind||''); id=String(id||'');
+  if(!kind || !id) return;
+  fatedEnsureTombstones(fatedDeletedTombstones);
+  if(!fatedDeletedTombstones[kind]) return;
+  var deletedAt=fatedDeletedTombstones[kind][id]||0;
+  var next=fatedNormalizeDeletedAt(updatedAt);
+  if(!next || next>=deletedAt) delete fatedDeletedTombstones[kind][id];
+}
+function fatedIsDeleted(kind, id, updatedAt){
+  kind=String(kind||''); id=String(id||'');
+  if(!kind || !id) return false;
+  fatedEnsureTombstones(fatedDeletedTombstones);
+  var deletedAt=fatedNormalizeDeletedAt(fatedDeletedTombstones[kind] && fatedDeletedTombstones[kind][id]);
+  if(!deletedAt) return false;
+  var next=fatedNormalizeDeletedAt(updatedAt);
+  return !next || deletedAt>=next;
+}
+function fatedImageAssetDeleted(id, row){ row=row||{}; return fatedIsDeleted('images', id, row.updatedAt || row.createdAt || 0); }
+function fatedTouchEntity(obj, ts){ if(obj && typeof obj==='object') obj.updatedAt=fatedNormalizeDeletedAt(ts)||Date.now(); return obj; }
+function fatedContactImageId(contactId, key){ return 'contact:'+String(contactId||'')+':'+key; }
+function fatedWidgetImageId(type, idx){ return 'widget:'+String(type||'')+':img'+(idx!==undefined && idx!==null ? ':'+idx : ''); }
+function fatedApplyTombstonesToPayload(payload){
+  if(!payload || typeof payload!=='object') return payload;
+  var state=payload.state||{};
+  var merged=fatedMergeTombstones(fatedDeletedTombstones, payload.deletedTombstones, state.deletedTombstones);
+  state.deletedTombstones=merged;
+  if(Array.isArray(state.contactsExtra)) state.contactsExtra=state.contactsExtra.filter(function(c){ return c && c.id && !fatedIsDeleted('contacts', c.id, c.updatedAt || c.createdAt || 0); });
+  if(Array.isArray(state.activePlugins)) state.activePlugins=state.activePlugins.filter(function(t){ return !fatedIsDeleted('plugins', t, 0); });
+  var removedMap={};
+  (Array.isArray(state.removedPlugins)?state.removedPlugins:[]).forEach(function(t){ removedMap[t]=1; });
+  Object.keys(merged.plugins||{}).forEach(function(t){ removedMap[t]=1; });
+  state.removedPlugins=Object.keys(removedMap);
+  var a=payload.assets||{};
+  if(Array.isArray(a.contacts)) a.contacts=a.contacts.filter(function(row){ return row && row.id && !fatedIsDeleted('contacts', row.id, row.updatedAt || row.createdAt || 0); });
+  if(a.profile){
+    if(fatedImageAssetDeleted('profile:userAvatar', {updatedAt:a.profile.userAvatarUpdatedAt||a.profile.updatedAt})) delete a.profile.userAvatar;
+    if(fatedImageAssetDeleted('profile:userCover', {updatedAt:a.profile.userCoverUpdatedAt||a.profile.updatedAt})) delete a.profile.userCover;
+    if(fatedImageAssetDeleted('profile:chatBg', {updatedAt:a.profile.chatBgUpdatedAt||a.profile.updatedAt})) delete a.profile.chatBg;
+  }
+  if(a.moments){
+    if(fatedImageAssetDeleted('momentsBg', {updatedAt:a.moments.momentsBgUpdatedAt||a.moments.updatedAt})) delete a.moments.momentsBg;
+    if(Array.isArray(a.moments.images)) a.moments.images=a.moments.images.filter(function(row){ return row && !fatedImageAssetDeleted('moment:'+row.id+':img', row); });
+  }
+  if(Array.isArray(a.appIconImgs)) a.appIconImgs=a.appIconImgs.filter(function(row){ return row && !fatedImageAssetDeleted('appIcon:'+row.id, row); });
+  if(a.widgetCustom && typeof a.widgetCustom==='object'){
+    Object.keys(a.widgetCustom).forEach(function(type){
+      var cfg=a.widgetCustom[type];
+      if(!cfg || typeof cfg!=='object') return;
+      if(fatedImageAssetDeleted(fatedWidgetImageId(type), {updatedAt:cfg.updatedAt})) delete cfg.img;
+      if(Array.isArray(cfg.imgs)){
+        cfg.imgs=cfg.imgs.map(function(img, idx){
+          return fatedImageAssetDeleted(fatedWidgetImageId(type, idx), {updatedAt:cfg.updatedAt}) ? null : img;
+        });
+      }
+    });
+  }
+  if(fatedIsDeleted('appearance', 'wallpaper:lock', a.lockWp && a.lockWp.updatedAt)) delete a.lockWp;
+  if(fatedIsDeleted('appearance', 'wallpaper:home', a.homeWp && a.homeWp.updatedAt)) delete a.homeWp;
+  if(Array.isArray(payload.chats)) payload.chats=payload.chats.filter(function(row){ return row && row.id && !fatedIsDeleted('contacts', row.id, row.updatedAt || row.createdAt || 0); });
+  payload.state=state; payload.assets=a; payload.deletedTombstones=merged;
+  return payload;
+}
 
 function fatedIsLegacyDefaultContactId(id){
   return FATED_LEGACY_DEFAULT_CONTACT_IDS.indexOf(String(id||'')) >= 0;
@@ -114,6 +220,7 @@ function isPersistableContactId(id){
   if(!id || id==='me') return false;
   if(typeof fatedIsLegacyDefaultContactId==='function' && fatedIsLegacyDefaultContactId(id)) return false;
   if(/^tmp[-_]/.test(id) || /^draft[-_]/.test(id)) return false;
+  if(contacts && contacts[id] && typeof fatedIsDeleted==='function' && fatedIsDeleted('contacts', id, contacts[id].updatedAt || contacts[id].createdAt || 0)) return false;
   return !!(contacts && contacts[id]);
 }
 function normalizeRestoredContactShape(id, c, seedRow){
@@ -150,12 +257,18 @@ function normalizeRestoredContactShape(id, c, seedRow){
   c.taDeletedBy = c.taDeletedBy || seedRow.taDeletedBy || '';
   c.taDeletedAt = c.taDeletedAt || seedRow.taDeletedAt || 0;
   c.taDeletedPrevBlocked = c.taDeletedPrevBlocked!==undefined ? !!c.taDeletedPrevBlocked : !!seedRow.taDeletedPrevBlocked;
+  c.createdAt = c.createdAt || seedRow.createdAt || Date.now();
+  c.updatedAt = fatedNormalizeDeletedAt(c.updatedAt || seedRow.updatedAt || seedRow.createdAt) || c.createdAt;
+  c.deletedAt = fatedNormalizeDeletedAt(c.deletedAt || seedRow.deletedAt);
   return c;
 }
 function ensureRestoredContact(id, seedRow){
   if(!id || id==='me') return null;
   if(typeof fatedIsLegacyDefaultContactId==='function' && fatedIsLegacyDefaultContactId(id)) return null;
-  contacts[id] = normalizeRestoredContactShape(id, contacts[id]||{}, seedRow||{});
+  seedRow=seedRow||{};
+  if(typeof fatedIsDeleted==='function' && fatedIsDeleted('contacts', id, seedRow.updatedAt || seedRow.createdAt || 0)) return null;
+  contacts[id] = normalizeRestoredContactShape(id, contacts[id]||{}, seedRow);
+  if(seedRow.updatedAt || seedRow.createdAt) fatedClearDeleted('contacts', id, contacts[id].updatedAt);
   return contacts[id];
 }
 function syncRenderedContactRows(){
@@ -191,6 +304,8 @@ function buildContactsSnapshot(){
     var c=contacts[k];
     return {
       id:k,
+      updatedAt:c.updatedAt||c.createdAt||0,
+      deletedAt:fatedDeletedTombstones.contacts[k]||c.deletedAt||0,
       name:c.name,
       displayName:c.displayName||'',
       tone:c.tone||'',
@@ -239,6 +354,7 @@ function buildLightState(){
     fontPrefs:lightFontConfig(),
     widgetBgMode:widgetBgMode,
     removedPlugins:removedPlugins,
+    deletedTombstones:fatedCloneTombstones(),
     activePlugins:buildActivePluginsSnapshot(),
     personaSeq:personaSeq,
     suoha: typeof suohaState!=='undefined' ? suohaState : null,
@@ -252,18 +368,23 @@ function buildLightState(){
   };
 }
 function buildProfileAssets(){
-  return {userAvatar:userAvatar||null, userCover:userCover||'', chatBg:chatBg||null};
+  var ts=getLocalPersistenceLastChangedAt()||Date.now();
+  return {userAvatar:userAvatar||null, userCover:userCover||'', chatBg:chatBg||null, updatedAt:ts, userAvatarUpdatedAt:ts, userCoverUpdatedAt:ts, chatBgUpdatedAt:ts, deletedAt:{userAvatar:fatedDeletedTombstones.images['profile:userAvatar']||0, userCover:fatedDeletedTombstones.images['profile:userCover']||0, chatBg:fatedDeletedTombstones.images['profile:chatBg']||0}};
 }
 function buildMomentsAssets(){
+  var ts=getLocalPersistenceLastChangedAt()||Date.now();
   return {
     momentsBg:momentsBg||null,
-    images:moments.map(function(m){ return {id:m.id, img:m.img||null}; }).filter(function(m){ return !!m.img; })
+    updatedAt:ts,
+    momentsBgUpdatedAt:ts,
+    deletedAt:{momentsBg:fatedDeletedTombstones.images.momentsBg||0},
+    images:moments.map(function(m){ return {id:m.id, img:m.img||null, updatedAt:m.updatedAt||m.ts||ts, deletedAt:fatedDeletedTombstones.images['moment:'+m.id+':img']||0}; }).filter(function(m){ return !!m.img; })
   };
 }
 function buildContactAssets(){
   return Object.keys(contacts).filter(function(k){ return isPersistableContactId(k); }).map(function(k){
     var c=contacts[k];
-    return {id:k, avatar:c.avatar||null, cover:c.cover||''};
+    return {id:k, avatar:c.avatar||null, cover:c.cover||'', updatedAt:c.updatedAt||c.createdAt||0, deletedAt:fatedDeletedTombstones.contacts[k]||0, avatarDeletedAt:fatedDeletedTombstones.images[fatedContactImageId(k,'avatar')]||0, coverDeletedAt:fatedDeletedTombstones.images[fatedContactImageId(k,'cover')]||0};
   });
 }
 function buildFontAssets(){
@@ -294,7 +415,8 @@ function saveState(){
   fatedDBSaveKV('contactAssets', buildContactAssets());
   fatedDBSaveKV('fontConfigAssets', buildFontAssets());
   fatedDBSaveKV('widgetCustom', widgetCustom);
-  fatedDBSaveKV('appIconImgs', appIcons.map(function(a){ return {id:a.id, img:a.img}; }));
+  fatedDBSaveKV('deletedTombstones', fatedCloneTombstones());
+  fatedDBSaveKV('appIconImgs', appIcons.map(function(a){ return {id:a.id, img:a.img, updatedAt:a.updatedAt||0, deletedAt:fatedDeletedTombstones.images['appIcon:'+a.id]||0}; }));
   fatedDBSaveKV('lockWp', lockWp);
   fatedDBSaveKV('homeWp', homeWp);
   fatedDBSaveAllChats();
@@ -331,10 +453,12 @@ function applyContactsSnapshot(list){
   list.forEach(function(c){
     if(!c || !c.id) return;
     var id=c.id;
+    if(typeof fatedIsDeleted==='function' && fatedIsDeleted('contacts', id, c.updatedAt || c.createdAt || 0)) return;
     var target=ensureRestoredContact(id, c);
     if(!target) return;
     Object.keys(c).forEach(function(k){ if(k!=='id' && k!=='avatar' && k!=='cover') target[k]=c[k]; });
     normalizeRestoredContactShape(id, target, c);
+    fatedClearDeleted('contacts', id, target.updatedAt);
   });
   syncPersonaSeqFromContacts();
 }
@@ -358,7 +482,9 @@ function applyStateSnapshot(s){
   if(Array.isArray(s.moments) && s.moments.length) moments=s.moments;
   if(s.viewAs) viewAs=s.viewAs;
   if(typeof s.personaSeq==='number' && isFinite(s.personaSeq)) personaSeq=Math.max(1, Math.floor(s.personaSeq));
-  if(Array.isArray(s.activePlugins)) savedPluginTypes=s.activePlugins.filter(function(t){ return typeof t==='string' && t; });
+  fatedMergeTombstones(fatedDeletedTombstones, s.deletedTombstones);
+  if(Array.isArray(s.removedPlugins)) s.removedPlugins.forEach(function(t){ fatedMarkDeleted('plugins', t, fatedDeletedTombstones.plugins[t]||Date.now()); });
+  if(Array.isArray(s.activePlugins)) savedPluginTypes=s.activePlugins.filter(function(t){ return typeof t==='string' && t && !fatedIsDeleted('plugins', t, 0); });
   applyContactsSnapshot(s.contactsExtra);
   if(s.worldBooks && typeof s.worldBooks==='object'){
     Object.keys(s.worldBooks).forEach(function(k){ worldBooks[k]=s.worldBooks[k]; });
@@ -405,21 +531,22 @@ function applyStateSnapshot(s){
 }
 function applyAppIconAssets(icons){
   if(!Array.isArray(icons)) return;
-  icons.forEach(function(o){ var a=appIcons.find(function(x){return x.id===o.id;}); if(a) a.img=o.img; });
+  icons.forEach(function(o){ if(!o || fatedImageAssetDeleted('appIcon:'+o.id, o)) return; var a=appIcons.find(function(x){return x.id===o.id;}); if(a){ a.img=o.img; a.updatedAt=o.updatedAt||Date.now(); fatedClearDeleted('images', 'appIcon:'+o.id, a.updatedAt); } });
   renderDesktopIcons(); renderIconGrid();
 }
 function applyProfileAssets(a){
   if(!a || typeof a!=='object') return false;
-  if(a.userAvatar!==undefined) userAvatar=a.userAvatar;
-  if(a.userCover!==undefined) userCover=a.userCover;
-  if(a.chatBg!==undefined) chatBg=a.chatBg;
+  if(a.userAvatar!==undefined && !fatedImageAssetDeleted('profile:userAvatar', {updatedAt:a.userAvatarUpdatedAt||a.updatedAt})) userAvatar=a.userAvatar;
+  if(a.userCover!==undefined && !fatedImageAssetDeleted('profile:userCover', {updatedAt:a.userCoverUpdatedAt||a.updatedAt})) userCover=a.userCover;
+  if(a.chatBg!==undefined && !fatedImageAssetDeleted('profile:chatBg', {updatedAt:a.chatBgUpdatedAt||a.updatedAt})) chatBg=a.chatBg;
   return true;
 }
 function applyMomentsAssets(a){
   if(!a || typeof a!=='object') return false;
-  if(a.momentsBg!==undefined) momentsBg=a.momentsBg;
+  if(a.momentsBg!==undefined && !fatedImageAssetDeleted('momentsBg', {updatedAt:a.momentsBgUpdatedAt||a.updatedAt})) momentsBg=a.momentsBg;
   if(Array.isArray(a.images)){
     a.images.forEach(function(row){
+      if(!row || fatedImageAssetDeleted('moment:'+row.id+':img', row)) return;
       var target=moments.find(function(m){ return String(m.id)===String(row.id); });
       if(target) target.img=row.img||null;
     });
@@ -431,10 +558,11 @@ function applyContactAssets(list){
   if(!Array.isArray(list)) return false;
   list.forEach(function(row){
     if(!row || !row.id) return;
+    if(fatedIsDeleted('contacts', row.id, row.updatedAt || row.createdAt || 0)) return;
     var c=ensureRestoredContact(row.id, row);
     if(!c) return;
-    if(row.avatar!==undefined) c.avatar=row.avatar;
-    if(row.cover!==undefined) c.cover=row.cover;
+    if(row.avatar!==undefined && !fatedImageAssetDeleted(fatedContactImageId(row.id,'avatar'), {updatedAt:row.avatarUpdatedAt||row.updatedAt})) c.avatar=row.avatar;
+    if(row.cover!==undefined && !fatedImageAssetDeleted(fatedContactImageId(row.id,'cover'), {updatedAt:row.coverUpdatedAt||row.updatedAt})) c.cover=row.cover;
   });
   return true;
 }
@@ -467,6 +595,7 @@ function loadStateBackupFromDB(cb){
   });
 }
 function loadStateAssetsFromDB(cb){
+  fatedDBLoadKV('deletedTombstones', function(ts){ if(ts && typeof ts==='object') fatedMergeTombstones(fatedDeletedTombstones, ts); });
   fatedDBLoadKV('profileAssets', function(profileAssets){
     var changed = !!applyProfileAssets(profileAssets);
     fatedDBLoadKV('momentsAssets', function(momentsAssets){

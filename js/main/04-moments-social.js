@@ -51,7 +51,7 @@ function addComment(id){
 }
 function setMomentsBg(e){
   const file = e.target.files[0]; if(!file) return;
-  const r = new FileReader(); r.onload=()=>{ momentsBg=r.result; applyMomentsBg(); saveState(); }; r.readAsDataURL(file);
+  const r = new FileReader(); r.onload=()=>{ momentsBg=r.result; if(typeof fatedClearDeleted==='function') fatedClearDeleted('images', 'momentsBg', Date.now()); applyMomentsBg(); saveState(); }; r.readAsDataURL(file);
 }
 function applyMomentsBg(){
   const c = document.querySelector('.moments-cover'); if(!c) return;
@@ -347,12 +347,18 @@ cpCoverInput.addEventListener('change', function(e){
     if(!res) return;
     if(_cpmCoverTarget==='me'){
       userCover=res;
+      if(typeof fatedClearDeleted==='function') fatedClearDeleted('images', 'profile:userCover', Date.now());
       var cv=document.getElementById('mym-cover');
       if(cv) cv.innerHTML='<img src="'+res+'" alt=""><div class="change" onclick="pickMyCover()">更换封面</div>';
       var pv=document.getElementById('mine-cover-preview'); if(pv){ pv.style.backgroundImage='url('+res+')'; pv.dataset.src=res; }
     } else {
       var id=_cpmTarget||currentContact; var c=contacts[id]; if(!c) return;
-      c.cover=res;
+      var ts=Date.now();
+      c.cover=res; c.updatedAt=ts;
+      if(typeof fatedClearDeleted==='function'){
+        fatedClearDeleted('contacts', id, ts);
+        fatedClearDeleted('images', 'contact:'+id+':cover', ts);
+      }
       var cv=document.getElementById('cpm-cover');
       if(cv) cv.innerHTML='<img src="'+res+'" alt=""><div class="change" onclick="pickCpCover()">更换封面</div>';
       var pv=document.getElementById('cp-cover-preview'); if(pv){ pv.style.backgroundImage='url('+res+')'; pv.dataset.src=res; }
