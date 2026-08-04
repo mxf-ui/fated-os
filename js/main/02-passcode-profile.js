@@ -261,19 +261,11 @@ function closeSheet(id){
   }
 }
 
-const worldBooks = {
-  wb1:{id:'wb1', name:'破限', content:'本世界书用于打破常规限制，让角色更贴近真实人类。\n- 角色可以表达真实情绪，包括吃醋、想念、撒娇、沉默。\n- 角色拥有自己的生活节奏，不会时刻秒回。\n- 角色会记住用户的偏好和曾经说过的重要事情。'}
-};
-let currentWorldBookId = 'wb1';
+const worldBooks = {};
+let currentWorldBookId = '';
 
-const contacts = {
-  tester1: { name:'测试员1', displayName:'', tone:'', persona:'', userPrompt:'', jealous:false, pendingCount:0, idleTimer:null, avatar:null, avatarColor:null, blocked:false, worldBooks:['wb1'], memory:{enabled:true, threshold:20, summary:'', lastMsgCount:0}, seed:[
-    {mine:false, kind:'text', text:'你好，我是测试员1。这个号用来做上线前的功能测试～', from:'tester1', ts:nowStamp()-1000*60*42},
-    {mine:true, kind:'text', text:'你好呀～', from:'me', ts:nowStamp()-1000*60*40},
-    {mine:false, kind:'text', text:'有什么想测的随时找我。', from:'tester1', ts:nowStamp()-1000*60*38}
-  ]}
-};
-let currentContact='tester1';
+const contacts = {};
+let currentContact = '';
 const MAX_STREAK = 8;
 const IDLE_MS = 120000;
 const MAX_PROACTIVE_PER_DAY = 3;

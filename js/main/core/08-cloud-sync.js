@@ -443,8 +443,8 @@ async function cloudRegister(opts){
     cloudApplyUser(user, key);
     await cloudRememberUnlock(user, key);
     cloudSetStatus(CLOUD_MSG.ACCOUNT_CREATED, '');
-    cloudShowEntryGate(CLOUD_MSG.UPLOADING_SAVE);
-    await cloudUploadSnapshot({manual:false, reason:'register'});
+    cloudShowEntryGate(CLOUD_MSG.SYNCING_SAVE);
+    await cloudAutoSyncAfterUnlock('register');
     cloudHideEntryGate();
   }catch(e){ cloudSetStatus(e.message, 'warn'); cloudShowEntryGate(e.message || CLOUD_MSG.CREATE_FAILED, 'warn'); }
   finally{ cloudSetBusy(false); }
@@ -529,12 +529,25 @@ async function cloudBuildLocalSnapshot(){
     chats:cloudCollectChats()
   };
 }
+function cloudHasConfiguredApiState(s){
+  s = s || {};
+  var cfg = s.apiConfig || {};
+  if(Array.isArray(cfg.profiles) && cfg.profiles.some(function(p){ return p && String(p.key||'').trim(); })) return true;
+  if(cfg.models && typeof cfg.models==='object' && Object.keys(cfg.models).some(function(k){ var m=cfg.models[k]; return m && String(m.key||'').trim(); })) return true;
+  var t = cfg.tts || {};
+  if(t.elevenlabs && String(t.elevenlabs.key||'').trim()) return true;
+  if(t.minimax && (String(t.minimax.key||'').trim() || String(t.minimax.groupId||'').trim())) return true;
+  if(t.custom && (String(t.custom.key||'').trim() || String(t.custom.endpoint||'').trim() || String(t.custom.voice||'').trim())) return true;
+  var img = cfg.imageGen || {};
+  if(img.enabled===true && (String(img.key||'').trim() || String(img.endpoint||'').trim() || String(img.model||'').trim())) return true;
+  return false;
+}
 function cloudSnapshotWeight(payload){
   if(!payload) return 0;
   var s=payload.state||{}, score=0;
   if(Array.isArray(s.contactsExtra)) score += s.contactsExtra.length * 3;
   if(Array.isArray(payload.chats)) payload.chats.forEach(function(c){ if(Array.isArray(c.seed)) score += c.seed.length; });
-  if(s.apiConfig && Array.isArray(s.apiConfig.profiles)) score += s.apiConfig.profiles.filter(function(p){ return p && (p.endpoint || p.key || p.model); }).length * 4;
+  if(cloudHasConfiguredApiState(s)) score += 4;
   if(s.worldBooks && typeof s.worldBooks==='object') score += Object.keys(s.worldBooks).length * 4;
   if(Array.isArray(s.moments)) score += s.moments.length;
   if(s.coupleState) score += 3;
@@ -555,27 +568,27 @@ function cloudUserDataWeight(payload){
   var s=payload.state||{}, a=payload.assets||{}, score=0;
   var contactsExtra=Array.isArray(s.contactsExtra) ? s.contactsExtra : [];
   contactsExtra.forEach(function(c){
-    if(!c || !c.id || c.id==='tester1') return;
+    if(!c || !c.id || c.id==='fated_default_contact') return;
     score += 4;
     if(c.avatar || c.cover) score += 2;
     if(c.tone || c.persona || c.bio || c.userPrompt) score += 2;
   });
   if(Array.isArray(payload.chats)){
     payload.chats.forEach(function(c){
-      if(!c || !c.id || c.id==='tester1') return;
+      if(!c || !c.id || c.id==='fated_default_contact') return;
       if(Array.isArray(c.seed) && c.seed.length) score += c.seed.length;
       if(c.avatar || c.cover) score += 2;
       if(c.tone || c.persona || c.bio || c.userPrompt) score += 2;
     });
   }
-  if(s.apiConfig && Array.isArray(s.apiConfig.profiles) && s.apiConfig.profiles.some(function(p){ return p && (p.key || p.endpoint || p.model); })) score += 4;
+  if(cloudHasConfiguredApiState(s)) score += 4;
   if(s.worldBooks && typeof s.worldBooks==='object' && Object.keys(s.worldBooks).filter(function(k){ return k!=='wb1'; }).length) score += 4;
   if(s.coupleState) score += 3;
   if(s.dream) score += 3;
   if(s.nilflow) score += 3;
   if(a.profile && (a.profile.userAvatar || a.profile.userCover || a.profile.chatBg)) score += 4;
   if(a.moments && Array.isArray(a.moments.images) && a.moments.images.length) score += a.moments.images.length * 2;
-  if(Array.isArray(a.contacts)) score += a.contacts.filter(function(c){ return c && c.id!=='tester1' && (c.avatar || c.cover); }).length * 2;
+  if(Array.isArray(a.contacts)) score += a.contacts.filter(function(c){ return c && c.id && c.id!=='me' && (c.avatar || c.cover); }).length * 2;
   if(a.widgetCustom && typeof a.widgetCustom==='object') score += Object.keys(a.widgetCustom).length * 2;
   if(Array.isArray(a.appIconImgs) && a.appIconImgs.some(function(i){ return i && i.img; })) score += 3;
   if(a.lockWp || a.homeWp) score += 2;
@@ -584,10 +597,38 @@ function cloudUserDataWeight(payload){
 }
 function cloudLocalHasRealSave(){
   if(typeof localPersistenceHasSavedData==='function' && localPersistenceHasSavedData()) return true;
-  try{
-    var raw=localStorage.getItem('fated_state');
-    if(raw && raw.length>24) return true;
-  }catch(e){}
+  return false;
+}
+function cloudCanUploadSnapshot(snapshot, opts){
+  opts = opts || {};
+  if(cloudSnapshotHasMeaningfulUserData(snapshot)) return true;
+  if(opts.manual===true){
+    cloudTouchStatus('Local save is still empty, skipped blank cloud upload. / ?????????????????????', 'warn');
+    return false;
+  }
+  cloudTouchStatus('Local save is still empty, skipped blank cloud upload. / ?????????????????????', 'warn');
+  return false;
+}
+function cloudSnapshotHasMeaningfulUserData(payload){
+  if(!payload) return false;
+  var s=payload.state||{}, a=payload.assets||{};
+  if((s.userName&&String(s.userName).trim()) || (s.userWxid&&String(s.userWxid).trim()) || (s.userBio&&String(s.userBio).trim()) || (s.userPrefs&&String(s.userPrefs).trim())) return true;
+  if(Array.isArray(s.contactsExtra) && s.contactsExtra.some(function(c){
+    return c && c.id && c.id!=='me' && (c.avatar || c.cover || c.tone || c.persona || c.bio || c.userPrompt || c.wxid);
+  })) return true;
+  if(Array.isArray(payload.chats) && payload.chats.some(function(c){
+    return c && c.id && c.id!=='me' && ((Array.isArray(c.seed) && c.seed.length>0) || c.avatar || c.cover || c.tone || c.persona || c.bio || c.userPrompt);
+  })) return true;
+  if(cloudHasConfiguredApiState(s)) return true;
+  if(s.worldBooks && typeof s.worldBooks==='object' && Object.keys(s.worldBooks).filter(function(k){ return k!=='wb1'; }).length) return true;
+  if(Array.isArray(s.moments) && s.moments.length>2) return true;
+  if(a.profile && (a.profile.userAvatar || a.profile.userCover || a.profile.chatBg)) return true;
+  if(a.moments && Array.isArray(a.moments.images) && a.moments.images.length) return true;
+  if(Array.isArray(a.contacts) && a.contacts.some(function(c){ return c && c.id && c.id!=='me' && (c.avatar || c.cover); })) return true;
+  if(a.widgetCustom && typeof a.widgetCustom==='object' && Object.keys(a.widgetCustom).length) return true;
+  if(Array.isArray(a.appIconImgs) && a.appIconImgs.some(function(i){ return i && i.img; })) return true;
+  if(a.lockWp || a.homeWp) return true;
+  if(Array.isArray(a.stickers) && a.stickers.length) return true;
   return false;
 }
 function cloudShouldRestoreRemote(local, remotePayload, remoteSnapshot){
@@ -595,8 +636,11 @@ function cloudShouldRestoreRemote(local, remotePayload, remoteSnapshot){
   var remoteWeight=cloudSnapshotWeight(remotePayload);
   var localUserWeight=cloudUserDataWeight(local);
   var remoteUserWeight=cloudUserDataWeight(remotePayload);
+  var localMeaningful=cloudSnapshotHasMeaningfulUserData(local);
+  var remoteMeaningful=cloudSnapshotHasMeaningfulUserData(remotePayload);
   var remoteTime=Number((remoteSnapshot && (remoteSnapshot.clientUpdatedAt || remoteSnapshot.updatedAt)) || 0);
   var localTime=Number((local && local.savedAt) || 0);
+  if(remoteMeaningful && !localMeaningful) return true;
   if(remoteUserWeight>0 && localUserWeight===0) return true;
   if(!cloudLocalHasRealSave() && remoteWeight>0) return true;
   if(localWeight < 8 && remoteWeight >= localWeight) return true;
@@ -685,13 +729,17 @@ async function cloudUploadSnapshot(opts){
   await cloudWaitForPersistenceReady({status:opts.manual!==false});
   if(opts.manual) cloudSetStatus('Encrypting local save... / \u6b63\u5728\u52a0\u5bc6\u672c\u5730\u5b58\u6863...', '');
   var snapshot=await cloudBuildLocalSnapshot();
+  if(!cloudSnapshotHasMeaningfulUserData(snapshot)){
+    cloudTouchStatus('Local save is still empty, skipped blank cloud upload. / ??????????????????', 'warn');
+    return null;
+  }
   await cloudExternalizeSnapshotAssets(snapshot);
   var encrypted=await cloudEncryptSnapshot(snapshot, cloudSyncState.key);
   var data=await cloudPutRemoteSnapshot(encrypted, snapshot, opts);
   cloudSyncState.lastRemote=data.updatedAt;
   cloudSyncState.lastUploadedLocalSaveAt=snapshot.savedAt;
-  var label='Saved to cloud at '+new Date(data.updatedAt).toLocaleString()+' / 已自动保存到云端。';
-  if(opts.manual) label='Uploaded encrypted cloud save at '+new Date(data.updatedAt).toLocaleString()+' / 加密云端存档已上传。';
+  var label='Saved to cloud at '+new Date(data.updatedAt).toLocaleString()+' / ???????';
+  if(opts.manual) label='Uploaded encrypted cloud save at '+new Date(data.updatedAt).toLocaleString()+' / ?????????';
   cloudTouchStatus(label, 'ok');
   return data;
 }
@@ -745,18 +793,25 @@ async function cloudAutoSyncAfterUnlock(reason){
     await cloudWaitForPersistenceReady({status:true});
     var remote=await cloudFetchRemoteSnapshot();
     var local=await cloudBuildLocalSnapshot();
+    var localMeaningful=cloudSnapshotHasMeaningfulUserData(local);
     if(remote.snapshot){
       var remotePayload=await cloudDecryptSnapshot(remote.snapshot, cloudSyncState.key);
       if(cloudShouldRestoreRemote(local, remotePayload, remote.snapshot)){
         await cloudRestoreSnapshotPayload(remotePayload);
-        cloudSetStatus('Cloud save restored automatically. / 已自动恢复云端存档。', 'ok');
+        cloudSetStatus('Cloud save restored automatically. / ??????????', 'ok');
+        return;
+      }
+      if(cloudSnapshotHasMeaningfulUserData(remotePayload) && !localMeaningful){
+        await cloudRestoreSnapshotPayload(remotePayload);
+        cloudSetStatus('Cloud save restored automatically. / ??????????', 'ok');
         return;
       }
     }
+    if(!cloudCanUploadSnapshot(local, {manual:false, reason:reason||'unlock'})) return cloudSetStatus('No local save yet. Start using Fated OS and it will save automatically. / ???????????????????????', '');
     await cloudUploadSnapshot({manual:false, reason:reason||'unlock'});
-    cloudSetStatus('Current device save is now protected in cloud. / 本机数据已保存到云端。', 'ok');
+    cloudSetStatus('Current device save is now protected in cloud. / ?????????????', 'ok');
   }catch(e){
-    cloudSetStatus(e.message || 'Auto sync failed / 自动同步失败', 'warn');
+    cloudSetStatus(e.message || 'Auto sync failed / ???????', 'warn');
   }
 }
 window.addEventListener('beforeunload', function(){ if(cloudHasSession()) cloudNotifyLocalSave('urgent'); });

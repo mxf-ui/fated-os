@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
@@ -157,49 +157,41 @@
   </div>
   <!-- ================= WECHAT APP (top-level screen) ================= -->
   <div class="topview" id="view-wechatapp">
-  <!-- ================= CHATS ================= -->
-  <div class="view active" id="view-chats">
-    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">微信</span><div class="icobtn glass-strong" onclick="openGroupSheet()" style="font-size:18px;">+</div></div>
-    <div class="chatlist">
-      <div class="chat-row" onclick="openThread('tester1')">
-        <div class="av glass-strong"><div class="chibi"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div><div class="blush l"></div><div class="blush r"></div></div></div>
-        <div class="mid"><div class="name">测试</div><div class="prev">你好，我是测试员1。这个号用来做上线前的功能测试～</div></div>
-        <div class="time">刚刚</div>
-      </div>
-    </div>
-    <div class="tabbar">
-      <div class="tab active" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">聊天</div></div>
-      <div class="tab" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">通讯</div></div>
-      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">朋友</div></div>
-      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">我</div></div>
-    </div>
-  </div>
-
-  <!-- ================= CONTACTS ================= -->
-  <div class="view" id="view-contacts">
-    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">通讯</span><div style="width:32px;"></div></div>
-    <div class="contactlist" id="contact-list">
-      <div class="add-row glass-strong" onclick="openSheet('addpersona')">
-        <div class="plus-tile"><div class="ico ico-plus"></div></div>
-        <div><div class="t">新建 AI 人设</div><div class="s">设置头像、名字与行为习惯</div></div>
-      </div>
-      <div class="add-row glass-strong" onclick="openGroupSheet()">
-        <div class="plus-tile"><div class="ico ico-chat"></div></div>
-        <div><div class="t">发起群聊</div><div class="s">拉多AI 人设进同丢个群</div></div>
-      </div>
-      <div class="sec-label">已添</div>
-      <div id="contact-items">
-        <div class="contact-row" onclick="openThread('tester1')" data-cid="tester1"><div class="av glass-strong" onclick="event.stopPropagation();changeContactAvatar('tester1')" title="点击更换头像" style="cursor:pointer;"><div class="chibi"><div class="ear l"></div><div class="ear r"></div><div class="face"></div><div class="eye l"></div><div class="eye r"></div><div class="blush l"></div><div class="blush r"></div></div></div><div style="flex:1;min-width:0;"><div class="name">测试</div><div class="habit">上线前功能测· 随时可聊</div></div><div class="del-contact" onclick="event.stopPropagation();deleteContact('tester1')" title="删除联系">×</div></div>
-      </div>
-    </div>
-    <div class="tabbar">
-      <div class="tab" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">聊天</div></div>
-      <div class="tab active" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">通讯</div></div>
-      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">朋友</div></div>
-      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">我</div></div>
-    </div>
-  </div>
-
+  <!-- ================= CHATS ================= -->
+  <div class="view active" id="view-chats">
+    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">微信</span><div class="icobtn glass-strong" onclick="openGroupSheet()" style="font-size:18px;">+</div></div>
+    <div class="chatlist"></div>
+    <div class="tabbar">
+      <div class="tab active" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">聊天</div></div>
+      <div class="tab" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">通讯</div></div>
+      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">朋友</div></div>
+      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">我</div></div>
+    </div>
+  </div>
+
+  <!-- ================= CONTACTS ================= -->
+  <div class="view" id="view-contacts">
+    <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">通讯</span><div style="width:32px;"></div></div>
+    <div class="contactlist" id="contact-list">
+      <div class="add-row glass-strong" onclick="openSheet('addpersona')">
+        <div class="plus-tile"><div class="ico ico-plus"></div></div>
+        <div><div class="t">新建 AI 人设</div><div class="s">设置头像、名字与行为习惯</div></div>
+      </div>
+      <div class="add-row glass-strong" onclick="openGroupSheet()">
+        <div class="plus-tile"><div class="ico ico-chat"></div></div>
+        <div><div class="t">发起群聊</div><div class="s">拉多个 AI 人设进同一个群</div></div>
+      </div>
+      <div class="sec-label">已添</div>
+      <div id="contact-items"></div>
+    </div>
+    <div class="tabbar">
+      <div class="tab" data-tab="chats" onclick="switchTab('chats')"><div class="ico ico-chat"></div><div class="lbl">聊天</div></div>
+      <div class="tab active" data-tab="contacts" onclick="switchTab('contacts')"><div class="ico ico-contact"></div><div class="lbl">通讯</div></div>
+      <div class="tab" data-tab="moments" onclick="switchTab('moments')"><div class="ico ico-photo"></div><div class="lbl">朋友</div></div>
+      <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="ico ico-profile"></div><div class="lbl">我</div></div>
+    </div>
+  </div>
+
   <!-- ================= MOMENTS ================= -->
   <div class="view" id="view-moments">
     <div class="wx-bar"><div class="icobtn glass-strong" onclick="goToScreen('home')">&#8249;</div><span class="wx-title">朋友</span><div class="icobtn glass-strong" onclick="openSheet('compose')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M3 16l5-5 4 4 4-4 5 5"/></svg></div></div>
@@ -295,7 +287,7 @@
     <div class="sheet-top">
       <div class="back-btn glass-strong" onclick="closeSheet('thread')"></div>
       <div id="thread-avatar" style="width:36px;height:36px;border-radius:12px;flex:none;overflow:hidden;cursor:pointer;position:relative;" onclick="openContactProfile()" title="点击查看资料"></div>
-      <div class="t" id="thread-name" style="cursor:pointer;" onclick="openContactProfile()" title="点击查看资料">测试</div>
+      <div class="t" id="thread-name" style="cursor:pointer;" onclick="openContactProfile()" title="点击查看资料">聊天</div>
       <div class="icobtn glass-strong" title="拍一" onclick="patContact()"><div class="ico ico-heart outline" style="width:14px;height:14px;"></div></div>
       <div class="icobtn glass-strong" title="导出聊天记录" onclick="exportChatHistory()" style="font-size:15px;">📥</div>
       <div class="icobtn glass-strong" title="语音通话" onclick="startCall()"><div class="ico ico-call"></div></div>
@@ -355,7 +347,7 @@
     <input type="file" accept="image/*" id="photo-up" style="display:none" onchange="sendPic(event)">
     <div class="call-screen" id="call-screen">
       <div class="call-av glass" id="call-av"></div>
-      <div class="call-name" id="call-name">测试</div>
+      <div class="call-name" id="call-name">语音通话</div>
       <div class="call-status" id="call-status">正在连接语音</div>
       <div class="call-speak" id="call-speak"></div>
       <div class="call-wave"><span style="height:10px;"></span><span style="height:18px;"></span><span style="height:8px;"></span><span style="height:22px;"></span><span style="height:12px;"></span><span style="height:16px;"></span></div>
@@ -468,7 +460,6 @@
       <div class="vis-opt" onclick="pickVis(this)"><div class="dot"></div><div class="t">仅自己可</div></div>
       <div class="vis-opt" onclick="pickVis(this,true)"><div class="dot"></div><div class="t">部分可见 / 不给谁看</div></div>
         <div id="vis-personas" style="display:none; margin-top:6px;">
-          <span class="persona-chip" data-id="tester1" onclick="toggleHidden(this)">测试</span>
           <span id="vis-personas-extra"></span>
         </div>
     </div>
@@ -1900,9 +1891,9 @@
 <div class="go-modal" id="go-modal-partner"><div class="go-modal-bg" onclick="goCloseModal('go-modal-partner')"></div><div class="go-modal-box"><div class="go-label" style="margin-bottom:12px;">选择 WeChat 连麦对象</div><div id="go-partner-list"></div><button class="go-btn ghost" style="margin-top:12px;" onclick="goCloseModal('go-modal-partner')">取消</button></div></div>
 <input type="file" id="go-file-input" accept="image/*" style="display:none;">
 <script src="js/main/00-boot-state.js"></script>
-<script src="js/main/01-system-shell.js?v=20260802-plugin-assets"></script>
-<script src="js/main/02-passcode-profile.js"></script>
-<script src="js/main/core/00-api-config-state.js"></script>
+<script src="js/main/01-system-shell.js?v=20260804-clean-defaults"></script>
+<script src="js/main/02-passcode-profile.js?v=20260804-clean-defaults"></script>
+<script src="js/main/core/00-api-config-state.js?v=20260804-clean-defaults"></script>
 <script src="js/main/core/01-font-config.js"></script>
 <script src="js/main/core/09-image-generation.js"></script>
 <script src="js/main/core/02-api-config-ui.js"></script>
@@ -1913,18 +1904,18 @@
 <script src="js/main/core/07-wallet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/main/core/08a-supabase-config.js?v=20260802-rate-clean"></script>
-<script src="js/main/core/08-cloud-sync.js?v=20260802-rate-clean"></script>
+<script src="js/main/core/08-cloud-sync.js?v=20260804-cloud-save-guard2"></script>
 
 <script src="js/main/core/10-event-memory.js"></script>
 
 <script src="js/main/04-moments-social.js"></script>
-<script src="js/main/chat/00-group-voice-api.js"></script>
-<script src="js/main/chat/01-thread-render.js"></script>
+<script src="js/main/chat/00-group-voice-api.js?v=20260804-clean-defaults"></script>
+<script src="js/main/chat/01-thread-render.js?v=20260804-clean-defaults"></script>
 <script src="js/main/chat/world/00-worldbook-bindings.js"></script>
 <script src="js/main/chat/world/01-contact-profile.js"></script>
 <script src="js/main/chat/world/02-group-profile.js"></script>
 <script src="js/main/chat/world/03-worldbook-editor-import.js"></script>
-<script src="js/main/chat/03-lists-widgets.js"></script>
+<script src="js/main/chat/03-lists-widgets.js?v=20260804-clean-defaults"></script>
 <script src="js/main/chat/ai/00-widget-send-state.js"></script>
 <script src="js/main/chat/ai/01-message-prep-transcribe.js"></script>
 <script src="js/main/chat/ai/02-real-ai-reply.js"></script>
@@ -1933,7 +1924,7 @@
 <script src="js/main/chat/ai/05-user-message-actions.js"></script>
 <script src="js/main/chat/ai/06-proactive-demos.js"></script>
 <script src="js/main/chat/05-drawers-stickers.js"></script>
-<script src="js/main/chat/06-call-persona-init.js"></script>
+<script src="js/main/chat/06-call-persona-init.js?v=20260804-clean-defaults"></script>
 <script src="js/main/06-forum.js"></script>
 <script src="js/main/07-game-space.js"></script>
 <script src="js/main/08-couple-space.js"></script>

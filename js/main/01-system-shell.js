@@ -1,4 +1,4 @@
-﻿/* ============ TOP-LEVEL SCREEN NAVIGATION ============ */
+/* ============ TOP-LEVEL SCREEN NAVIGATION ============ */
 function goToScreen(id){
   document.querySelectorAll('.topview').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+id).classList.add('active');
@@ -361,7 +361,7 @@ function pluginPreviewHTML(type){
     case 'breathe': {
       var wcb = (typeof widgetCustom!=='undefined' && widgetCustom['breathe']) || {};
       var bImg = wcb.img || '';
-      var bName = (wcb.name!=null && wcb.name!=='') ? wcb.name : '测试员1';
+      var bName = (wcb.name!=null && wcb.name!=='') ? wcb.name : 'Fated';
       var bStatus = (wcb.status!=null && wcb.status!=='') ? wcb.status : '正在陪着你';
       var bCore = bImg
         ? '<div class="ph-slot filled" data-wc-img="breathe" style="width:100%;height:100%;background-image:url('+bImg+');"></div>'
@@ -673,7 +673,9 @@ window.addEventListener('touchend', lockOnUp);
 
 /* ============ DATA MANAGER UI ============ */
 function dataManagerOwnContactIds(){
-  return Object.keys(contacts||{}).filter(function(k){ return k==='tester1' || k[0]==='p' || k[0]==='g'; });
+  return Object.keys(contacts||{}).filter(function(k){
+    return typeof isPersistableContactId==='function' ? isPersistableContactId(k) : k!=='me';
+  });
 }
 function dataManagerByteSize(value){
   try{ return new Blob([JSON.stringify(value||{})]).size; }catch(e){ return 0; }

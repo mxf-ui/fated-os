@@ -14,9 +14,7 @@ function addContactRow(id, isGroup){
   const box = document.getElementById('contact-items');
   if(box) box.appendChild(row);
 }
-function deleteContact(id){
-  if(id==='tester1'){ showToast('测试员1 是默认联系人，不能删除', 1600); return; }
-  var nm = contacts[id] ? contacts[id].name : id;
+function deleteContact(id){var nm = contacts[id] ? contacts[id].name : id;
   // 清除空闲计时器
   if(contacts[id] && contacts[id].idleTimer){ clearTimeout(contacts[id].idleTimer); }
   // 彻底删除联系人数据
@@ -30,10 +28,10 @@ function deleteContact(id){
   var cr=document.querySelector('#contact-items [data-cid="'+id+'"]'); if(cr) cr.remove();
   // 重建聊天列表（会自动排除已删除的联系人）
   renderChatList();
-  // 如果当前正在和被删除的联系人聊天，切回测试员1
   if(currentContact===id){
-    currentContact='tester1';
+    currentContact='';
     closeSheet('thread');
+    if(typeof renderEmptyThread==='function') renderEmptyThread();
   }
   saveState();
   showToast('已删除「'+nm+'」及其所有聊天记录', 1600);

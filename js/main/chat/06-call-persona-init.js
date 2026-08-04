@@ -130,12 +130,6 @@ function seedStartupPlugins(){
 function initApp(){  /* 记忆模式：不再清空旧存档，保留用户所有数据 */
   loadState();
   initWidgetBgMode(); /* 确保插件背景效果立即生效（即使无存档也用默认磨砂）*/
-  if(!moments.length){
-    moments = [
-      { id:1, authorId:'tester1', text:'这是上线前的测试环境，欢迎体验各类功能～', vis:'公开', hidden:[], ts: nowStamp()-1000*60*60*2, place:'', likes:12, liked:false, comments:[] },
-      { id:2, authorId:'me', text:'我是 user，正在做最后的上线检查。', vis:'公开', hidden:[], ts: nowStamp()-1000*60*60*24, place:'', likes:3, liked:false, comments:[] }
-    ];
-  }
   if(typeof syncRenderedContactRows==='function') syncRenderedContactRows();
   applyUserName(); applyUserPrefs(); updateUserAvatarEl();
   applyMomentsBg(); renderMoments(); populateViewAs();

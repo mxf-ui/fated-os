@@ -44,8 +44,19 @@ function contactAvatar(c){
   return avatarHTML(c?c.tone:'', c?c.avatarColor:null);
 }
 
+function renderEmptyThread(){
+  var name=document.getElementById('thread-name'); if(name) name.textContent='??';
+  var call=document.getElementById('call-name'); if(call) call.textContent='????';
+  var av=document.getElementById('thread-avatar'); if(av) av.innerHTML='';
+  var wrap=document.getElementById('thread-msgs'); if(wrap) wrap.innerHTML='<div class="daydivider">????</div>';
+  var ib=document.getElementById('msg-input'), sb=document.getElementById('sendbtn');
+  if(ib){ ib.disabled=true; ib.placeholder='?????????'; }
+  if(sb){ sb.style.opacity=.4; sb.style.pointerEvents='none'; }
+}
+
 function renderThread(){
   const c = contacts[currentContact];
+  if(!c){ renderEmptyThread(); return; }
   document.getElementById('thread-name').textContent = c.displayName || c.name;
   document.getElementById('call-name').textContent = c.name;
   var tAv=document.getElementById('thread-avatar'); if(tAv) tAv.innerHTML=contactAvatar(c);
@@ -207,5 +218,5 @@ function playVoice(el){
   if(t) speakText(t);
 }
 
-function openThread(id){ currentContact=id; if(contacts[id]) contacts[id].unread=0; renderChatList(); renderThread(); saveChatThread(id); openSheet('thread'); resetIdleTimer(); }
+function openThread(id){ if(!id || !contacts[id]){ if(typeof showToast==='function') showToast('?????????????', 1600, 'warn'); renderChatList(); renderEmptyThread(); return; } currentContact=id; contacts[id].unread=0; renderChatList(); renderThread(); saveChatThread(id); openSheet('thread'); resetIdleTimer(); }
 

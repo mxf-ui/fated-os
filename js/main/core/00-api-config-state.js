@@ -1,4 +1,4 @@
-﻿/* ============ API & MODEL CONFIG ============ */
+/* ============ API & MODEL CONFIG ============ */
 function createApiProfile(id, name, endpoint, key, model, apiFormat, temperature, stream){
   return {
     id:id,
@@ -30,8 +30,8 @@ var apiConfig = {
   },
   tts:{elevenlabs:{key:'',model:'eleven_multilingual_v2'},minimax:{key:'',groupId:'',model:'speech-01'},custom:{key:'',endpoint:'',voice:''}},
   imageGen:{enabled:false, provider:'pollinations', endpoint:'https://image.pollinations.ai', key:'', model:'flux', size:'portrait', style:'cinematic mobile illustration, soft green light, delicate details, clean composition, no text in image', negative:'low quality, blurry, watermark, extra text, distorted hands', lastPreview:''},
-  voiceIds:{tester1:''},
-  memoryBooks:{tester1:''},
+  voiceIds:{},
+  memoryBooks:{},
   proxyUrl:'http://127.0.0.1:8080',
   webSearch:true
 };
