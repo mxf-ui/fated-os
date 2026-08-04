@@ -805,57 +805,65 @@
   </div>
 
 <!-- ================= SHEET: CLOUD SYNC ================= -->
-<div class="sheet" id="sheet-cloudsync">
-  <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('cloudsync')">&#8249;</div><div class="t">Cloud Sync <small>云端保存</small></div></div>
-  <div class="sheet-body cloud-sync-body">
-    <div class="cloud-sync-card">
-      <div class="cloud-sync-title">Encrypted Account Save <small>加密账号保存</small></div>
-      <div class="cloud-sync-sub">人设、聊天、API 设置、插件图片、壁纸和贴纸会在本浏览器加密后再上传。</div>
-      <div class="cloud-sync-account">Account 账号b id="cloud-current-email">Not signed in 未登</b></div>
-      <div id="cloud-sync-status" class="cloud-sync-status">登录或创建账号后启用云端保存</div>
-    </div>
-    <div class="cloud-sync-card" id="cloud-auth-box">
-      <label class="cloud-sync-label">Email / 邮箱</label>
-      <input id="cloud-email" class="cloud-sync-input" type="email" placeholder="you@example.com" autocomplete="email">
-      <label class="cloud-sync-label">Password / 密码</label>
-      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="At least 8 characters / &#33267;&#23569; 8 &#20301;" autocomplete="current-password">
-
-      <label class="cloud-sync-label">Invite Code / &#36992;&#35831;&#30721;</label>
-
-      <input id="cloud-invite" class="cloud-sync-input" placeholder="123456" maxlength="20" autocomplete="off">
-      <button id="cloud-login-btn" class="cloud-sync-btn primary" onclick="cloudLogin()">Sign In / 登录</button>
-      <button id="cloud-register-btn" class="cloud-sync-btn" onclick="cloudRegister()">Create Account / 创建账号</button>
-    </div>
-    <div class="cloud-sync-card" id="cloud-action-box" style="display:none;">
-      <button id="cloud-upload-btn" class="cloud-sync-btn primary" onclick="cloudUploadNow()">Upload / 上传本机数据</button>
-      <button id="cloud-restore-btn" class="cloud-sync-btn" onclick="cloudRestoreNow()">Restore / 恢复云端数据</button>
-      <button id="cloud-logout-btn" class="cloud-sync-btn danger" onclick="cloudLogout()">Sign Out / 逢出登</button>
-    </div>
-  </div>
-</div>
-
+<div class="sheet" id="sheet-cloudsync">
+  <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('cloudsync')">&#8249;</div><div class="t">Cloud Sync <small>云端保存</small></div></div>
+  <div class="sheet-body cloud-sync-body">
+    <div class="cloud-sync-card">
+      <div class="cloud-sync-title">Encrypted Account Save <small>加密账号保存</small></div>
+      <div class="cloud-sync-sub">人设、聊天、API 设置、插件图片、壁纸和贴纸会在本浏览器加密后再上传。</div>
+      <div class="cloud-sync-account">Account / 账号 <b id="cloud-current-email">Not signed in / 未登录</b></div>
+      <div id="cloud-sync-status" class="cloud-sync-status">登录或创建账号后启用云端保存。</div>
+    </div>
+    <div class="cloud-sync-card" id="cloud-auth-box">
+      <label class="cloud-sync-label">Email / 邮箱</label>
+      <input id="cloud-email" class="cloud-sync-input" type="email" placeholder="you@example.com" autocomplete="email">
+      <label class="cloud-sync-label">Password / 密码</label>
+      <input id="cloud-password" class="cloud-sync-input" type="password" placeholder="At least 8 characters / 至少 8 位" autocomplete="current-password">
+      <label class="cloud-sync-label">Invite Code / 邀请码</label>
+      <input id="cloud-invite" class="cloud-sync-input" placeholder="123456" maxlength="20" autocomplete="off">
+      <button id="cloud-login-btn" class="cloud-sync-btn primary" onclick="cloudLogin()">Sign In / 登录</button>
+      <button id="cloud-register-btn" class="cloud-sync-btn" onclick="cloudRegister()">Create Account / 创建账号</button>
+    </div>
+    <div class="cloud-sync-card" id="cloud-action-box" style="display:none;">
+      <button id="cloud-upload-btn" class="cloud-sync-btn primary" onclick="cloudUploadNow()">Upload / 上传本机数据</button>
+      <button id="cloud-restore-btn" class="cloud-sync-btn" onclick="cloudRestoreNow()">Restore / 恢复云端数据</button>
+      <button id="cloud-logout-btn" class="cloud-sync-btn danger" onclick="cloudLogout()">Sign Out / 退出登录</button>
+    </div>
+  </div>
+</div>
   <!-- ================= SHEET: MODEL API (LLM) ================= -->
-  <div class="sheet" id="sheet-datamgr">
-    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('datamgr')">&#8249;</div><div class="t">Data Manager <small>数据管理</small></div></div>
-    <div class="sheet-body data-manager-body">
-      <div class="settings-note">人设、聊天、API、插件图片会优先保存在本机浏览器数据库，换设备时请配合 Cloud Sync 或导出本机快照。</div>
-      <div class="settings-section-title">Storage / 存储统计</div>
-      <div class="data-stat-grid">
-        <div class="data-stat"><b id="dm-api-count">0</b><small>API 配置</small></div>
-        <div class="data-stat"><b id="dm-contact-count">0</b><small>人设联系</small></div>
-        <div class="data-stat"><b id="dm-chat-count">0</b><small>聊天消息</small></div>
-        <div class="data-stat"><b id="dm-asset-size">0 KB</b><small>图片与插</small></div>
-      </div>
-      <div class="settings-section-title">Backup & Restore / 备份与恢</div>
-      <button type="button" class="data-action primary" onclick="dataManagerExportSnapshot()">Export Local Snapshot (.JSON) / 导出本机快照</button>
-      <button type="button" class="data-action" onclick="dataManagerSaveNow()">Save Current Device Now / 立即写入本机</button>
-      <button type="button" class="data-action" onclick="dataManagerOpenCloud()">Open Cloud Sync / 打开云端同步</button>
-      <div class="settings-section-title">Health Check / 数据体检</div>
-      <button type="button" class="data-action" onclick="dataManagerCheckStorage()">Check Local Storage / 棢查本机保</button>
-      <div class="data-manager-status" id="dm-status">等待棢查</div>
-    </div>
-  </div>
-
+  <div class="sheet" id="sheet-datamgr">
+    <div class="sheet-top"><div class="back-btn glass-strong" onclick="closeSheet('datamgr')">&#8249;</div><div class="t">Data Manager <small>数据管理</small></div></div>
+    <div class="sheet-body data-manager-body">
+      <div class="settings-note">人设、聊天、API、插件图片会优先保存在本机浏览器数据库；登录后会加密同步到 Supabase。这里可以查看保存链路和最近日志。</div>
+      <div class="settings-section-title">Storage / 存储统计</div>
+      <div class="data-stat-grid">
+        <div class="data-stat"><b id="dm-api-count">0</b><small>API 配置</small></div>
+        <div class="data-stat"><b id="dm-contact-count">0</b><small>人设联系人</small></div>
+        <div class="data-stat"><b id="dm-chat-count">0</b><small>聊天消息</small></div>
+        <div class="data-stat"><b id="dm-asset-size">0 KB</b><small>图片与插件</small></div>
+      </div>
+      <div class="settings-section-title">Save Diagnostics / 保存诊断</div>
+      <div class="save-diagnostics-panel" id="save-diagnostics-panel">
+        <div class="save-diagnostics-head"><b>保存链路状态</b><small>本地、账号、云端、资源上传</small></div>
+        <div class="save-diagnostics-grid" id="save-diagnostics-grid"></div>
+        <button type="button" class="data-action" onclick="saveDiagnosticsRefresh(true)">Refresh Diagnostics / 刷新诊断</button>
+      </div>
+      <div class="settings-section-title">Backup & Restore / 备份与恢复</div>
+      <button type="button" class="data-action primary" onclick="dataManagerExportSnapshot()">Export Local Snapshot (.JSON) / 导出本机快照</button>
+      <button type="button" class="data-action" onclick="dataManagerSaveNow()">Save Current Device Now / 立即写入本机</button>
+      <button type="button" class="data-action" onclick="dataManagerOpenCloud()">Open Cloud Sync / 打开云端同步</button>
+      <div class="settings-section-title">Log Statistics / 日志统计</div>
+      <div class="save-log-panel">
+        <div class="save-log-summary" id="save-log-summary">等待日志统计</div>
+        <div class="save-log-list" id="save-log-list"></div>
+        <button type="button" class="data-action" onclick="saveDiagnosticsClearLogs()">Clear Save Logs / 清空保存日志</button>
+      </div>
+      <div class="settings-section-title">Health Check / 数据体检</div>
+      <button type="button" class="data-action" onclick="dataManagerCheckStorage()">Check Local Storage / 检查本机保存</button>
+      <div class="data-manager-status" id="dm-status">等待检查</div>
+    </div>
+  </div>
   <div class="sheet api-config-sheet" id="sheet-modelcfg">
             <div class="sheet-top api-config-top"><div class="t">API &#35774;&#32622;</div><button type="button" class="api-back" onclick="closeSheet('modelcfg')">&#8249;</button></div>
     <div class="sheet-body api-config-body">
@@ -1904,7 +1912,8 @@
 <script src="js/main/core/07-wallet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/main/core/08a-supabase-config.js?v=20260802-rate-clean"></script>
-<script src="js/main/core/08-cloud-sync.js?v=20260804-merge-protection"></script>
+<script src="js/main/core/08-cloud-sync.js?v=20260804-save-diagnostics"></script>
+<script src="js/main/core/09-save-diagnostics.js?v=20260804-save-panel"></script>
 
 <script src="js/main/core/10-event-memory.js"></script>
 

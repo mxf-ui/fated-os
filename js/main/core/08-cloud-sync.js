@@ -1,4 +1,4 @@
-﻿/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
+/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
 var cloudSyncState = {
   user:null,
   key:null,
@@ -44,6 +44,7 @@ function cloudSetStatus(text, tone){
   if(!el) return;
   el.textContent=text||'';
   el.className='cloud-sync-status '+(tone||'');
+  if(typeof saveDiagnosticsRender==='function') saveDiagnosticsRender();
 }
 function cloudSetBusy(on){
   cloudSyncState.busy=!!on;
@@ -395,6 +396,7 @@ async function cloudSyncInit(){
     if(cloudHasSession()){
       cloudHideEntryGate();
       cloudSetStatus(CLOUD_MSG.SYNC_UNLOCKED, '');
+      if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-auth-ready', '已使用记住的密钥解锁云同步。', {}, 'ok');
       await cloudAutoSyncAfterUnlock('remembered');
     }else{
       cloudSetStatus(CLOUD_MSG.SIGNED_IN_UNLOCK, '');
@@ -422,9 +424,10 @@ async function cloudLogin(opts){
     await cloudRememberUnlock(user, key);
     cloudSetStatus(CLOUD_MSG.SIGNED_SYNCING, '');
     cloudShowEntryGate(CLOUD_MSG.SYNCING_SAVE);
+    if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-login-success', '账号登录成功，开始合并云端与本机数据。', {email:user.email||''}, 'ok');
     await cloudAutoSyncAfterUnlock('login');
     cloudHideEntryGate();
-  }catch(e){ cloudSetStatus(e.message, 'warn'); cloudShowEntryGate(e.message || CLOUD_MSG.SIGN_IN_FAILED, 'warn'); }
+  }catch(e){ if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-login-failed', e.message || CLOUD_MSG.SIGN_IN_FAILED, {}, 'warn'); cloudSetStatus(e.message, 'warn'); cloudShowEntryGate(e.message || CLOUD_MSG.SIGN_IN_FAILED, 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 async function cloudRegister(opts){
@@ -444,9 +447,10 @@ async function cloudRegister(opts){
     await cloudRememberUnlock(user, key);
     cloudSetStatus(CLOUD_MSG.ACCOUNT_CREATED, '');
     cloudShowEntryGate(CLOUD_MSG.SYNCING_SAVE);
+    if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-register-success', '账号创建成功，开始上传当前本机数据。', {email:user.email||''}, 'ok');
     await cloudAutoSyncAfterUnlock('register');
     cloudHideEntryGate();
-  }catch(e){ cloudSetStatus(e.message, 'warn'); cloudShowEntryGate(e.message || CLOUD_MSG.CREATE_FAILED, 'warn'); }
+  }catch(e){ if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-register-failed', e.message || CLOUD_MSG.CREATE_FAILED, {}, 'warn'); cloudSetStatus(e.message, 'warn'); cloudShowEntryGate(e.message || CLOUD_MSG.CREATE_FAILED, 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 async function cloudLogout(){
@@ -457,6 +461,7 @@ async function cloudLogout(){
   cloudSyncState.user=null; cloudSyncState.key=null; cloudSyncState.autosaveTimer=null; cloudSyncState.autosaveInFlight=false; cloudSyncState.autosavePending=false;
   cloudRenderAuthState();
   cloudShowEntryGate(CLOUD_MSG.SIGNED_OUT_ENTER);
+  if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-logout', '账号已退出，本机数据仍保留。', {}, 'warn');
   cloudSetStatus(CLOUD_MSG.SIGNED_OUT_LOCAL, '');
   cloudSetBusy(false);
 }
@@ -905,13 +910,14 @@ async function cloudUploadSnapshot(opts){
   if(opts.manual) label='Uploaded encrypted cloud save at '+new Date(data.updatedAt).toLocaleString()+' / cloud save merged and protected';
   if(prepared && prepared.merged) label='Merged local and cloud save at '+new Date(data.updatedAt).toLocaleString()+' / local and cloud data are both kept';
   cloudTouchStatus(label, 'ok');
+  if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-upload-success', label, {reason:(opts&&opts.reason)||'', savedAt:snapshot.savedAt, updatedAt:data.updatedAt}, 'ok');
   return data;
 }
 async function cloudUploadNow(){
     if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first. / \u8bf7\u5148\u7528\u5bc6\u7801\u767b\u5f55\u3002', 'warn');
   cloudSetBusy(true);
   try{ await cloudUploadSnapshot({manual:true, reason:'manual'}); }
-  catch(e){ cloudSetStatus(e.message, 'warn'); }
+  catch(e){ if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-upload-failed', e.message || 'Upload failed', {manual:true}, 'warn'); cloudSetStatus(e.message, 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 async function cloudRestoreNow(){
@@ -931,7 +937,8 @@ async function cloudRestoreNow(){
     var encrypted=await cloudEncryptSnapshot(merged, cloudSyncState.key);
     await cloudPutRemoteSnapshot(encrypted, merged, {manual:false, reason:'manual-restore-merge'});
     cloudSetStatus('Cloud save restored and merged. Local-only data was kept. / \u4e91\u7aef\u5b58\u6863\u5df2\u6062\u590d\u5e76\u5408\u5e76\uff0c\u672c\u673a\u72ec\u6709\u6570\u636e\u5df2\u4fdd\u7559\u3002', 'ok');
-  }catch(e){ cloudSetStatus(e.message || 'Restore failed / \u6062\u590d\u5931\u8d25', 'warn'); }
+    if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-restore-success', '\u4e91\u7aef\u6570\u636e\u5df2\u6062\u590d\u5e76\u4e0e\u672c\u673a\u6570\u636e\u5408\u5e76\u3002', {}, 'ok');
+  }catch(e){ if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-restore-failed', e.message || 'Restore failed', {}, 'warn'); cloudSetStatus(e.message || 'Restore failed / \u6062\u590d\u5931\u8d25', 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 function cloudNotifyLocalSave(reason){
@@ -951,7 +958,7 @@ async function cloudRunAutosave(){
   cloudSyncState.autosaveInFlight=true;
     cloudTouchStatus('Saving to cloud... / \u6b63\u5728\u81ea\u52a8\u4fdd\u5b58\u4e91\u7aef...', '');
   try{ await cloudUploadSnapshot({manual:false, reason:'autosave'}); }
-  catch(e){ cloudTouchStatus('Cloud autosave failed: '+(e.message||e), 'warn'); }
+  catch(e){ if(typeof saveDiagnosticsLog==='function') saveDiagnosticsLog('cloud-autosave-failed', e.message || String(e), {}, 'warn'); cloudTouchStatus('Cloud autosave failed: '+(e.message||e), 'warn'); }
   finally{
     cloudSyncState.autosaveInFlight=false;
     if(cloudSyncState.autosavePending){ cloudSyncState.autosavePending=false; cloudScheduleAutosave(2500); }
