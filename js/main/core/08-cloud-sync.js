@@ -1,4 +1,4 @@
-/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
+﻿/* ============ CLOUD ACCOUNT + ENCRYPTED AUTO SYNC ============ */
 var cloudSyncState = {
   user:null,
   key:null,
@@ -18,12 +18,12 @@ var CLOUD_MSG = {
   SIGN_IN_UNLOCK:'Sign in to unlock cloud save. / \u8bf7\u767b\u5f55\u540e\u540c\u6b65\u5b58\u6863\u3002',
   CHECKING:'Checking account... / \u6b63\u5728\u68c0\u67e5\u8d26\u53f7\u3002',
   ENTER_UNLOCK:'Enter password and invite code to unlock encrypted cloud save. / \u8bf7\u8f93\u5165\u5bc6\u7801\u548c\u9080\u8bf7\u7801\u89e3\u9501\u4e91\u5b58\u6863\u3002',
-  SIGN_IN_CREATE_ENTER:'New users tap Register first; existing users tap Login. / 新用户请先点注册，老用户直接登录。',
+    SIGN_IN_CREATE_ENTER:'New users tap Register first; existing users tap Login. / \u65b0\u7528\u6237\u8bf7\u5148\u70b9\u6ce8\u518c\uff0c\u8001\u7528\u6237\u76f4\u63a5\u767b\u5f55\u3002',
   SIGN_IN_ENTER:'Sign in to enter. / \u8bf7\u767b\u5f55\u540e\u8fdb\u5165\u3002',
   SYNC_UNLOCKED:'Cloud sync is unlocked. / \u4e91\u7aef\u540c\u6b65\u5df2\u89e3\u9501\u3002',
   SIGNED_IN_UNLOCK:'Signed in. Enter password and invite code once to unlock encrypted sync. / \u5df2\u767b\u5f55\uff0c\u8bf7\u8f93\u5165\u5bc6\u7801\u548c\u9080\u8bf7\u7801\u89e3\u9501\u52a0\u5bc6\u540c\u6b65\u3002',
   D1_MISSING:'Cloud database is not configured yet. / \u4e91\u7aef\u6570\u636e\u5e93\u8fd8\u672a\u914d\u7f6e\u3002',
-  SIGN_IN_CREATE_SYNC:'New users tap Register first; existing users tap Login. / 新用户请先点注册，老用户直接登录。',
+    SIGN_IN_CREATE_SYNC:'New users tap Register first; existing users tap Login. / \u65b0\u7528\u6237\u8bf7\u5148\u70b9\u6ce8\u518c\uff0c\u8001\u7528\u6237\u76f4\u63a5\u767b\u5f55\u3002',
   EMAIL_PASSWORD_REQUIRED:'Email and password are required. / \u8bf7\u586b\u5199\u90ae\u7bb1\u548c\u5bc6\u7801\u3002',
   INVITE_REQUIRED:'Invite code is required. / \u8bf7\u586b\u5199\u9080\u8bf7\u7801\u3002',
   SIGNING_IN:'Signing in... / \u6b63\u5728\u767b\u5f55\u3002',
@@ -141,28 +141,28 @@ function cloudFriendlyAuthMessage(error, fallback){
   var raw=String((error && (error.message || error.error_description || error.code)) || fallback || 'Supabase request failed');
   var lower=raw.toLowerCase();
   if(lower.indexOf('invalid login credentials')>=0 || lower.indexOf('invalid credentials')>=0){
-    return 'Account not found or password is wrong. New users must tap Register first. / 账号不存在或密码错误。新用户请先点注册。';
+    return 'Account not found or password is wrong. New users must tap Register first. / \u8d26\u53f7\u4e0d\u5b58\u5728\u6216\u5bc6\u7801\u9519\u8bef\u3002\u65b0\u7528\u6237\u8bf7\u5148\u70b9\u6ce8\u518c\u3002';
   }
   if(lower.indexOf('email not confirmed')>=0 || lower.indexOf('confirm')>=0){
-    return 'Email is not confirmed. Please open the confirmation email, or turn off Supabase email confirmation for invite-only testing. / 邮箱还没有确认。请先点确认邮件，或在 Supabase 里关闭邮箱确认后再内测。';
+    return 'Email is not confirmed. Please open the confirmation email, or turn off Supabase email confirmation for invite-only testing. / \u90ae\u7bb1\u8fd8\u6ca1\u6709\u786e\u8ba4\u3002';
   }
   if(lower.indexOf('email rate limit exceeded')>=0 || (lower.indexOf('rate limit')>=0 && lower.indexOf('email')>=0)){
-    return 'Email registration is temporarily rate-limited. Wait a few minutes, change another email, or turn off Supabase email confirmation for invite-only testing. / 邮件注册触发频率限制。请等几分钟、换一个邮箱，或在 Supabase 里关闭邮箱确认后再内测。';
+    return 'Email registration is temporarily rate-limited. Wait a few minutes, change another email, or turn off Supabase email confirmation. / \u90ae\u4ef6\u6ce8\u518c\u89e6\u53d1\u9891\u7387\u9650\u5236\u3002';
   }
   if(lower.indexOf('user already registered')>=0 || lower.indexOf('already registered')>=0 || lower.indexOf('already exists')>=0){
-    return 'This email is already registered. Please tap Login instead. / 这个邮箱已经注册过了，请直接点登录。';
+    return 'This email is already registered. Please tap Login instead. / \u8fd9\u4e2a\u90ae\u7bb1\u5df2\u7ecf\u6ce8\u518c\u8fc7\u4e86\uff0c\u8bf7\u76f4\u63a5\u767b\u5f55\u3002';
   }
   if(lower.indexOf('password')>=0 && lower.indexOf('6')>=0){
     return CLOUD_MSG.PASSWORD_LENGTH;
   }
   if(lower.indexOf('invite_invalid')>=0 || lower.indexOf('invite code invalid')>=0){
-    return 'Invite code is invalid. / 邀请码无效。';
+    return 'Invite code is invalid. / \u9080\u8bf7\u7801\u65e0\u6548\u3002';
   }
   if(lower.indexOf('invite_exhausted')>=0){
-    return 'Invite code has been used up. / 邀请码次数已用完。';
+    return 'Invite code has been used up. / \u9080\u8bf7\u7801\u6b21\u6570\u5df2\u7528\u5b8c\u3002';
   }
   if(lower.indexOf('not_authenticated')>=0){
-    return 'Please log in or register first, then the invite code can be verified. / 请先登录或注册，邀请码才能完成验证。';
+    return 'Please log in or register first, then the invite code can be verified. / \u8bf7\u5148\u767b\u5f55\u6216\u6ce8\u518c\uff0c\u518d\u9a8c\u8bc1\u9080\u8bf7\u7801\u3002';
   }
   return raw;
 }
@@ -358,7 +358,7 @@ function cloudRenderAuthState(){
   var emailEl=document.getElementById('cloud-current-email');
   var authBox=document.getElementById('cloud-auth-box');
   var actionBox=document.getElementById('cloud-action-box');
-  if(emailEl) emailEl.textContent=signed ? cloudSyncState.user.email : 'Not signed in 未登录';
+    if(emailEl) emailEl.textContent=signed ? cloudSyncState.user.email : 'Not signed in / \u672a\u767b\u5f55';
   if(authBox) authBox.style.display=signed && cloudSyncState.key ? 'none' : 'block';
   if(actionBox) actionBox.style.display=signed && cloudSyncState.key ? 'block' : 'none';
   var savedEmail=''; try{ savedEmail=localStorage.getItem('fated_cloud_email')||''; }catch(e){}
@@ -601,10 +601,10 @@ function cloudCanUploadSnapshot(snapshot, opts){
   opts = opts || {};
   if(cloudSnapshotHasMeaningfulUserData(snapshot)) return true;
   if(opts.manual===true){
-    cloudTouchStatus('Local save is still empty, skipped blank cloud upload. / ?????????????????????', 'warn');
+    cloudTouchStatus('Local save is still empty, skipped blank cloud upload. / empty local save was not uploaded', 'warn');
     return false;
   }
-  cloudTouchStatus('Local save is still empty, skipped blank cloud upload. / ?????????????????????', 'warn');
+  cloudTouchStatus('Local save is still empty, skipped blank cloud upload. / empty local save was not uploaded', 'warn');
   return false;
 }
 async function cloudFindBlockingRemoteSnapshot(snapshot, opts){
@@ -659,6 +659,157 @@ function cloudShouldRestoreRemote(local, remotePayload, remoteSnapshot){
   if(remoteTime > (localTime + 5000)) return true;
   return false;
 }
+
+function cloudDataHasValue(value){
+  if(value===undefined || value===null) return false;
+  if(typeof value==='string') return value.trim()!=='';
+  if(Array.isArray(value)) return value.length>0;
+  if(typeof value==='object') return Object.keys(value).length>0;
+  return true;
+}
+function cloudStableJson(value){
+  try{ return JSON.stringify(value); }catch(e){ return String(value); }
+}
+function cloudMergePrimitiveArray(localArr, remoteArr){
+  var out=[], seen={};
+  (Array.isArray(remoteArr)?remoteArr:[]).concat(Array.isArray(localArr)?localArr:[]).forEach(function(item){
+    var key=typeof item+'|'+String(item);
+    if(seen[key]) return;
+    seen[key]=1; out.push(item);
+  });
+  return out;
+}
+function cloudMergeArrayById(localArr, remoteArr, opts){
+  opts=opts||{};
+  var preferLocal=opts.preferLocal!==false;
+  var out=[], map={};
+  function add(item, fromLocal){
+    if(!item || typeof item!=='object' || !item.id) return;
+    var id=String(item.id);
+    if(!map[id]){ map[id]=cloudClonePlain(item, {}); out.push(map[id]); return; }
+    map[id]=cloudMergeDeep(fromLocal ? item : map[id], fromLocal ? map[id] : item, {preferLocal:preferLocal});
+    for(var i=0;i<out.length;i++){ if(String(out[i].id)===id){ out[i]=map[id]; break; } }
+  }
+  (Array.isArray(remoteArr)?remoteArr:[]).forEach(function(item){ add(item, false); });
+  (Array.isArray(localArr)?localArr:[]).forEach(function(item){ add(item, true); });
+  return out;
+}
+function cloudMergeArrayValues(localArr, remoteArr, opts){
+  localArr=Array.isArray(localArr)?localArr:[];
+  remoteArr=Array.isArray(remoteArr)?remoteArr:[];
+  var all=localArr.concat(remoteArr);
+  if(!all.length) return [];
+  if(all.every(function(v){ return !v || typeof v!=='object'; })) return cloudMergePrimitiveArray(localArr, remoteArr);
+  if(all.some(function(v){ return v && typeof v==='object' && v.id; })) return cloudMergeArrayById(localArr, remoteArr, opts);
+  var out=[], seen={};
+  remoteArr.concat(localArr).forEach(function(item){
+    var key=cloudStableJson(item);
+    if(seen[key]) return;
+    seen[key]=1; out.push(cloudClonePlain(item, item));
+  });
+  return out;
+}
+function cloudMergeDeep(localValue, remoteValue, opts){
+  opts=opts||{};
+  var preferLocal=opts.preferLocal!==false;
+  if(Array.isArray(localValue) || Array.isArray(remoteValue)) return cloudMergeArrayValues(localValue, remoteValue, opts);
+  var localObj=localValue && typeof localValue==='object';
+  var remoteObj=remoteValue && typeof remoteValue==='object';
+  if(localObj || remoteObj){
+    var out={};
+    var keys={};
+    if(remoteObj) Object.keys(remoteValue).forEach(function(k){ keys[k]=1; });
+    if(localObj) Object.keys(localValue).forEach(function(k){ keys[k]=1; });
+    Object.keys(keys).forEach(function(k){ out[k]=cloudMergeDeep(localObj?localValue[k]:undefined, remoteObj?remoteValue[k]:undefined, opts); });
+    return out;
+  }
+  var preferred=preferLocal ? localValue : remoteValue;
+  var fallback=preferLocal ? remoteValue : localValue;
+  return cloudDataHasValue(preferred) ? preferred : fallback;
+}
+function cloudMergeApiConfig(localCfg, remoteCfg, opts){
+  var merged=cloudMergeDeep(localCfg||{}, remoteCfg||{}, opts);
+  if(Array.isArray(localCfg && localCfg.profiles) || Array.isArray(remoteCfg && remoteCfg.profiles)){
+    merged.profiles=cloudMergeArrayById((localCfg&&localCfg.profiles)||[], (remoteCfg&&remoteCfg.profiles)||[], opts);
+  }
+  if(!cloudDataHasValue(merged.activeProfileId)){
+    var profiles=Array.isArray(merged.profiles) ? merged.profiles : [];
+    if(profiles[0] && profiles[0].id) merged.activeProfileId=profiles[0].id;
+  }
+  return merged;
+}
+function cloudMergeChatRows(localRows, remoteRows, opts){
+  opts=opts||{};
+  var out=[], map={};
+  function add(row, fromLocal){
+    if(!row || !row.id) return;
+    var id=String(row.id);
+    if(!map[id]){ map[id]=cloudClonePlain(row, {}); out.push(map[id]); return; }
+    var base=fromLocal ? row : map[id];
+    var other=fromLocal ? map[id] : row;
+    var merged=cloudMergeDeep(base, other, opts);
+    merged.seed=cloudMergeArrayValues(base.seed, other.seed, opts).filter(function(m){ return !m || m.kind!=='typing'; });
+    map[id]=merged;
+    for(var i=0;i<out.length;i++){ if(String(out[i].id)===id){ out[i]=merged; break; } }
+  }
+  (Array.isArray(remoteRows)?remoteRows:[]).forEach(function(row){ add(row, false); });
+  (Array.isArray(localRows)?localRows:[]).forEach(function(row){ add(row, true); });
+  return out;
+}
+function cloudMergeContacts(localContacts, remoteContacts, opts){
+  var merged=cloudMergeArrayById(localContacts||[], remoteContacts||[], opts);
+  return (typeof fatedSanitizeContactsList==='function') ? fatedSanitizeContactsList(merged) : merged;
+}
+function cloudMergeSnapshotPayloads(localPayload, remotePayload, opts){
+  opts=opts||{};
+  var preferLocal=opts.preferLocal!==false;
+  var local=cloudClonePlain(localPayload||{}, {});
+  var remote=cloudClonePlain(remotePayload||{}, {});
+  var merged=cloudMergeDeep(local, remote, {preferLocal:preferLocal});
+  merged.schemaVersion=Math.max(Number(local.schemaVersion)||2, Number(remote.schemaVersion)||2, 2);
+  merged.savedAt=Math.max(Number(local.savedAt)||0, Number(remote.savedAt)||0, Date.now());
+  merged.state=merged.state||{};
+  var localState=local.state||{}, remoteState=remote.state||{};
+  merged.state.contactsExtra=cloudMergeContacts(localState.contactsExtra||[], remoteState.contactsExtra||[], {preferLocal:preferLocal});
+  merged.state.apiConfig=cloudMergeApiConfig(localState.apiConfig||{}, remoteState.apiConfig||{}, {preferLocal:preferLocal});
+  merged.state.worldBooks=cloudMergeDeep(localState.worldBooks||{}, remoteState.worldBooks||{}, {preferLocal:preferLocal});
+  merged.state.activePlugins=cloudMergePrimitiveArray(localState.activePlugins||[], remoteState.activePlugins||[]);
+  merged.state.removedPlugins=cloudMergePrimitiveArray(localState.removedPlugins||[], remoteState.removedPlugins||[]);
+  if(Array.isArray(localState.moments) || Array.isArray(remoteState.moments)) merged.state.moments=cloudMergeArrayValues(localState.moments||[], remoteState.moments||[], {preferLocal:preferLocal});
+  merged.assets=merged.assets||{};
+  var localAssets=local.assets||{}, remoteAssets=remote.assets||{};
+  merged.assets.contacts=cloudMergeArrayById(localAssets.contacts||[], remoteAssets.contacts||[], {preferLocal:preferLocal});
+  merged.assets.widgetCustom=cloudMergeDeep(localAssets.widgetCustom||{}, remoteAssets.widgetCustom||{}, {preferLocal:preferLocal});
+  merged.assets.appIconImgs=cloudMergeArrayById(localAssets.appIconImgs||[], remoteAssets.appIconImgs||[], {preferLocal:preferLocal});
+  merged.assets.lockWp=cloudMergeDeep(localAssets.lockWp||{}, remoteAssets.lockWp||{}, {preferLocal:preferLocal});
+  merged.assets.homeWp=cloudMergeDeep(localAssets.homeWp||{}, remoteAssets.homeWp||{}, {preferLocal:preferLocal});
+  merged.assets.stickers=cloudMergeArrayValues(localAssets.stickers||[], remoteAssets.stickers||[], {preferLocal:preferLocal});
+  merged.chats=cloudMergeChatRows(local.chats||[], remote.chats||[], {preferLocal:preferLocal});
+  return (typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(merged) : merged;
+}
+function cloudSnapshotsEqual(a, b){ return cloudStableJson(a)===cloudStableJson(b); }
+async function cloudReadRemoteSnapshotPayload(){
+  if(!cloudHasSession()) return null;
+  var remote=await cloudFetchRemoteSnapshot();
+  if(!remote.snapshot) return null;
+  var payload=await cloudDecryptSnapshot(remote.snapshot, cloudSyncState.key);
+  payload=(typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(payload) : payload;
+  return {remote:remote, payload:payload};
+}
+async function cloudPrepareSnapshotForUpload(snapshot, opts){
+  opts=opts||{};
+  var remoteData=await cloudReadRemoteSnapshotPayload();
+  if(!remoteData || !cloudSnapshotHasMeaningfulUserData(remoteData.payload)) return {snapshot:snapshot, remote:null, merged:false, restored:false};
+  var remotePayload=remoteData.payload;
+  var preferRemote=cloudShouldRestoreRemote(snapshot, remotePayload, remoteData.remote.snapshot);
+  var merged=preferRemote ? cloudMergeSnapshotPayloads(remotePayload, snapshot, {preferLocal:true}) : cloudMergeSnapshotPayloads(snapshot, remotePayload, {preferLocal:true});
+  var changed=!cloudSnapshotsEqual(merged, snapshot);
+  if(changed){
+    await cloudRestoreSnapshotPayload(merged);
+  }
+  return {snapshot:merged, remote:remoteData.remote, merged:changed, restored:preferRemote};
+}
+
 function cloudIsDataUrl(value){
   return typeof value==='string' && /^data:(image|audio)\/[a-z0-9.+-]+;base64,/i.test(value) && value.length>256;
 }
@@ -701,7 +852,7 @@ async function cloudExternalizeSnapshotAssets(snapshot){
 }
 async function cloudRestoreSnapshotPayload(payload){
   payload = (typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(payload) : payload;
-  if(!payload || !payload.state) throw new Error('Cloud save is empty or invalid. / 云端存档为空或无效。');
+    if(!payload || !payload.state) throw new Error('Cloud save is empty or invalid. / \u4e91\u7aef\u5b58\u6863\u4e3a\u7a7a\u6216\u65e0\u6548\u3002');
   cloudSyncState.suppressAutosave=true;
   try{
     applyStateSnapshot(payload.state);
@@ -742,41 +893,44 @@ async function cloudUploadSnapshot(opts){
   await cloudWaitForPersistenceReady({status:opts.manual!==false});
   if(opts.manual) cloudSetStatus('Encrypting local save... / \u6b63\u5728\u52a0\u5bc6\u672c\u5730\u5b58\u6863...', '');
   var snapshot=await cloudBuildLocalSnapshot();
+  var prepared=await cloudPrepareSnapshotForUpload(snapshot, opts);
+  snapshot=(prepared && prepared.snapshot) || snapshot;
   if(!cloudCanUploadSnapshot(snapshot, opts)) return null;
-  var blockingRemote=await cloudFindBlockingRemoteSnapshot(snapshot, opts);
-  if(blockingRemote){
-    await cloudRestoreSnapshotPayload(blockingRemote.payload);
-    cloudTouchStatus('Cloud save is newer, restored instead of overwriting. / 云端存档较新，已恢复，未覆盖。', 'ok');
-    return blockingRemote.remote;
-  }
   await cloudExternalizeSnapshotAssets(snapshot);
   var encrypted=await cloudEncryptSnapshot(snapshot, cloudSyncState.key);
   var data=await cloudPutRemoteSnapshot(encrypted, snapshot, opts);
   cloudSyncState.lastRemote=data.updatedAt;
   cloudSyncState.lastUploadedLocalSaveAt=snapshot.savedAt;
-  var label='Saved to cloud at '+new Date(data.updatedAt).toLocaleString()+' / ???????';
-  if(opts.manual) label='Uploaded encrypted cloud save at '+new Date(data.updatedAt).toLocaleString()+' / ?????????';
+  var label='Saved to cloud at '+new Date(data.updatedAt).toLocaleString()+' / cloud save merged and protected';
+  if(opts.manual) label='Uploaded encrypted cloud save at '+new Date(data.updatedAt).toLocaleString()+' / cloud save merged and protected';
+  if(prepared && prepared.merged) label='Merged local and cloud save at '+new Date(data.updatedAt).toLocaleString()+' / local and cloud data are both kept';
   cloudTouchStatus(label, 'ok');
   return data;
 }
 async function cloudUploadNow(){
-  if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first. / 请先用密码登录。', 'warn');
+    if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first. / \u8bf7\u5148\u7528\u5bc6\u7801\u767b\u5f55\u3002', 'warn');
   cloudSetBusy(true);
   try{ await cloudUploadSnapshot({manual:true, reason:'manual'}); }
   catch(e){ cloudSetStatus(e.message, 'warn'); }
   finally{ cloudSetBusy(false); }
 }
 async function cloudRestoreNow(){
-  if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first. / 请先用密码登录。', 'warn');
-  if(!confirm('Restore cloud save to this device? Current local data will be replaced by the cloud snapshot. / 确定恢复云端存档到本设备吗？当前本机数据会被云端快照替换。')) return;
+  if(!cloudSyncState.user || !cloudSyncState.key) return cloudSetStatus('Sign in with password first. / \u8bf7\u5148\u7528\u5bc6\u7801\u767b\u5f55\u3002', 'warn');
+  if(!confirm('Restore cloud save to this device? Local-only data will be merged and kept. / \u6062\u590d\u4e91\u7aef\u5b58\u6863\u5230\u672c\u8bbe\u5907\uff1f\u672c\u673a\u72ec\u6709\u6570\u636e\u4f1a\u5408\u5e76\u4fdd\u7559\u3002')) return;
   cloudSetBusy(true); cloudSetStatus('Downloading cloud save... / \u6b63\u5728\u4e0b\u8f7d\u4e91\u7aef\u5b58\u6863...', '');
   try{
     var data=await cloudFetchRemoteSnapshot();
-    if(!data.snapshot) throw new Error('No cloud save found. Upload once from your main device first. / 没有找到云端存档，请先在主设备上传一次。');
+    if(!data.snapshot) throw new Error('No cloud save found. Upload once from your main device first. / \u6ca1\u6709\u627e\u5230\u4e91\u7aef\u5b58\u6863\uff0c\u8bf7\u5148\u5728\u4e3b\u8bbe\u5907\u4e0a\u4f20\u4e00\u6b21\u3002');
     cloudSetStatus('Decrypting cloud save... / \u6b63\u5728\u89e3\u5bc6\u4e91\u7aef\u5b58\u6863...', '');
-    var payload=await cloudDecryptSnapshot(data.snapshot, cloudSyncState.key);
-    await cloudRestoreSnapshotPayload(payload);
-    cloudSetStatus('Cloud save restored. Local data has been refreshed. / 云端存档已恢复，本机数据已刷新。', 'ok');
+    var remotePayload=await cloudDecryptSnapshot(data.snapshot, cloudSyncState.key);
+    remotePayload=(typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(remotePayload) : remotePayload;
+    var localPayload=await cloudBuildLocalSnapshot();
+    var merged=cloudMergeSnapshotPayloads(remotePayload, localPayload, {preferLocal:true});
+    await cloudRestoreSnapshotPayload(merged);
+    await cloudExternalizeSnapshotAssets(merged);
+    var encrypted=await cloudEncryptSnapshot(merged, cloudSyncState.key);
+    await cloudPutRemoteSnapshot(encrypted, merged, {manual:false, reason:'manual-restore-merge'});
+    cloudSetStatus('Cloud save restored and merged. Local-only data was kept. / \u4e91\u7aef\u5b58\u6863\u5df2\u6062\u590d\u5e76\u5408\u5e76\uff0c\u672c\u673a\u72ec\u6709\u6570\u636e\u5df2\u4fdd\u7559\u3002', 'ok');
   }catch(e){ cloudSetStatus(e.message || 'Restore failed / \u6062\u590d\u5931\u8d25', 'warn'); }
   finally{ cloudSetBusy(false); }
 }
@@ -795,7 +949,7 @@ async function cloudRunAutosave(){
   if(!cloudHasSession()) return;
   if(cloudSyncState.autosaveInFlight){ cloudSyncState.autosavePending=true; return; }
   cloudSyncState.autosaveInFlight=true;
-  cloudTouchStatus('Saving to cloud... / 正在自动保存云端...', '');
+    cloudTouchStatus('Saving to cloud... / \u6b63\u5728\u81ea\u52a8\u4fdd\u5b58\u4e91\u7aef...', '');
   try{ await cloudUploadSnapshot({manual:false, reason:'autosave'}); }
   catch(e){ cloudTouchStatus('Cloud autosave failed: '+(e.message||e), 'warn'); }
   finally{
@@ -809,26 +963,23 @@ async function cloudAutoSyncAfterUnlock(reason){
     await cloudWaitForPersistenceReady({status:true});
     var remote=await cloudFetchRemoteSnapshot();
     var local=await cloudBuildLocalSnapshot();
-    var localMeaningful=cloudSnapshotHasMeaningfulUserData(local);
     if(remote.snapshot){
       var remotePayload=await cloudDecryptSnapshot(remote.snapshot, cloudSyncState.key);
-      if(typeof fatedSanitizeLegacyDefaultCloudPayload==='function') fatedSanitizeLegacyDefaultCloudPayload(remotePayload);
-      if(cloudShouldRestoreRemote(local, remotePayload, remote.snapshot)){
-        await cloudRestoreSnapshotPayload(remotePayload);
-        cloudSetStatus('Cloud save restored automatically. / ??????????', 'ok');
-        return;
-      }
-      if(cloudSnapshotHasMeaningfulUserData(remotePayload) && !localMeaningful){
-        await cloudRestoreSnapshotPayload(remotePayload);
-        cloudSetStatus('Cloud save restored automatically. / ??????????', 'ok');
+      remotePayload=(typeof fatedSanitizeLegacyDefaultCloudPayload==='function') ? fatedSanitizeLegacyDefaultCloudPayload(remotePayload) : remotePayload;
+      if(cloudSnapshotHasMeaningfulUserData(remotePayload)){
+        var preferRemote=cloudShouldRestoreRemote(local, remotePayload, remote.snapshot);
+        var merged=preferRemote ? cloudMergeSnapshotPayloads(remotePayload, local, {preferLocal:true}) : cloudMergeSnapshotPayloads(local, remotePayload, {preferLocal:true});
+        await cloudRestoreSnapshotPayload(merged);
+        await cloudUploadSnapshot({manual:false, reason:(preferRemote?'remote-merge':'unlock-merge')});
+        cloudSetStatus('Local and cloud save were merged. No side was overwritten. / \u672c\u5730\u548c\u4e91\u7aef\u5b58\u6863\u5df2\u5408\u5e76\uff0c\u4e0d\u4f1a\u5355\u5411\u8986\u76d6\u3002', 'ok');
         return;
       }
     }
-    if(!cloudCanUploadSnapshot(local, {manual:false, reason:reason||'unlock'})) return cloudSetStatus('No local save yet. Start using Fated OS and it will save automatically. / ???????????????????????', '');
+    if(!cloudCanUploadSnapshot(local, {manual:false, reason:reason||'unlock'})) return cloudSetStatus('No local save yet. Start using Fated OS and it will save automatically. / no local save yet', '');
     await cloudUploadSnapshot({manual:false, reason:reason||'unlock'});
-    cloudSetStatus('Current device save is now protected in cloud. / ?????????????', 'ok');
+    cloudSetStatus('Current device save is now protected in cloud. / current device save protected', 'ok');
   }catch(e){
-    cloudSetStatus(e.message || 'Auto sync failed / ???????', 'warn');
+    cloudSetStatus(e.message || 'Auto sync failed / auto sync failed', 'warn');
   }
 }
 window.addEventListener('beforeunload', function(){ if(cloudHasSession()) cloudNotifyLocalSave('urgent'); });
@@ -836,6 +987,7 @@ document.addEventListener('visibilitychange', function(){ if(document.hidden && 
 
 
 window.addEventListener('load', function(){ cloudBootAuthGate(); });
+
 
 
 

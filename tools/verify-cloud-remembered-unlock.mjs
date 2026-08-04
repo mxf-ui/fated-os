@@ -12,9 +12,10 @@ assert(/async function\s+cloudLoadRememberedUnlock\s*\(/.test(cloud), 'cloud syn
 assert(/function\s+cloudForgetRememberedUnlock\s*\(/.test(cloud), 'cloud sync must clear remembered unlock data on logout');
 assert(/exportKey\('raw',\s*key\)/.test(cloud), 'remembered unlock must export the AES key, not store the password');
 assert(/importKey\('raw'[\s\S]*\{name:'AES-GCM'\}/.test(cloud), 'remembered unlock must import the AES key for encryption/decryption');
-assert(/cloudLoadRememberedUnlock\(me\.user\)/.test(cloud), 'cloudSyncInit must try remembered unlock after /api/auth/me');
+assert(/var\s+user=await cloudGetCurrentUser\(\)/.test(cloud), 'cloudSyncInit must read the persisted Supabase session');
+assert(/cloudLoadRememberedUnlock\(user\)/.test(cloud), 'cloudSyncInit must try remembered unlock after Supabase session restore');
 assert(/cloudAutoSyncAfterUnlock\('remembered'\)/.test(cloud), 'remembered unlock must trigger cloud reconcile on boot');
 assert(/cloudForgetRememberedUnlock\(\)/.test(cloud), 'logout path must forget remembered unlock');
-assert(/08-cloud-sync\.js\?v=20260802-remembered-unlock/.test(index), 'index must cache-bust the cloud sync script');
+assert(/08-cloud-sync\.js\?v=20260804-merge-protection/.test(index), 'index must cache-bust the cloud sync script');
 
 console.log('Cloud remembered unlock behavior verified.');
